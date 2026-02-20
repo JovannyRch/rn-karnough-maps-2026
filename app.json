@@ -1,48 +1,58 @@
 {
   "expo": {
-    "name": "rn_karnough_map_2026",
-    "slug": "rn_karnough_map_2026",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "rnkarnoughmap2026",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "package": "com.jovannyrch.kmaps",
+      "predictiveBackGestureEnabled": false,
+      "versionCode": 36
     },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+    "experiments": {
+      "reactCompiler": false,
+      "typedRoutes": true
     },
+    "icon": "./assets/images/icon.png",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jovannyrch.kmaps"
+    },
+    "name": "Mapas de Karnough",
+    "newArchEnabled": true,
+    "orientation": "portrait",
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
             "backgroundColor": "#000000"
-          }
+          },
+          "image": "./assets/images/splash.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-4665787383933447~4424008395",
+          "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz"
         }
       ]
     ],
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+    "scheme": "rnkarnoughmap2026",
+    "slug": "rn_karnough_map_2026",
+    "userInterfaceStyle": "automatic",
+    "version": "2.0.6",
+    "web": {
+      "favicon": "./assets/images/favicon.png",
+      "output": "static"
     }
   }
 }

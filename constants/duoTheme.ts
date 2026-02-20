@@ -1,0 +1,16 @@
+export const DUO = {
+  bg: "#F7FBF2",
+  card: "#FFFFFF",
+  ink: "#1C2A1A",
+  muted: "#78906F",
+  border: "#D9E8CC",
+  borderStrong: "#BCD7A8",
+  green: "#58CC02",
+  greenDark: "#46A302",
+  greenSoft: "#EAF8DE",
+  blue: "#1CB0F6",
+  blueDark: "#1295D8",
+  yellow: "#FFC800",
+  orange: "#FF9F1A",
+  orangeDark: "#E17F00",
+} as const;

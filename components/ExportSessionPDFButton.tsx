@@ -1,0 +1,209 @@
+import useStore from "@/app/store";
+import {
+  addAdListener,
+  createRewardedAd,
+  hasAdMobRewardedModule,
+} from "@/utils/admobSupport";
+import { generateSessionPDF } from "@/utils/pdfGenerator";
+import { MaterialIcons } from "@expo/vector-icons";
+import { FC, useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
+
+const REWARDED_EXPORT_UNIT_ID = "ca-app-pub-4665787383933447/1959787491";
+
+interface ExportSessionPDFButtonProps {
+  compact?: boolean;
+  disabled?: boolean;
+}
+
+const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
+  compact = false,
+  disabled = false,
+}) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isWaitingAd, setIsWaitingAd] = useState(false);
+  const [rewardedLoaded, setRewardedLoaded] = useState(false);
+  const [rewardedAd, setRewardedAd] = useState<any>(null);
+  const {
+    resultType,
+    variableQuantity,
+    circuitVector,
+    result,
+    values,
+    variableRotation,
+    vectorResult,
+    boxColors,
+    variables,
+    isPro,
+  } = useStore();
+  const pendingExportAfterAdRef = useRef(false);
+
+  useEffect(() => {
+    if (isPro || !hasAdMobRewardedModule) {
+      return;
+    }
+
+    const adInstance = createRewardedAd(REWARDED_EXPORT_UNIT_ID);
+    if (!adInstance) {
+      return;
+    }
+    setRewardedAd(adInstance);
+
+    const unsubscribeLoaded = addAdListener(adInstance, "adLoaded", () => {
+      setRewardedLoaded(true);
+    });
+
+    const unsubscribeClosed = addAdListener(adInstance, "adDismissed", () => {
+      setRewardedLoaded(false);
+      void Promise.resolve(adInstance.load()).catch(() => {});
+      if (!pendingExportAfterAdRef.current) {
+        return;
+      }
+      pendingExportAfterAdRef.current = false;
+      setIsWaitingAd(false);
+      void performExport();
+    });
+
+    const unsubscribeFailed = addAdListener(adInstance, "adFailedToLoad", () => {
+      setRewardedLoaded(false);
+    });
+
+    void Promise.resolve(adInstance.load()).catch(() => {
+      setRewardedLoaded(false);
+    });
+
+    return () => {
+      unsubscribeLoaded.remove();
+      unsubscribeClosed.remove();
+      unsubscribeFailed.remove();
+    };
+  }, [isPro]);
+
+  const performExport = async () => {
+    try {
+      setIsGenerating(true);
+      const uri = await generateSessionPDF({
+        resultType,
+        variableQuantity,
+        circuitVector,
+        resultExpression: result,
+        values,
+        variableRotation,
+        vectorResult,
+        boxColors,
+        variables,
+      });
+
+      Alert.alert(
+        "PDF de sesión generado",
+        `Se exportó la sesión completa.${
+          uri
+            ? "\nPuedes compartirlo o guardarlo desde el diálogo del sistema."
+            : ""
+        }`,
+        [{ text: "OK" }],
+      );
+    } catch (error) {
+      console.error("Error al exportar sesión PDF:", error);
+      Alert.alert(
+        "Error",
+        "No fue posible exportar la sesión completa en PDF. Inténtalo de nuevo.",
+        [{ text: "OK" }],
+      );
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleExport = async () => {
+    if (isGenerating || isWaitingAd || disabled) {
+      return;
+    }
+
+    if (!isPro && rewardedLoaded && rewardedAd) {
+      pendingExportAfterAdRef.current = true;
+      setIsWaitingAd(true);
+      try {
+        await rewardedAd.show();
+      } catch {
+        pendingExportAfterAdRef.current = false;
+        setIsWaitingAd(false);
+        await performExport();
+      }
+      return;
+    }
+
+    await performExport();
+  };
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.button,
+        compact && styles.buttonCompact,
+        (isGenerating || isWaitingAd || disabled) && styles.buttonDisabled,
+      ]}
+      onPress={handleExport}
+      disabled={isGenerating || isWaitingAd || disabled}
+    >
+      {isGenerating || isWaitingAd ? (
+        <ActivityIndicator size="small" color="#fff" style={styles.icon} />
+      ) : (
+        <MaterialIcons
+          name="assignment"
+          size={20}
+          color="#fff"
+          style={styles.icon}
+        />
+      )}
+      <Text style={styles.buttonText}>
+        {isGenerating
+          ? "Exportando sesión..."
+          : isWaitingAd
+            ? "Mostrando anuncio..."
+            : "Exportar sesión completa"}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+const styles = StyleSheet.create({
+  button: {
+    marginHorizontal: 12,
+    marginTop: 8,
+    marginBottom: 10,
+    minHeight: 46,
+    borderRadius: 14,
+    borderBottomWidth: 4,
+    borderBottomColor: "#1A4EA0",
+    backgroundColor: "#2D7FF9",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  buttonCompact: {
+    marginHorizontal: 0,
+    marginTop: 10,
+    marginBottom: 0,
+  },
+  buttonDisabled: {
+    backgroundColor: "#9FBCE8",
+    borderBottomColor: "#7FA0D6",
+  },
+  icon: {
+    marginRight: 8,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "800",
+  },
+});
+
+export default ExportSessionPDFButton;
