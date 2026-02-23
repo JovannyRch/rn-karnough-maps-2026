@@ -1,8 +1,8 @@
 import useStore from "@/app/store";
 import {
   addAdListener,
-  createRewardedAd,
-  hasAdMobRewardedModule,
+  createInterstitialAd,
+  hasAdMobInterstitialModule,
 } from "@/utils/admobSupport";
 import { generateSessionPDF } from "@/utils/pdfGenerator";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -15,7 +15,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const REWARDED_EXPORT_UNIT_ID = "ca-app-pub-4665787383933447/1959787491";
+const INTERSTITIAL_EXPORT_UNIT_ID = "ca-app-pub-4665787383933447/6321320097";
 
 interface ExportSessionPDFButtonProps {
   compact?: boolean;
@@ -28,8 +28,8 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isWaitingAd, setIsWaitingAd] = useState(false);
-  const [rewardedLoaded, setRewardedLoaded] = useState(false);
-  const [rewardedAd, setRewardedAd] = useState<any>(null);
+  const [interstitialLoaded, setInterstitialLoaded] = useState(false);
+  const [interstitialAd, setInterstitialAd] = useState<any>(null);
   const {
     resultType,
     variableQuantity,
@@ -41,26 +41,28 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
     boxColors,
     variables,
     isPro,
+    adsMutedUntil,
   } = useStore();
+  const adsSuppressed = isPro || adsMutedUntil > Date.now();
   const pendingExportAfterAdRef = useRef(false);
 
   useEffect(() => {
-    if (isPro || !hasAdMobRewardedModule) {
+    if (adsSuppressed || !hasAdMobInterstitialModule) {
       return;
     }
 
-    const adInstance = createRewardedAd(REWARDED_EXPORT_UNIT_ID);
+    const adInstance = createInterstitialAd(INTERSTITIAL_EXPORT_UNIT_ID);
     if (!adInstance) {
       return;
     }
-    setRewardedAd(adInstance);
+    setInterstitialAd(adInstance);
 
     const unsubscribeLoaded = addAdListener(adInstance, "adLoaded", () => {
-      setRewardedLoaded(true);
+      setInterstitialLoaded(true);
     });
 
     const unsubscribeClosed = addAdListener(adInstance, "adDismissed", () => {
-      setRewardedLoaded(false);
+      setInterstitialLoaded(false);
       void Promise.resolve(adInstance.load()).catch(() => {});
       if (!pendingExportAfterAdRef.current) {
         return;
@@ -71,11 +73,11 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
     });
 
     const unsubscribeFailed = addAdListener(adInstance, "adFailedToLoad", () => {
-      setRewardedLoaded(false);
+      setInterstitialLoaded(false);
     });
 
     void Promise.resolve(adInstance.load()).catch(() => {
-      setRewardedLoaded(false);
+      setInterstitialLoaded(false);
     });
 
     return () => {
@@ -83,7 +85,7 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
       unsubscribeClosed.remove();
       unsubscribeFailed.remove();
     };
-  }, [isPro]);
+  }, [adsSuppressed]);
 
   const performExport = async () => {
     try {
@@ -126,11 +128,11 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
       return;
     }
 
-    if (!isPro && rewardedLoaded && rewardedAd) {
+    if (!adsSuppressed && interstitialLoaded && interstitialAd) {
       pendingExportAfterAdRef.current = true;
       setIsWaitingAd(true);
       try {
-        await rewardedAd.show();
+        await interstitialAd.show();
       } catch {
         pendingExportAfterAdRef.current = false;
         setIsWaitingAd(false);

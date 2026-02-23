@@ -75,6 +75,19 @@ const normalizeTerm = (term: string) => {
     .trim();
 };
 
+const formatCircuitTermLabel = (term: string, solveType: SolveType) => {
+  const normalized = normalizeTerm(term).replace(/\./g, "·");
+  if (!normalized) {
+    return solveType === "POS" ? "(0)" : "0";
+  }
+
+  if (solveType === "POS" && normalized.includes("+")) {
+    return `(${normalized})`;
+  }
+
+  return normalized;
+};
+
 const parseLiterals = (term: string, rails: string[]): Literal[] => {
   const normalized = normalizeTerm(term);
   const matches = [...normalized.matchAll(/([A-D])('?)/gi)];
@@ -395,8 +408,9 @@ const text = (
   size = 10,
   weight = 700,
   color = "#111",
+  anchor: "start" | "middle" | "end" = "start",
 ) =>
-  `<text x="${x}" y="${y}" font-size="${size}" font-weight="${weight}" fill="${color}">${value}</text>`;
+  `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="${size}" font-weight="${weight}" fill="${color}">${value}</text>`;
 
 const dot = (x: number, y: number, r = 3.2, color: string = STROKE) =>
   `<circle cx="${x}" cy="${y}" r="${r}" fill="${color}" />`;
@@ -497,11 +511,13 @@ export const generateCircuitHTML = (data: CircuitData): string => {
   terms.forEach((literals, termIndex) => {
     const centerY = rowsTop + termIndex * (rowHeight + rowGap) + rowHeight / 2;
     const termColor = TERM_COLORS[termIndex % TERM_COLORS.length];
-    const termLabelX = gatesStartX - 44;
+    const termLabel = formatCircuitTermLabel(circuitVector[termIndex] ?? "", solveType);
+    const termLabelX = gatesStartX - 10;
     const termLabelY = centerY - gateH / 2 - 10;
+    const termLabelSize = termLabel.length > 10 ? 8.6 : 10;
 
     svgParts.push(
-      text(termLabelX, termLabelY, `T${termIndex + 1}`, 10, 800, termColor),
+      text(termLabelX, termLabelY, termLabel, termLabelSize, 800, termColor, "end"),
     );
 
     if (literals.length === 0) {

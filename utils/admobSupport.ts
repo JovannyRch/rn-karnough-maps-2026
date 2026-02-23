@@ -2,6 +2,7 @@ import {
   addAdListener,
   createInterstitialAd,
   createRewardedAd,
+  createRewardedInterstitialAd,
   hasBannerModule,
   hasInterstitialModule,
   hasMobileAdsCore,
@@ -17,5 +18,6 @@ export {
   addAdListener,
   createInterstitialAd,
   createRewardedAd,
+  createRewardedInterstitialAd,
   initializeMobileAds,
 };

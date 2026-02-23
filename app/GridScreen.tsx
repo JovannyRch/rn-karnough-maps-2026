@@ -4,21 +4,30 @@ import { ProButton } from "@/components/ProBadge";
 import TableView from "@/components/TableView";
 import { DUO } from "@/constants/duoTheme";
 import {
+  addAdListener,
+  createInterstitialAd,
+  createRewardedInterstitialAd,
+  hasAdMobCoreModule,
+  hasAdMobInterstitialModule,
+  hasAdMobRewardedModule,
+  initializeMobileAds,
+} from "@/utils/admobSupport";
+import {
   addExerciseHistoryEntry,
   ExerciseHistoryEntry,
 } from "@/utils/exerciseHistory";
 import {
-  addAdListener,
-  createInterstitialAd,
-  hasAdMobCoreModule,
-  hasAdMobInterstitialModule,
-  initializeMobileAds,
-} from "@/utils/admobSupport";
+  getCompletedExercisesCount,
+  incrementCompletedExercises,
+  requestInAppReviewOnce,
+} from "@/utils/inAppReview";
 import Icon from "@expo/vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Alert,
   Clipboard,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -54,14 +63,27 @@ const INTERSTITIAL_COUNTER_KEY = "@interstitial_result_open_count";
 const INTERSTITIAL_LAST_SHOWN_KEY = "@interstitial_last_shown_at";
 const INTERSTITIAL_EVERY_X_RESULT_OPENS = 4;
 const INTERSTITIAL_MIN_GAP_MS = 90 * 1000;
+const REWARDED_MUTE_UNIT_ID = "ca-app-pub-4665787383933447/1959787491";
+const ADS_MUTE_DURATION_MS = 15 * 60 * 1000;
+const ENGAGEMENT_DIALOG_LAST_SHOWN_KEY = "@engagement_dialog_last_shown";
+const ENGAGEMENT_DIALOG_EXERCISE_THRESHOLD = 3;
+const ENGAGEMENT_DIALOG_COOLDOWN_MS = 18 * 60 * 60 * 1000;
+/* 
+const ENGAGEMENT_DIALOG_EXERCISE_THRESHOLD = 1;
+const ENGAGEMENT_DIALOG_COOLDOWN_MS = 0; */
+
 const ESTIMATED_BANNER_HEIGHT = 56;
 const RESULT_DOCK_HEIGHT = 84;
 
 export default function GridScreen({ navigation, route }: GridScreenProps) {
   const [interstitialLoaded, setInterstitialLoaded] = useState(false);
   const [interstitial, setInterstitial] = useState<any>(null);
+  const [rewardedLoaded, setRewardedLoaded] = useState(false);
+  const [rewardedAd, setRewardedAd] = useState<any>(null);
   const [copyFeedbackVisible, setCopyFeedbackVisible] = useState(false);
   const [isVariableMenuOpen, setIsVariableMenuOpen] = useState(false);
+  const [showEngagementDialog, setShowEngagementDialog] = useState(false);
+  const [isUnlockingAds, setIsUnlockingAds] = useState(false);
   const insets = useSafeAreaInsets();
   const interstitialOpenCountRef = useRef(0);
   const interstitialLastShownAtRef = useRef(0);
@@ -69,6 +91,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
   const copyFeedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const pendingMuteAfterRewardedRef = useRef(false);
   const viewSwitchProgress = useSharedValue(1);
   const resultDockScale = useSharedValue(1);
   const copyBadgeOpacity = useSharedValue(0);
@@ -90,9 +113,12 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     view,
     setResultType,
     isPro,
+    adsMutedUntil,
+    setAdsMutedUntil,
     rotateVariables,
     variableRotation,
   } = useStore();
+  const adsSuppressed = isPro || adsMutedUntil > Date.now();
 
   const squares = useSquares();
   const heroFade = useSharedValue(0);
@@ -150,7 +176,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
   }, [result, resultDockScale, vectorResult.length]);
 
   useEffect(() => {
-    if (isPro) {
+    if (adsSuppressed) {
       interstitialPolicyReadyRef.current = true;
       return;
     }
@@ -172,7 +198,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         interstitialPolicyReadyRef.current = true;
       }
     })();
-  }, [isPro]);
+  }, [adsSuppressed]);
 
   useEffect(() => {
     const historyEntry: ExerciseHistoryEntry | undefined =
@@ -214,8 +240,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         .catch(() => {});
     }
 
-    if (!isPro && hasAdMobInterstitialModule) {
-      const adInstance = createInterstitialAd("ca-app-pub-4665787383933447/6321320097");
+    if (!adsSuppressed && hasAdMobInterstitialModule) {
+      const adInstance = createInterstitialAd(
+        "ca-app-pub-4665787383933447/6321320097",
+      );
       if (!adInstance) {
         return;
       }
@@ -230,9 +258,13 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         void Promise.resolve(adInstance.load()).catch(() => {});
       });
 
-      const unsubscribeError = addAdListener(adInstance, "adFailedToLoad", () => {
-        setInterstitialLoaded(false);
-      });
+      const unsubscribeError = addAdListener(
+        adInstance,
+        "adFailedToLoad",
+        () => {
+          setInterstitialLoaded(false);
+        },
+      );
 
       void Promise.resolve(adInstance.load()).catch(() => {
         setInterstitialLoaded(false);
@@ -247,7 +279,84 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
 
     setInterstitial(null);
     setInterstitialLoaded(false);
-  }, [isPro]);
+  }, [adsSuppressed]);
+
+  useEffect(() => {
+    if (adsSuppressed || !hasAdMobRewardedModule) {
+      setRewardedAd(null);
+      setRewardedLoaded(false);
+      return;
+    }
+
+    const adInstance = createRewardedInterstitialAd(REWARDED_MUTE_UNIT_ID);
+    if (!adInstance) {
+      return;
+    }
+    setRewardedAd(adInstance);
+
+    const unsubscribeLoaded = addAdListener(adInstance, "adLoaded", () => {
+      setRewardedLoaded(true);
+    });
+
+    const unsubscribeClosed = addAdListener(adInstance, "adDismissed", () => {
+      setRewardedLoaded(false);
+      void Promise.resolve(adInstance.load()).catch(() => {});
+      if (!pendingMuteAfterRewardedRef.current) {
+        return;
+      }
+      pendingMuteAfterRewardedRef.current = false;
+      setIsUnlockingAds(false);
+      setShowEngagementDialog(false);
+      void setAdsMutedUntil(Date.now() + ADS_MUTE_DURATION_MS);
+    });
+
+    const unsubscribeError = addAdListener(adInstance, "adFailedToLoad", () => {
+      setRewardedLoaded(false);
+      pendingMuteAfterRewardedRef.current = false;
+      setIsUnlockingAds(false);
+    });
+
+    void Promise.resolve(adInstance.load()).catch(() => {
+      setRewardedLoaded(false);
+    });
+
+    return () => {
+      unsubscribeLoaded.remove();
+      unsubscribeClosed.remove();
+      unsubscribeError.remove();
+    };
+  }, [adsSuppressed, setAdsMutedUntil]);
+
+  useEffect(() => {
+    if (adsSuppressed) {
+      return;
+    }
+
+    const evaluateEngagementDialog = async () => {
+      const completedExercises = await getCompletedExercisesCount();
+      if (completedExercises < ENGAGEMENT_DIALOG_EXERCISE_THRESHOLD) {
+        return;
+      }
+
+      const rawLastShown = await AsyncStorage.getItem(
+        ENGAGEMENT_DIALOG_LAST_SHOWN_KEY,
+      );
+      const lastShown = rawLastShown ? Number(rawLastShown) || 0 : 0;
+      const now = Date.now();
+      if (now - lastShown < ENGAGEMENT_DIALOG_COOLDOWN_MS) {
+        return;
+      }
+
+      await AsyncStorage.setItem(ENGAGEMENT_DIALOG_LAST_SHOWN_KEY, String(now));
+      setShowEngagementDialog(true);
+    };
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      void evaluateEngagementDialog();
+    });
+
+    return unsubscribe;
+  }, [adsSuppressed, navigation]);
 
   const variableOptions = useMemo(
     () => [
@@ -279,13 +388,16 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     }
 
     const navigateToResult = () => {
-      void addExerciseHistoryEntry({
-        variableQuantity,
-        resultType,
-        values: [...useStore.getState().values],
-        result,
-        isFavorite: false,
-      });
+      void (async () => {
+        await addExerciseHistoryEntry({
+          variableQuantity,
+          resultType,
+          values: [...useStore.getState().values],
+          result,
+          isFavorite: false,
+        });
+        await incrementCompletedExercises();
+      })();
 
       navigation.navigate("ResultScreen", {
         result,
@@ -293,7 +405,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       });
     };
 
-    if (isPro || !interstitialPolicyReadyRef.current) {
+    if (adsSuppressed || !interstitialPolicyReadyRef.current) {
       navigateToResult();
       return;
     }
@@ -330,6 +442,42 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     }
 
     navigateToResult();
+  };
+
+  const handleUnlockAdsFor15Minutes = async () => {
+    if (isUnlockingAds) {
+      return;
+    }
+
+    if (!rewardedLoaded || !rewardedAd) {
+      setShowEngagementDialog(false);
+      Alert.alert(
+        "Anuncio no disponible",
+        "Inténtalo en unos segundos para activar 15 minutos sin anuncios.",
+      );
+      return;
+    }
+
+    setIsUnlockingAds(true);
+    pendingMuteAfterRewardedRef.current = true;
+    try {
+      await rewardedAd.show();
+    } catch {
+      pendingMuteAfterRewardedRef.current = false;
+      setIsUnlockingAds(false);
+      Alert.alert("Error", "No se pudo mostrar el anuncio recompensado.");
+    }
+  };
+
+  const handleRequestReviewFromDialog = async () => {
+    const opened = await requestInAppReviewOnce();
+    setShowEngagementDialog(false);
+    if (!opened) {
+      Alert.alert(
+        "Calificar app",
+        "Ahora no fue posible abrir la reseña. Puedes intentarlo más tarde.",
+      );
+    }
   };
 
   const handleCopyResult = () => {
@@ -510,7 +658,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               height:
                 RESULT_DOCK_HEIGHT +
                 insets.bottom +
-                (isPro ? 16 : ESTIMATED_BANNER_HEIGHT + 16),
+                (adsSuppressed ? 16 : ESTIMATED_BANNER_HEIGHT + 16),
             },
           ]}
         />
@@ -520,7 +668,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         style={[
           styles.resultDock,
           {
-            bottom: insets.bottom + (isPro ? 8 : ESTIMATED_BANNER_HEIGHT + 8),
+            bottom:
+              insets.bottom + (adsSuppressed ? 8 : ESTIMATED_BANNER_HEIGHT + 8),
           },
           resultDockAnimatedStyle,
         ]}
@@ -568,7 +717,79 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
           <Text style={styles.resultDockButtonText}>Circuito</Text>
         </Pressable>
       </Reanimated.View>
-      {!isPro && <MyBannerAd />}
+      {!adsSuppressed && <MyBannerAd />}
+
+      <Modal
+        visible={showEngagementDialog}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowEngagementDialog(false)}
+      >
+        <View style={styles.dialogBackdrop}>
+          <View style={styles.dialogCard}>
+            <Text style={styles.dialogTitle}>¿Te está gustando la app?</Text>
+            <Text style={styles.dialogBody}>
+              Si te ayuda a estudiar, puedes apoyar el proyecto o desbloquear
+              una sesión sin anuncios.
+            </Text>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.dialogPrimaryAction,
+                pressed && styles.actionButtonPressed,
+              ]}
+              onPress={() => {
+                setShowEngagementDialog(false);
+                navigation.navigate("ProScreen");
+              }}
+            >
+              <Text style={styles.dialogPrimaryActionText}>
+                Comprar versión PRO
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.dialogSecondaryAction,
+                (isUnlockingAds || !rewardedLoaded) &&
+                  styles.dialogDisabledAction,
+                pressed && styles.actionButtonPressed,
+              ]}
+              onPress={() => {
+                void handleUnlockAdsFor15Minutes();
+              }}
+              disabled={isUnlockingAds || !rewardedLoaded}
+            >
+              <Text style={styles.dialogSecondaryActionText}>
+                {isUnlockingAds
+                  ? "Mostrando anuncio..."
+                  : "Quitar anuncios por 15 min"}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.dialogSecondaryAction,
+                pressed && styles.actionButtonPressed,
+              ]}
+              onPress={() => {
+                void handleRequestReviewFromDialog();
+              }}
+            >
+              <Text style={styles.dialogSecondaryActionText}>
+                Calificar app
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [pressed && styles.actionButtonPressed]}
+              onPress={() => setShowEngagementDialog(false)}
+            >
+              <Text style={styles.dialogDismissText}>Más tarde</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1038,5 +1259,70 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0.4,
+  },
+  dialogBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(19, 33, 25, 0.42)",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+  dialogCard: {
+    backgroundColor: DUO.card,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: DUO.border,
+    paddingHorizontal: 16,
+    paddingVertical: 18,
+    gap: 10,
+  },
+  dialogTitle: {
+    fontSize: 20,
+    fontWeight: "900",
+    color: DUO.ink,
+  },
+  dialogBody: {
+    fontSize: 14,
+    color: DUO.muted,
+    fontWeight: "600",
+    lineHeight: 19,
+    marginBottom: 4,
+  },
+  dialogPrimaryAction: {
+    minHeight: 46,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: DUO.green,
+    borderBottomWidth: 3,
+    borderBottomColor: DUO.greenDark,
+  },
+  dialogPrimaryActionText: {
+    color: "#FFFFFF",
+    fontWeight: "900",
+    fontSize: 14,
+  },
+  dialogSecondaryAction: {
+    minHeight: 44,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F3F8ED",
+    borderWidth: 1,
+    borderColor: DUO.border,
+  },
+  dialogSecondaryActionText: {
+    color: DUO.ink,
+    fontWeight: "800",
+    fontSize: 14,
+  },
+  dialogDisabledAction: {
+    opacity: 0.5,
+  },
+  dialogDismissText: {
+    marginTop: 2,
+    textAlign: "center",
+    color: DUO.muted,
+    fontWeight: "700",
+    fontSize: 13,
   },
 });

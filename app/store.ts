@@ -3,6 +3,7 @@ import { BoxColor, VectorResultItem } from "./types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PRO_STATUS_KEY = "@isPro";
+const ADS_MUTED_UNTIL_KEY = "@ads_muted_until";
 
 interface ResultStore {
   result: string;
@@ -29,6 +30,8 @@ interface ResultStore {
   rotateVariables: () => void;
   isPro: boolean;
   setIsPro: (isPro: boolean) => void;
+  adsMutedUntil: number;
+  setAdsMutedUntil: (timestamp: number) => void;
 }
 
 const VARIABLE_QUANTITY = 4;
@@ -108,6 +111,15 @@ export const useStore = create<ResultStore>((set) => ({
       console.error("Error saving pro status:", error);
     }
   },
+  adsMutedUntil: 0,
+  setAdsMutedUntil: async (timestamp: number) => {
+    set({ adsMutedUntil: timestamp });
+    try {
+      await AsyncStorage.setItem(ADS_MUTED_UNTIL_KEY, String(timestamp));
+    } catch (error) {
+      console.error("Error saving ads muted timestamp:", error);
+    }
+  },
 }));
 
 // Cargar el estado de PRO al iniciar
@@ -119,6 +131,16 @@ AsyncStorage.getItem(PRO_STATUS_KEY)
   })
   .catch((error) => {
     console.error("Error loading pro status:", error);
+  });
+
+AsyncStorage.getItem(ADS_MUTED_UNTIL_KEY)
+  .then((value) => {
+    if (value !== null) {
+      useStore.setState({ adsMutedUntil: Number(value) || 0 });
+    }
+  })
+  .catch((error) => {
+    console.error("Error loading ads muted timestamp:", error);
   });
 
 export default useStore;

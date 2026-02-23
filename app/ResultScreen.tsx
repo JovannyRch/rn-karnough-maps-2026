@@ -32,7 +32,9 @@ interface ResultScreenProps {
 }
 
 const ResultScreen = ({ navigation }: ResultScreenProps) => {
-  const { isPro, resultType, variableQuantity, values, result } = useStore();
+  const { isPro, adsMutedUntil, resultType, variableQuantity, values, result } =
+    useStore();
+  const adsSuppressed = isPro || adsMutedUntil > Date.now();
   const insets = useSafeAreaInsets();
   const fade = useSharedValue(0);
   const lift = useSharedValue(14);
@@ -62,7 +64,7 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingBottom: insets.bottom + (isPro ? 20 : 84) },
+          { paddingBottom: insets.bottom + (adsSuppressed ? 20 : 84) },
         ]}
       >
         <Reanimated.View style={[styles.content, entranceAnimatedStyle]}>
@@ -111,7 +113,7 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
           </View>
         </Reanimated.View>
       </ScrollView>
-      {!isPro && <MyBannerAd />}
+      {!adsSuppressed && <MyBannerAd />}
 
       <Modal
         visible={isCircuitFullscreen}
@@ -134,11 +136,11 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
           </View>
           <View style={styles.fullscreenCircuitCard}>
             <CircuitComponent
-              bottomPadding={isPro ? 24 : 96 + insets.bottom}
+              bottomPadding={adsSuppressed ? 24 : 96 + insets.bottom}
               enableZoom
             />
           </View>
-          {!isPro && <MyBannerAd />}
+          {!adsSuppressed && <MyBannerAd />}
         </SafeAreaView>
       </Modal>
     </SafeAreaView>

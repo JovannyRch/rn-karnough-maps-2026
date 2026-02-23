@@ -49,7 +49,8 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("ALL");
   const [variableFilter, setVariableFilter] = useState<VariableFilter>("ALL");
   const [favoriteFilter, setFavoriteFilter] = useState<FavoriteFilter>("ALL");
-  const { isPro } = useStore();
+  const { isPro, adsMutedUntil } = useStore();
+  const adsSuppressed = isPro || adsMutedUntil > Date.now();
 
   const loadHistory = useCallback(async () => {
     setLoading(true);
@@ -379,7 +380,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
         }
       />
 
-      {!isPro && <MyBannerAd />}
+      {!adsSuppressed && <MyBannerAd />}
     </SafeAreaView>
   );
 }

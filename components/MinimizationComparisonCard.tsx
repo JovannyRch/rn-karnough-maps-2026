@@ -28,7 +28,8 @@ export default function MinimizationComparisonCard({
   resultType,
   currentResult,
 }: MinimizationComparisonCardProps) {
-  const { isPro } = useStore();
+  const { isPro, adsMutedUntil } = useStore();
+  const adsSuppressed = isPro || adsMutedUntil > Date.now();
   const [expanded, setExpanded] = useState(false);
   const [showHeuristicHelp, setShowHeuristicHelp] = useState(false);
   const [interstitialLoaded, setInterstitialLoaded] = useState(false);
@@ -48,7 +49,7 @@ export default function MinimizationComparisonCard({
   );
 
   useEffect(() => {
-    if (isPro) {
+    if (adsSuppressed) {
       interstitialPolicyReadyRef.current = true;
       return;
     }
@@ -69,10 +70,10 @@ export default function MinimizationComparisonCard({
         interstitialPolicyReadyRef.current = true;
       }
     })();
-  }, [isPro]);
+  }, [adsSuppressed]);
 
   useEffect(() => {
-    if (isPro || !hasAdMobInterstitialModule) {
+    if (adsSuppressed || !hasAdMobInterstitialModule) {
       return;
     }
 
@@ -104,10 +105,10 @@ export default function MinimizationComparisonCard({
       unsubscribeClosed.remove();
       unsubscribeError.remove();
     };
-  }, [isPro]);
+  }, [adsSuppressed]);
 
   const maybeShowEquivalentInterstitial = async () => {
-    if (isPro || !interstitialPolicyReadyRef.current) {
+    if (adsSuppressed || !interstitialPolicyReadyRef.current) {
       return;
     }
 

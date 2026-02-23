@@ -156,6 +156,28 @@ export const createRewardedAd = (unitId: string): FullScreenAd | null => {
   return null;
 };
 
+export const createRewardedInterstitialAd = (
+  unitId: string,
+): FullScreenAd | null => {
+  if (!hasRewardedModule) {
+    return null;
+  }
+
+  if (mobileAdsProvider === "google") {
+    return adaptFullScreenAd(
+      googleAds?.RewardedInterstitialAd?.createForAdRequest?.(unitId),
+    );
+  }
+
+  if (mobileAdsProvider === "legacy") {
+    return adaptFullScreenAd(
+      legacyAds?.RewardedInterstitialAd?.createAd?.(unitId),
+    );
+  }
+
+  return null;
+};
+
 export const BannerAd = googleAds?.BannerAd ?? legacyAds?.BannerAd ?? null;
 
 export const BannerAdSize =
