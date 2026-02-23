@@ -26,6 +26,7 @@ interface ResultStore {
   view: "table" | "map";
   setView: (newView: "table" | "map") => void;
   variables: string[];
+  setVariableName: (index: number, value: string) => void;
   variableRotation: number;
   rotateVariables: () => void;
   isPro: boolean;
@@ -37,6 +38,12 @@ interface ResultStore {
 const VARIABLE_QUANTITY = 4;
 const getBaseVariables = (quantity: number) =>
   Array.from({ length: quantity }, (_, i) => String.fromCharCode(65 + i));
+const normalizeVariableName = (value: string) =>
+  value
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9_]/g, "")
+    .slice(0, 3);
 
 export const useStore = create<ResultStore>((set) => ({
   variableQuantity: VARIABLE_QUANTITY,
@@ -87,14 +94,36 @@ export const useStore = create<ResultStore>((set) => ({
   },
   view: "map",
   setView: (newView: "table" | "map") => set({ view: newView }),
-  variables: ["A", "B"],
+  variables: getBaseVariables(VARIABLE_QUANTITY),
+  setVariableName: (index: number, value: string) =>
+    set((state) => {
+      if (index < 0 || index >= state.variableQuantity) {
+        return state;
+      }
+
+      const next = [...state.variables];
+      const candidate = normalizeVariableName(value);
+
+      if (
+        candidate &&
+        next.some(
+          (item, itemIndex) => itemIndex !== index && item === candidate,
+        )
+      ) {
+        return state;
+      }
+
+      next[index] = candidate;
+      return { variables: next };
+    }),
   variableRotation: 0,
   rotateVariables: () =>
     set((state) => {
       const nextRotation = (state.variableRotation + 1) % state.variableQuantity;
-      const base = getBaseVariables(state.variableQuantity);
-      const rotated = base.map(
-        (_, index) => base[(index + nextRotation) % state.variableQuantity]
+      const rotated = state.variables.map(
+        (_, index) =>
+          state.variables[(index + 1) % state.variableQuantity] ??
+          state.variables[index],
       );
 
       return {

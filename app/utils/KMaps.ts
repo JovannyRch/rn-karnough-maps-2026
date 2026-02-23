@@ -279,7 +279,8 @@ export class KMaps {
     typeMap: number,
     typeSol: SolveType,
     squares: (number | string)[][][],
-    variableRotation: number = 0
+    variableRotation: number = 0,
+    variables?: string[]
   ) {
     this.typeMap = typeMap;
     this.typeSol = typeSol;
@@ -303,10 +304,15 @@ export class KMaps {
     this.circuitVector = [];
     this.variableRotation =
       ((variableRotation % this.typeMap) + this.typeMap) % this.typeMap;
-    const baseVariables = VARIABLES.slice(0, this.typeMap);
-    this.variables = baseVariables.map(
-      (_, index) => baseVariables[(index + this.variableRotation) % this.typeMap]
-    );
+    const providedVariables = variables?.slice(0, this.typeMap) ?? [];
+    if (providedVariables.length === this.typeMap) {
+      this.variables = providedVariables;
+    } else {
+      const baseVariables = VARIABLES.slice(0, this.typeMap);
+      this.variables = baseVariables.map(
+        (_, index) => baseVariables[(index + this.variableRotation) % this.typeMap]
+      );
+    }
   }
 
   private getDimensions() {

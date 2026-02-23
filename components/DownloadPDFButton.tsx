@@ -17,7 +17,8 @@ interface DownloadPDFButtonProps {
 
 const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({ compact = false }) => {
   const [isGenerating, setIsGenerating] = useState(false);
-  const { resultType, variableQuantity, circuitVector, result } = useStore();
+  const { resultType, variableQuantity, circuitVector, result, variables } =
+    useStore();
 
   const handleDownloadPDF = async () => {
     try {
@@ -28,6 +29,7 @@ const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({ compact = false }) => {
         variableQuantity,
         circuitVector,
         resultExpression: result,
+        variables,
       };
 
       const uri = await generateCircuitPDF(circuitData);

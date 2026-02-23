@@ -4,11 +4,11 @@ import variablesStyles from "./styles";
 import GridBox from "@/components/GridBox";
 import DiagonalBox from "./DiagonalBox";
 import useStore from "../store";
-import { buildRotatedMap, getRotatedVariables } from "../utils/rotationMapping";
+import { buildRotatedMap } from "../utils/rotationMapping";
 
 export default function ThreeVariablesGrid() {
-  const { variableRotation } = useStore();
-  const vars = getRotatedVariables(3, variableRotation);
+  const { variableRotation, variables } = useStore();
+  const vars = variables.slice(0, 3);
   const rotatedMap = buildRotatedMap(3, variableRotation);
 
   return (

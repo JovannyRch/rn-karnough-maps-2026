@@ -14,13 +14,14 @@ interface CircuitComponentProps {
 
 export const CircuitComponent = memo(
   ({ bottomPadding = 120, enableZoom = false }: CircuitComponentProps) => {
-    const { resultType, variableQuantity, circuitVector } = useStore();
+    const { resultType, variableQuantity, circuitVector, variables } = useStore();
 
     const htmlContent = useMemo(() => {
       const circuit = generateCircuitHTML({
         resultType,
         variableQuantity,
         circuitVector,
+        variables,
       });
 
       return `
@@ -47,7 +48,7 @@ export const CircuitComponent = memo(
         </body>
       </html>
     `;
-    }, [resultType, variableQuantity, circuitVector, enableZoom]);
+    }, [resultType, variableQuantity, circuitVector, variables, enableZoom]);
 
     const estimatedHeight = useMemo(() => {
       if (circuitVector.length === 0) {

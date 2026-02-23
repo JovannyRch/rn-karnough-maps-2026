@@ -9,6 +9,7 @@ interface CircuitData {
   variableQuantity: number;
   circuitVector: string[];
   resultExpression?: string;
+  variables?: string[];
 }
 
 interface VectorResultItemLike {
@@ -70,7 +71,7 @@ const addNegations = (vars: string[]): string[] => {
 
 const normalizeTerm = (term: string) => {
   return term
-    .replace(/([A-D])\u0305/gi, "$1'")
+    .replace(/(.)\u0305/g, "$1'")
     .replace(/[()\s]/g, "")
     .trim();
 };
@@ -88,15 +89,28 @@ const formatCircuitTermLabel = (term: string, solveType: SolveType) => {
   return normalized;
 };
 
-const parseLiterals = (term: string, rails: string[]): Literal[] => {
+const parseLiterals = (
+  term: string,
+  rails: string[],
+  solveType: SolveType,
+): Literal[] => {
   const normalized = normalizeTerm(term);
-  const matches = [...normalized.matchAll(/([A-D])('?)/gi)];
+  if (!normalized) {
+    return [];
+  }
 
-  return matches
-    .map((match) => {
-      const symbol = `${match[1].toUpperCase()}${match[2] ? "'" : ""}`;
-      return { symbol, railIndex: rails.indexOf(symbol) };
-    })
+  const tokenSeparator = solveType === "SOP" ? "." : "+";
+  const tokens = normalized.includes(tokenSeparator)
+    ? normalized.split(tokenSeparator)
+    : [normalized];
+
+  return tokens
+    .map((token) => token.trim())
+    .filter(Boolean)
+    .map((token) => ({
+      symbol: token.endsWith("'") ? token : token,
+      railIndex: rails.indexOf(token),
+    }))
     .filter((literal) => literal.railIndex >= 0);
 };
 
@@ -474,10 +488,12 @@ export const generateCircuitHTML = (data: CircuitData): string => {
     `;
   }
 
-  const variables = getVariables(variableQuantity);
+  const variables = data.variables?.slice(0, variableQuantity) ?? getVariables(variableQuantity);
   const rails = addNegations(variables);
   const railCount = rails.length;
-  const terms = circuitVector.map((term) => parseLiterals(term, rails));
+  const terms = circuitVector.map((term) =>
+    parseLiterals(term, rails, solveType),
+  );
 
   const stepX = 20;
   const leftPadding = 22;

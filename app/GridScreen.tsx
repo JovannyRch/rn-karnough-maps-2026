@@ -30,6 +30,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import Reanimated, {
@@ -103,6 +104,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     setResultType,
     isPro,
     adsMutedUntil,
+    variables,
+    setVariableName,
     rotateVariables,
     variableRotation,
   } = useStore();
@@ -121,6 +124,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         solutionType,
         squares,
         variableRotation,
+        variables,
       );
       kMap.Algorithm();
       setResult(kMap.getMathExpression());
@@ -135,7 +139,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       getResult(resultType);
     },
     0,
-    [squares, resultType, variableRotation],
+    [squares, resultType, variableRotation, variables],
   );
 
   useEffect(() => {
@@ -546,6 +550,33 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             <QuickChip onPress={() => setAllValues("1")} label="1s" />
             <QuickChip onPress={() => setAllValues("0")} label="0s" />
             <QuickChip onPress={() => setAllValues("X")} label="Xs" />
+          </View>
+
+          <View style={styles.variablesEditorSection}>
+            <Text style={styles.controlLabel}>Nombres de variables</Text>
+            <View style={styles.variablesEditorRow}>
+              {variables.slice(0, variableQuantity).map((variable, index) => (
+                <View key={`variable-edit-${index}`} style={styles.variableInputWrap}>
+                  <Text style={styles.variableInputLabel}>{`V${index + 1}`}</Text>
+                  <TextInput
+                    value={variable}
+                    maxLength={3}
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                    style={styles.variableInput}
+                    onChangeText={(text) => setVariableName(index, text)}
+                    onEndEditing={() => {
+                      if (!variables[index]) {
+                        setVariableName(
+                          index,
+                          String.fromCharCode(65 + index),
+                        );
+                      }
+                    }}
+                  />
+                </View>
+              ))}
+            </View>
           </View>
           <ExportSessionPDFButton compact disabled={!result} />
         </Reanimated.View>
@@ -1004,6 +1035,39 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "800",
     color: "#6A5600",
+  },
+  variablesEditorSection: {
+    marginTop: 14,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: DUO.border,
+  },
+  variablesEditorRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  variableInputWrap: {
+    minWidth: 60,
+    flex: 1,
+  },
+  variableInputLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: DUO.muted,
+    marginBottom: 4,
+  },
+  variableInput: {
+    minHeight: 40,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: DUO.border,
+    backgroundColor: "#F2F8EC",
+    paddingHorizontal: 10,
+    color: DUO.ink,
+    fontSize: 14,
+    fontWeight: "700",
+    textAlign: "center",
   },
   gridContainer: {
     padding: 12,
