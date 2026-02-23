@@ -6,10 +6,8 @@ import { DUO } from "@/constants/duoTheme";
 import {
   addAdListener,
   createInterstitialAd,
-  createRewardedInterstitialAd,
   hasAdMobCoreModule,
   hasAdMobInterstitialModule,
-  hasAdMobRewardedModule,
   initializeMobileAds,
 } from "@/utils/admobSupport";
 import {
@@ -63,14 +61,9 @@ const INTERSTITIAL_COUNTER_KEY = "@interstitial_result_open_count";
 const INTERSTITIAL_LAST_SHOWN_KEY = "@interstitial_last_shown_at";
 const INTERSTITIAL_EVERY_X_RESULT_OPENS = 4;
 const INTERSTITIAL_MIN_GAP_MS = 90 * 1000;
-const REWARDED_MUTE_UNIT_ID = "ca-app-pub-4665787383933447/1959787491";
-const ADS_MUTE_DURATION_MS = 15 * 60 * 1000;
 const ENGAGEMENT_DIALOG_LAST_SHOWN_KEY = "@engagement_dialog_last_shown";
 const ENGAGEMENT_DIALOG_EXERCISE_THRESHOLD = 3;
 const ENGAGEMENT_DIALOG_COOLDOWN_MS = 18 * 60 * 60 * 1000;
-/* 
-const ENGAGEMENT_DIALOG_EXERCISE_THRESHOLD = 1;
-const ENGAGEMENT_DIALOG_COOLDOWN_MS = 0; */
 
 const ESTIMATED_BANNER_HEIGHT = 56;
 const RESULT_DOCK_HEIGHT = 84;
@@ -78,12 +71,9 @@ const RESULT_DOCK_HEIGHT = 84;
 export default function GridScreen({ navigation, route }: GridScreenProps) {
   const [interstitialLoaded, setInterstitialLoaded] = useState(false);
   const [interstitial, setInterstitial] = useState<any>(null);
-  const [rewardedLoaded, setRewardedLoaded] = useState(false);
-  const [rewardedAd, setRewardedAd] = useState<any>(null);
   const [copyFeedbackVisible, setCopyFeedbackVisible] = useState(false);
   const [isVariableMenuOpen, setIsVariableMenuOpen] = useState(false);
   const [showEngagementDialog, setShowEngagementDialog] = useState(false);
-  const [isUnlockingAds, setIsUnlockingAds] = useState(false);
   const insets = useSafeAreaInsets();
   const interstitialOpenCountRef = useRef(0);
   const interstitialLastShownAtRef = useRef(0);
@@ -91,7 +81,6 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
   const copyFeedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const pendingMuteAfterRewardedRef = useRef(false);
   const viewSwitchProgress = useSharedValue(1);
   const resultDockScale = useSharedValue(1);
   const copyBadgeOpacity = useSharedValue(0);
@@ -114,7 +103,6 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     setResultType,
     isPro,
     adsMutedUntil,
-    setAdsMutedUntil,
     rotateVariables,
     variableRotation,
   } = useStore();
@@ -282,52 +270,6 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
   }, [adsSuppressed]);
 
   useEffect(() => {
-    if (adsSuppressed || !hasAdMobRewardedModule) {
-      setRewardedAd(null);
-      setRewardedLoaded(false);
-      return;
-    }
-
-    const adInstance = createRewardedInterstitialAd(REWARDED_MUTE_UNIT_ID);
-    if (!adInstance) {
-      return;
-    }
-    setRewardedAd(adInstance);
-
-    const unsubscribeLoaded = addAdListener(adInstance, "adLoaded", () => {
-      setRewardedLoaded(true);
-    });
-
-    const unsubscribeClosed = addAdListener(adInstance, "adDismissed", () => {
-      setRewardedLoaded(false);
-      void Promise.resolve(adInstance.load()).catch(() => {});
-      if (!pendingMuteAfterRewardedRef.current) {
-        return;
-      }
-      pendingMuteAfterRewardedRef.current = false;
-      setIsUnlockingAds(false);
-      setShowEngagementDialog(false);
-      void setAdsMutedUntil(Date.now() + ADS_MUTE_DURATION_MS);
-    });
-
-    const unsubscribeError = addAdListener(adInstance, "adFailedToLoad", () => {
-      setRewardedLoaded(false);
-      pendingMuteAfterRewardedRef.current = false;
-      setIsUnlockingAds(false);
-    });
-
-    void Promise.resolve(adInstance.load()).catch(() => {
-      setRewardedLoaded(false);
-    });
-
-    return () => {
-      unsubscribeLoaded.remove();
-      unsubscribeClosed.remove();
-      unsubscribeError.remove();
-    };
-  }, [adsSuppressed, setAdsMutedUntil]);
-
-  useEffect(() => {
     if (adsSuppressed) {
       return;
     }
@@ -358,7 +300,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     return unsubscribe;
   }, [adsSuppressed, navigation]);
 
-  const variableOptions = useMemo(
+  const variableOptions = useMemo<VariableOption[]>(
     () => [
       { label: "2 Variables", value: 2 },
       { label: "3 Variables", value: 3 },
@@ -442,31 +384,6 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     }
 
     navigateToResult();
-  };
-
-  const handleUnlockAdsFor15Minutes = async () => {
-    if (isUnlockingAds) {
-      return;
-    }
-
-    if (!rewardedLoaded || !rewardedAd) {
-      setShowEngagementDialog(false);
-      Alert.alert(
-        "Anuncio no disponible",
-        "Inténtalo en unos segundos para activar 15 minutos sin anuncios.",
-      );
-      return;
-    }
-
-    setIsUnlockingAds(true);
-    pendingMuteAfterRewardedRef.current = true;
-    try {
-      await rewardedAd.show();
-    } catch {
-      pendingMuteAfterRewardedRef.current = false;
-      setIsUnlockingAds(false);
-      Alert.alert("Error", "No se pudo mostrar el anuncio recompensado.");
-    }
   };
 
   const handleRequestReviewFromDialog = async () => {
@@ -566,7 +483,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               <Text style={styles.controlLabel}>Variables</Text>
               <VariableSelector
                 options={variableOptions}
-                value={variableQuantity}
+                value={variableQuantity as 2 | 3 | 4}
                 isOpen={isVariableMenuOpen}
                 onToggle={() => setIsVariableMenuOpen((prev) => !prev)}
                 onSelect={(nextValue) => {
@@ -729,8 +646,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
           <View style={styles.dialogCard}>
             <Text style={styles.dialogTitle}>¿Te está gustando la app?</Text>
             <Text style={styles.dialogBody}>
-              Si te ayuda a estudiar, puedes apoyar el proyecto o desbloquear
-              una sesión sin anuncios.
+              Si te ayuda a estudiar, puedes apoyar el proyecto.
             </Text>
 
             <Pressable
@@ -745,25 +661,6 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             >
               <Text style={styles.dialogPrimaryActionText}>
                 Comprar versión PRO
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={({ pressed }) => [
-                styles.dialogSecondaryAction,
-                (isUnlockingAds || !rewardedLoaded) &&
-                  styles.dialogDisabledAction,
-                pressed && styles.actionButtonPressed,
-              ]}
-              onPress={() => {
-                void handleUnlockAdsFor15Minutes();
-              }}
-              disabled={isUnlockingAds || !rewardedLoaded}
-            >
-              <Text style={styles.dialogSecondaryActionText}>
-                {isUnlockingAds
-                  ? "Mostrando anuncio..."
-                  : "Quitar anuncios por 15 min"}
               </Text>
             </Pressable>
 

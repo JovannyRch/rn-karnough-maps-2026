@@ -1,4 +1,13 @@
 import { NativeModules, UIManager } from "react-native";
+import mobileAds, {
+  AdEventType,
+  BannerAd,
+  BannerAdSize,
+  InterstitialAd,
+  RewardedAdEventType,
+  RewardedAd,
+  RewardedInterstitialAd,
+} from "react-native-google-mobile-ads";
 
 type AdSubscription = {
   remove: () => void;
@@ -6,59 +15,28 @@ type AdSubscription = {
 
 type FullScreenAd = {
   addEventListener: (
-    event: "adLoaded" | "adDismissed" | "adFailedToLoad",
-    handler: () => void,
+    event: "adLoaded" | "adDismissed" | "adFailedToLoad" | "earnedReward",
+    handler: (...args: any[]) => void,
   ) => AdSubscription;
   load: () => Promise<void> | void;
   show: () => Promise<void>;
 };
 
-type SupportedProvider = "google" | "legacy" | "none";
+type GoogleAdLike = Partial<FullScreenAd> & {
+  addAdEventListener?: (...args: any[]) => () => void;
+};
 
 const noopSubscription: AdSubscription = { remove: () => {} };
 
-let googleAds: any = null;
-let legacyAds: any = null;
-
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  googleAds = require("react-native-google-mobile-ads");
-} catch {}
-
-if (!googleAds) {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    legacyAds = require("@react-native-admob/admob");
-  } catch {}
-}
-
-export const mobileAdsProvider: SupportedProvider = googleAds
-  ? "google"
-  : legacyAds
-    ? "legacy"
-    : "none";
-
-const hasLegacyBannerNative = Boolean(
-  UIManager.getViewManagerConfig?.("RNAdMobBannerView"),
-);
 const hasGoogleBannerNative = Boolean(
   UIManager.getViewManagerConfig?.("RNGoogleMobileAdsBannerView") ||
-    UIManager.getViewManagerConfig?.("GoogleMobileAdsBannerView"),
-);
-const hasLegacyInterstitialNative = Boolean(
-  NativeModules.RNAdMobInterstitialAd && NativeModules.RNAdMobEvent,
-);
-const hasLegacyRewardedNative = Boolean(
-  NativeModules.RNAdMobRewardedAd && NativeModules.RNAdMobEvent,
+  UIManager.getViewManagerConfig?.("GoogleMobileAdsBannerView"),
 );
 const hasGoogleCoreNative = Boolean(NativeModules.RNGoogleMobileAdsModule);
 
-const mapEventForGoogle = (event: "adLoaded" | "adDismissed" | "adFailedToLoad") => {
-  if (!googleAds) {
-    return event;
-  }
-
-  const { AdEventType } = googleAds;
+const mapEventForGoogle = (
+  event: "adLoaded" | "adDismissed" | "adFailedToLoad" | "earnedReward",
+) => {
   switch (event) {
     case "adLoaded":
       return AdEventType.LOADED;
@@ -66,22 +44,28 @@ const mapEventForGoogle = (event: "adLoaded" | "adDismissed" | "adFailedToLoad")
       return AdEventType.CLOSED;
     case "adFailedToLoad":
       return AdEventType.ERROR;
+    case "earnedReward":
+      return RewardedAdEventType.EARNED_REWARD;
     default:
       return event;
   }
 };
 
-const adaptFullScreenAd = (ad: any): FullScreenAd | null => {
+const adaptFullScreenAd = (ad: GoogleAdLike | null): FullScreenAd | null => {
   if (!ad) {
     return null;
   }
 
-  if (typeof ad.addEventListener !== "function" && typeof ad.addAdEventListener === "function") {
+  const addNativeListener = ad.addAdEventListener;
+  if (
+    typeof ad.addEventListener !== "function" &&
+    typeof addNativeListener === "function"
+  ) {
     ad.addEventListener = (
-      event: "adLoaded" | "adDismissed" | "adFailedToLoad",
-      handler: () => void,
+      event: "adLoaded" | "adDismissed" | "adFailedToLoad" | "earnedReward",
+      handler: (...args: any[]) => void,
     ) => {
-      const unsubscribe = ad.addAdEventListener(mapEventForGoogle(event), handler);
+      const unsubscribe = addNativeListener(mapEventForGoogle(event), handler);
       return { remove: unsubscribe };
     };
   }
@@ -97,31 +81,16 @@ const adaptFullScreenAd = (ad: any): FullScreenAd | null => {
   return ad as FullScreenAd;
 };
 
-export const hasBannerModule =
-  (mobileAdsProvider === "google" && hasGoogleBannerNative) ||
-  (mobileAdsProvider === "legacy" && hasLegacyBannerNative);
+export const hasBannerModule = hasGoogleBannerNative;
 
-export const hasInterstitialModule =
-  (mobileAdsProvider === "google" && hasGoogleCoreNative) ||
-  (mobileAdsProvider === "legacy" && hasLegacyInterstitialNative);
+export const hasInterstitialModule = hasGoogleCoreNative;
 
-export const hasRewardedModule =
-  (mobileAdsProvider === "google" && hasGoogleCoreNative) ||
-  (mobileAdsProvider === "legacy" && hasLegacyRewardedNative);
+export const hasRewardedModule = hasGoogleCoreNative;
 
-export const hasMobileAdsCore =
-  (mobileAdsProvider === "google" && hasGoogleCoreNative) ||
-  (mobileAdsProvider === "legacy" && Boolean(NativeModules.RNAdMob));
+export const hasMobileAdsCore = hasGoogleCoreNative;
 
 export const initializeMobileAds = async () => {
-  if (mobileAdsProvider === "google" && googleAds?.default) {
-    await googleAds.default().initialize();
-    return;
-  }
-
-  if (mobileAdsProvider === "legacy" && legacyAds?.default?.getInitializationStatus) {
-    await legacyAds.default.getInitializationStatus();
-  }
+  await mobileAds().initialize();
 };
 
 export const createInterstitialAd = (unitId: string): FullScreenAd | null => {
@@ -129,15 +98,7 @@ export const createInterstitialAd = (unitId: string): FullScreenAd | null => {
     return null;
   }
 
-  if (mobileAdsProvider === "google") {
-    return adaptFullScreenAd(googleAds?.InterstitialAd?.createForAdRequest?.(unitId));
-  }
-
-  if (mobileAdsProvider === "legacy") {
-    return adaptFullScreenAd(legacyAds?.InterstitialAd?.createAd?.(unitId));
-  }
-
-  return null;
+  return adaptFullScreenAd(InterstitialAd.createForAdRequest(unitId));
 };
 
 export const createRewardedAd = (unitId: string): FullScreenAd | null => {
@@ -145,15 +106,7 @@ export const createRewardedAd = (unitId: string): FullScreenAd | null => {
     return null;
   }
 
-  if (mobileAdsProvider === "google") {
-    return adaptFullScreenAd(googleAds?.RewardedAd?.createForAdRequest?.(unitId));
-  }
-
-  if (mobileAdsProvider === "legacy") {
-    return adaptFullScreenAd(legacyAds?.RewardedAd?.createAd?.(unitId));
-  }
-
-  return null;
+  return adaptFullScreenAd(RewardedAd.createForAdRequest(unitId));
 };
 
 export const createRewardedInterstitialAd = (
@@ -163,41 +116,18 @@ export const createRewardedInterstitialAd = (
     return null;
   }
 
-  if (mobileAdsProvider === "google") {
-    return adaptFullScreenAd(
-      googleAds?.RewardedInterstitialAd?.createForAdRequest?.(unitId),
-    );
-  }
-
-  if (mobileAdsProvider === "legacy") {
-    return adaptFullScreenAd(
-      legacyAds?.RewardedInterstitialAd?.createAd?.(unitId),
-    );
-  }
-
-  return null;
+  return adaptFullScreenAd(RewardedInterstitialAd.createForAdRequest(unitId));
 };
 
-export const BannerAd = googleAds?.BannerAd ?? legacyAds?.BannerAd ?? null;
+export const getAdaptiveBannerSize = () =>
+  BannerAdSize.ANCHORED_ADAPTIVE_BANNER;
 
-export const BannerAdSize =
-  googleAds?.BannerAdSize ??
-  legacyAds?.BannerAdSize ?? {
-    ADAPTIVE_BANNER: "ADAPTIVE_BANNER",
-    ANCHORED_ADAPTIVE_BANNER: "ANCHORED_ADAPTIVE_BANNER",
-  };
-
-export const getAdaptiveBannerSize = () => {
-  if (mobileAdsProvider === "google") {
-    return BannerAdSize.ANCHORED_ADAPTIVE_BANNER;
-  }
-  return BannerAdSize.ADAPTIVE_BANNER;
-};
+export { BannerAd, BannerAdSize };
 
 export const addAdListener = (
   ad: FullScreenAd | null,
-  event: "adLoaded" | "adDismissed" | "adFailedToLoad",
-  handler: () => void,
+  event: "adLoaded" | "adDismissed" | "adFailedToLoad" | "earnedReward",
+  handler: (...args: any[]) => void,
 ): AdSubscription => {
   if (!ad) {
     return noopSubscription;

@@ -8,6 +8,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
   ViewToken,
 } from "react-native";
@@ -55,8 +56,11 @@ const SLIDES: Slide[] = [
 export default function OnboardingScreen({
   navigation,
 }: OnboardingScreenProps) {
+  const { width, height } = useWindowDimensions();
   const [activeIndex, setActiveIndex] = useState(0);
   const listRef = useRef<FlatList<Slide> | null>(null);
+  const slideWidth = Math.max(width - 32, 0);
+  const compactLayout = height < 760;
 
   const isLast = activeIndex === SLIDES.length - 1;
 
@@ -94,12 +98,31 @@ export default function OnboardingScreen({
 
   const renderSlide: ListRenderItem<Slide> = ({ item }) => {
     return (
-      <View style={styles.slide}>
-        <View style={[styles.iconCard, { borderColor: item.accent }]}>
-          <MaterialIcons name={item.icon} size={56} color={item.accent} />
+      <View style={[styles.slide, { width: slideWidth }]}>
+        <View
+          style={[
+            styles.iconCard,
+            compactLayout && styles.iconCardCompact,
+            { borderColor: item.accent },
+          ]}
+        >
+          <MaterialIcons
+            name={item.icon}
+            size={compactLayout ? 48 : 56}
+            color={item.accent}
+          />
         </View>
-        <Text style={styles.slideTitle}>{item.title}</Text>
-        <Text style={styles.slideDescription}>{item.description}</Text>
+        <Text style={[styles.slideTitle, compactLayout && styles.slideTitleCompact]}>
+          {item.title}
+        </Text>
+        <Text
+          style={[
+            styles.slideDescription,
+            compactLayout && styles.slideDescriptionCompact,
+          ]}
+        >
+          {item.description}
+        </Text>
       </View>
     );
   };
@@ -119,10 +142,13 @@ export default function OnboardingScreen({
         </Pressable>
       </View>
 
-      <Text style={styles.title}>Empieza en 3 pasos</Text>
+      <Text style={[styles.title, compactLayout && styles.titleCompact]}>
+        Empieza en 3 pasos
+      </Text>
 
       <FlatList
         ref={listRef}
+        style={styles.slidesList}
         data={SLIDES}
         keyExtractor={(item) => item.id}
         renderItem={renderSlide}
@@ -195,16 +221,20 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "900",
   },
+  titleCompact: {
+    fontSize: 26,
+  },
+  slidesList: {
+    flex: 1,
+  },
   slidesContent: {
     flexGrow: 1,
   },
   slide: {
-    width: 360,
-    maxWidth: "100%",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 14,
     gap: 16,
   },
   iconCard: {
@@ -216,11 +246,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  iconCardCompact: {
+    width: 116,
+    height: 116,
+    borderRadius: 24,
+  },
   slideTitle: {
     color: DUO.ink,
     fontSize: 28,
     fontWeight: "900",
     textAlign: "center",
+  },
+  slideTitleCompact: {
+    fontSize: 24,
   },
   slideDescription: {
     color: DUO.muted,
@@ -228,7 +266,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: "600",
     textAlign: "center",
-    maxWidth: 340,
+    width: "100%",
+    maxWidth: 320,
+  },
+  slideDescriptionCompact: {
+    fontSize: 15,
+    lineHeight: 22,
   },
   footer: {
     paddingBottom: 18,
