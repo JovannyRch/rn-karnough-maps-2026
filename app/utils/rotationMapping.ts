@@ -1,4 +1,4 @@
-const BASE_VARIABLES = ["A", "B", "C", "D"] as const;
+const BASE_VARIABLES = ["A", "B", "C", "D", "E"] as const;
 
 export const getRotatedVariables = (
   variableQuantity: number,
@@ -24,6 +24,10 @@ const getGrayLabels = (bitCount: number) => {
     return ["00", "01", "11", "10"];
   }
 
+  if (bitCount === 3) {
+    return ["000", "001", "011", "010", "110", "111", "101", "100"];
+  }
+
   return [];
 };
 
@@ -34,6 +38,10 @@ const getAxisBits = (variableQuantity: number) => {
 
   if (variableQuantity === 3) {
     return { colBits: 2, rowBits: 1 };
+  }
+
+  if (variableQuantity === 5) {
+    return { colBits: 3, rowBits: 2 };
   }
 
   return { colBits: 2, rowBits: 2 };

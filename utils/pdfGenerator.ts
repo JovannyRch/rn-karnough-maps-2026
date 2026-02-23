@@ -57,6 +57,7 @@ const getVariables = (quantity: number): string[] => {
   if (quantity === 2) return ["A", "B"];
   if (quantity === 3) return ["A", "B", "C"];
   if (quantity === 4) return ["A", "B", "C", "D"];
+  if (quantity === 5) return ["A", "B", "C", "D", "E"];
   return [];
 };
 

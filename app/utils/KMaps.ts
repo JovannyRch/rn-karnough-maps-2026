@@ -23,9 +23,10 @@ interface Implicant {
   covers: number[];
 }
 
-const VARIABLES = ["A", "B", "C", "D"];
+const VARIABLES = ["A", "B", "C", "D", "E"];
 
-const toBinary = (value: number, width: number) => value.toString(2).padStart(width, "0");
+const toBinary = (value: number, width: number) =>
+  value.toString(2).padStart(width, "0");
 
 const literalCount = (pattern: string) =>
   pattern.split("").filter((bit) => bit !== "-").length;
@@ -67,7 +68,7 @@ const isFullyCovered = (cover: Set<number>, targets: number[]) =>
 const buildPrimeImplicants = (
   variableQuantity: number,
   minterms: number[],
-  dontCares: number[]
+  dontCares: number[],
 ) => {
   const source = [...new Set([...minterms, ...dontCares])];
   let groups = source.map((value) => ({
@@ -109,12 +110,16 @@ const buildPrimeImplicants = (
     groups = next;
   }
 
-  const mintermPatterns = minterms.map((value) => toBinary(value, variableQuantity));
+  const mintermPatterns = minterms.map((value) =>
+    toBinary(value, variableQuantity),
+  );
 
   return primes
     .map((pattern) => ({
       pattern,
-      covers: minterms.filter((m, idx) => matchesPattern(pattern, mintermPatterns[idx])),
+      covers: minterms.filter((m, idx) =>
+        matchesPattern(pattern, mintermPatterns[idx]),
+      ),
     }))
     .filter((item) => item.covers.length > 0);
 };
@@ -122,13 +127,17 @@ const buildPrimeImplicants = (
 const solveExactPatterns = (
   variableQuantity: number,
   minterms: number[],
-  dontCares: number[]
+  dontCares: number[],
 ): string[][] => {
   if (minterms.length === 0) {
     return [[]];
   }
 
-  const implicants = buildPrimeImplicants(variableQuantity, minterms, dontCares);
+  const implicants = buildPrimeImplicants(
+    variableQuantity,
+    minterms,
+    dontCares,
+  );
   if (implicants.length === 0) {
     return [[]];
   }
@@ -143,7 +152,9 @@ const solveExactPatterns = (
     }
   });
 
-  const essentialPatterns = [...essential].map((index) => implicants[index].pattern);
+  const essentialPatterns = [...essential].map(
+    (index) => implicants[index].pattern,
+  );
   const baseCovered = new Set<number>();
   [...essential].forEach((index) => {
     implicants[index].covers.forEach((value) => baseCovered.add(value));
@@ -157,7 +168,9 @@ const solveExactPatterns = (
   const candidates = implicants
     .map((item, index) => ({ item, index }))
     .filter(({ index }) => !essential.has(index))
-    .filter(({ item }) => item.covers.some((value) => uncovered.includes(value)));
+    .filter(({ item }) =>
+      item.covers.some((value) => uncovered.includes(value)),
+    );
 
   let bestTerms = Number.POSITIVE_INFINITY;
   let bestLiterals = Number.POSITIVE_INFINITY;
@@ -174,7 +187,10 @@ const solveExactPatterns = (
         ...essentialPatterns,
         ...picked.map((idx) => candidates[idx].item.pattern),
       ];
-      const literalTotal = patterns.reduce((acc, p) => acc + literalCount(p), 0);
+      const literalTotal = patterns.reduce(
+        (acc, p) => acc + literalCount(p),
+        0,
+      );
 
       if (
         totalTerms < bestTerms ||
@@ -184,10 +200,7 @@ const solveExactPatterns = (
         bestLiterals = literalTotal;
         bestPatternSets.length = 0;
         bestPatternSets.push(patterns);
-      } else if (
-        totalTerms === bestTerms &&
-        literalTotal === bestLiterals
-      ) {
+      } else if (totalTerms === bestTerms && literalTotal === bestLiterals) {
         bestPatternSets.push(patterns);
       }
       return;
@@ -231,14 +244,16 @@ const getVisualScore = (
   cells: Cell[],
   rows: number,
   cols: number,
-  targetValue: 0 | 1
+  targetValue: 0 | 1,
 ) => {
   let wrapPenalty = 0;
   let areaScore = 0;
 
   patterns.forEach((pattern) => {
     const covered = cells
-      .filter((cell) => matchesPattern(pattern, toBinary(cell.index, variableQuantity)))
+      .filter((cell) =>
+        matchesPattern(pattern, toBinary(cell.index, variableQuantity)),
+      )
       .filter((cell) => cell.value === targetValue || cell.value === "X");
 
     const hasRowStart = covered.some((cell) => cell.row === 0);
@@ -280,7 +295,7 @@ export class KMaps {
     typeSol: SolveType,
     squares: (number | string)[][][],
     variableRotation: number = 0,
-    variables?: string[]
+    variables?: string[],
   ) {
     this.typeMap = typeMap;
     this.typeSol = typeSol;
@@ -296,10 +311,10 @@ export class KMaps {
       "blue",
       "green",
       "orange",
-      "#50C878",
+      "#ff6699",
       "lightblue",
       "#CD7F32",
-      "#ff6699",
+      "#50C878",
     ];
     this.circuitVector = [];
     this.variableRotation =
@@ -310,12 +325,16 @@ export class KMaps {
     } else {
       const baseVariables = VARIABLES.slice(0, this.typeMap);
       this.variables = baseVariables.map(
-        (_, index) => baseVariables[(index + this.variableRotation) % this.typeMap]
+        (_, index) =>
+          baseVariables[(index + this.variableRotation) % this.typeMap],
       );
     }
   }
 
   private getDimensions() {
+    if (this.typeMap === 5) {
+      return { rows: 4, cols: 8 };
+    }
     if (this.typeMap === 4) {
       return { rows: 4, cols: 4 };
     }
@@ -356,8 +375,7 @@ export class KMaps {
       }
 
       const variable = this.variables[i] ?? VARIABLES[i];
-      const shouldNegate =
-        this.typeSol === "SOP" ? bit === "0" : bit === "1";
+      const shouldNegate = this.typeSol === "SOP" ? bit === "0" : bit === "1";
 
       plain.push(shouldNegate ? `${variable}'` : variable);
       math.push(shouldNegate ? `${variable}\u0305` : variable);
@@ -392,7 +410,9 @@ export class KMaps {
     return patterns
       .map((pattern) => {
         const covered = cells
-          .filter((cell) => matchesPattern(pattern, toBinary(cell.index, this.typeMap)))
+          .filter((cell) =>
+            matchesPattern(pattern, toBinary(cell.index, this.typeMap)),
+          )
           .filter((cell) => cell.value === targetValue || cell.value === "X")
           .map((cell) => ({ riga: cell.row, col: cell.col }));
 
@@ -407,7 +427,9 @@ export class KMaps {
         });
 
         const coversAnyTarget = uniqueCovered.some((item) => {
-          const found = cells.find((cell) => cell.row === item.riga && cell.col === item.col);
+          const found = cells.find(
+            (cell) => cell.row === item.riga && cell.col === item.col,
+          );
           return found?.value === targetValue;
         });
 
@@ -458,7 +480,7 @@ export class KMaps {
     const bestPatternCandidates = solveExactPatterns(
       this.typeMap,
       [...new Set(minterms)],
-      [...new Set(dontCares)]
+      [...new Set(dontCares)],
     );
 
     if (
@@ -476,7 +498,7 @@ export class KMaps {
           return literalDiff;
         }
         return a.localeCompare(b);
-      })
+      }),
     );
 
     const sortedCandidates = [...normalizedCandidates].sort((a, b) => {
@@ -486,7 +508,7 @@ export class KMaps {
         cells,
         rows,
         cols,
-        targetValue as 0 | 1
+        targetValue as 0 | 1,
       );
       const scoreB = getVisualScore(
         b,
@@ -494,7 +516,7 @@ export class KMaps {
         cells,
         rows,
         cols,
-        targetValue as 0 | 1
+        targetValue as 0 | 1,
       );
 
       if (scoreA.wrapPenalty !== scoreB.wrapPenalty) {
@@ -508,7 +530,9 @@ export class KMaps {
 
     const sortedPatterns = sortedCandidates[0];
 
-    const termData = sortedPatterns.map((pattern) => this.patternToTerms(pattern));
+    const termData = sortedPatterns.map((pattern) =>
+      this.patternToTerms(pattern),
+    );
 
     this.result = termData
       .map((term) => term.plain)
@@ -694,7 +718,10 @@ export class KMaps {
         if (col < 0) {
           col = c - 1;
         }
-        if (groups[k].col === col % c && groups[k].riga === groups[j].riga % r) {
+        if (
+          groups[k].col === col % c &&
+          groups[k].riga === groups[j].riga % r
+        ) {
           return true;
         }
       }
@@ -703,7 +730,10 @@ export class KMaps {
         if (riga < 0) {
           riga = r - 1;
         }
-        if (groups[k].col === groups[j].col % c && groups[k].riga === riga % r) {
+        if (
+          groups[k].col === groups[j].col % c &&
+          groups[k].riga === riga % r
+        ) {
           return true;
         }
       }
@@ -728,7 +758,7 @@ export class KMaps {
       | "closedBottom"
       | "top-bottom"
       | "right-left"
-      | "monoGroup"
+      | "monoGroup",
   ) {
     switch (position) {
       case "top":

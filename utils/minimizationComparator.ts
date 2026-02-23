@@ -22,7 +22,7 @@ export interface ComparatorOutput {
   currentResultEquivalent: boolean | null;
 }
 
-const VARIABLES = ["A", "B", "C", "D"];
+const VARIABLES = ["A", "B", "C", "D", "E"];
 
 const toBinary = (value: number, width: number) => {
   return value.toString(2).padStart(width, "0");

@@ -49,9 +49,10 @@ export const useStore = create<ResultStore>((set) => ({
   variableQuantity: VARIABLE_QUANTITY,
   values: Array.from({ length: 2 ** VARIABLE_QUANTITY }, () => "0"),
   setValues: (newValues: string[]) => set({ values: newValues }),
-  setAllValues: (newValue: string) => {
-    set({ values: Array.from({ length: 2 ** 4 }, () => newValue) });
-  },
+  setAllValues: (newValue: string) =>
+    set((state) => ({
+      values: Array.from({ length: 2 ** state.variableQuantity }, () => newValue),
+    })),
   result: "",
   setResult: (newResult: string) => set({ result: newResult }),
   clearResult: () => set({ result: "" }),

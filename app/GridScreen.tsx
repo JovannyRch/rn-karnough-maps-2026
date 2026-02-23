@@ -46,6 +46,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import FourVariables from "./Grids/FourVariablesGrid";
+import FiveVariablesGrid from "./Grids/FiveVariablesGrid";
 import ThreeVariablesGrid from "./Grids/ThreeVariablesGrid";
 import TwoVariablesGrid from "./Grids/TwoVariablesGrid";
 import useDebounce from "./hooks/useDebounce";
@@ -309,6 +310,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       { label: "2 Variables", value: 2 },
       { label: "3 Variables", value: 3 },
       { label: "4 Variables", value: 4 },
+      { label: "5 Variables", value: 5 },
     ],
     [],
   );
@@ -487,7 +489,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               <Text style={styles.controlLabel}>Variables</Text>
               <VariableSelector
                 options={variableOptions}
-                value={variableQuantity as 2 | 3 | 4}
+                value={variableQuantity as 2 | 3 | 4 | 5}
                 isOpen={isVariableMenuOpen}
                 onToggle={() => setIsVariableMenuOpen((prev) => !prev)}
                 onSelect={(nextValue) => {
@@ -590,9 +592,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         >
           {view === "map" && (
             <>
-              {variableQuantity == 2 && <TwoVariablesGrid />}
-              {variableQuantity == 3 && <ThreeVariablesGrid />}
-              {variableQuantity == 4 && <FourVariables />}
+              {variableQuantity === 2 && <TwoVariablesGrid />}
+              {variableQuantity === 3 && <ThreeVariablesGrid />}
+              {variableQuantity === 4 && <FourVariables />}
+              {variableQuantity === 5 && <FiveVariablesGrid />}
             </>
           )}
 
@@ -730,15 +733,15 @@ interface ChoiceButtonProps {
 
 interface VariableOption {
   label: string;
-  value: 2 | 3 | 4;
+  value: 2 | 3 | 4 | 5;
 }
 
 interface VariableSelectorProps {
   options: VariableOption[];
-  value: 2 | 3 | 4;
+  value: 2 | 3 | 4 | 5;
   isOpen: boolean;
   onToggle: () => void;
-  onSelect: (value: 2 | 3 | 4) => void;
+  onSelect: (value: 2 | 3 | 4 | 5) => void;
 }
 
 const VariableSelector = ({
