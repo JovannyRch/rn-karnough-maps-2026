@@ -7,6 +7,7 @@ import {
 import { generateSessionPDF } from "@/utils/pdfGenerator";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FC, useEffect, useRef, useState } from "react";
+import { TestIds } from "react-native-google-mobile-ads";
 import {
   ActivityIndicator,
   Alert,
@@ -15,7 +16,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const INTERSTITIAL_EXPORT_UNIT_ID = "ca-app-pub-4665787383933447/6321320097";
+const INTERSTITIAL_EXPORT_UNIT_ID = __DEV__
+  ? TestIds.INTERSTITIAL
+  : "ca-app-pub-4665787383933447/6321320097";
+const INTERSTITIAL_WAIT_TIMEOUT_MS = 3000;
+const INTERSTITIAL_POLL_MS = 120;
 
 interface ExportSessionPDFButtonProps {
   compact?: boolean;
@@ -45,6 +50,7 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
   } = useStore();
   const adsSuppressed = isPro || adsMutedUntil > Date.now();
   const pendingExportAfterAdRef = useRef(false);
+  const interstitialLoadedRef = useRef(false);
 
   useEffect(() => {
     if (adsSuppressed || !hasAdMobInterstitialModule) {
@@ -59,10 +65,12 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
 
     const unsubscribeLoaded = addAdListener(adInstance, "adLoaded", () => {
       setInterstitialLoaded(true);
+      interstitialLoadedRef.current = true;
     });
 
     const unsubscribeClosed = addAdListener(adInstance, "adDismissed", () => {
       setInterstitialLoaded(false);
+      interstitialLoadedRef.current = false;
       void Promise.resolve(adInstance.load()).catch(() => {});
       if (!pendingExportAfterAdRef.current) {
         return;
@@ -74,10 +82,12 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
 
     const unsubscribeFailed = addAdListener(adInstance, "adFailedToLoad", () => {
       setInterstitialLoaded(false);
+      interstitialLoadedRef.current = false;
     });
 
     void Promise.resolve(adInstance.load()).catch(() => {
       setInterstitialLoaded(false);
+      interstitialLoadedRef.current = false;
     });
 
     return () => {
@@ -86,6 +96,10 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
       unsubscribeFailed.remove();
     };
   }, [adsSuppressed]);
+
+  useEffect(() => {
+    interstitialLoadedRef.current = interstitialLoaded;
+  }, [interstitialLoaded]);
 
   const performExport = async () => {
     try {
@@ -128,9 +142,30 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
       return;
     }
 
-    if (!adsSuppressed && interstitialLoaded && interstitialAd) {
-      pendingExportAfterAdRef.current = true;
+    if (!adsSuppressed && interstitialAd) {
       setIsWaitingAd(true);
+
+      if (!interstitialLoadedRef.current) {
+        try {
+          await Promise.resolve(interstitialAd.load());
+        } catch {}
+
+        const startedAt = Date.now();
+        while (
+          !interstitialLoadedRef.current &&
+          Date.now() - startedAt < INTERSTITIAL_WAIT_TIMEOUT_MS
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, INTERSTITIAL_POLL_MS));
+        }
+      }
+
+      if (!interstitialLoadedRef.current) {
+        setIsWaitingAd(false);
+        await performExport();
+        return;
+      }
+
+      pendingExportAfterAdRef.current = true;
       try {
         await interstitialAd.show();
       } catch {
