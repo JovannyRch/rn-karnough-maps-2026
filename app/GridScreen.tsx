@@ -93,6 +93,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     vectorResult,
     setResult,
     setBoxColors,
+    boxColors,
     variableQuantity,
     setVariableQuantity,
     setAllValues,
@@ -103,6 +104,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     setView,
     view,
     setResultType,
+    focusedGroupIndex,
+    setFocusedGroupIndex,
     isPro,
     adsMutedUntil,
     variables,
@@ -321,6 +324,41 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     }
     return result;
   }, [result, vectorResult]);
+
+  const groupLegend = useMemo(() => {
+    const terms = vectorResult.filter(
+      (item) =>
+        typeof item.groupIndex === "number" &&
+        typeof item.style?.color === "string" &&
+        item.style.color !== "black",
+    );
+
+    return terms.map((term) => {
+      const groupIndex = term.groupIndex as number;
+      const coveredCells = boxColors.filter(
+        (box) => box.groupIndex === groupIndex,
+      ).length;
+      return {
+        groupIndex,
+        label: term.value,
+        color: term.style.color as string,
+        coveredCells,
+      };
+    });
+  }, [boxColors, vectorResult]);
+
+  useEffect(() => {
+    if (focusedGroupIndex === null) {
+      return;
+    }
+
+    const stillExists = boxColors.some(
+      (item) => item.groupIndex === focusedGroupIndex,
+    );
+    if (!stillExists) {
+      setFocusedGroupIndex(null);
+    }
+  }, [boxColors, focusedGroupIndex, setFocusedGroupIndex]);
 
   useEffect(() => {
     return () => {
@@ -601,6 +639,68 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
 
           {view === "table" && <TableView />}
         </Reanimated.View>
+
+        {view === "map" && groupLegend.length > 0 && (
+          <View style={styles.legendCard}>
+            <Text style={styles.legendTitle}>Foco por grupo</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.legendRow}
+            >
+              <Pressable
+                style={({ pressed }) => [
+                  styles.legendChip,
+                  focusedGroupIndex === null && styles.legendChipActive,
+                  pressed && styles.legendChipPressed,
+                ]}
+                onPress={() => setFocusedGroupIndex(null)}
+              >
+                <Text
+                  style={[
+                    styles.legendChipText,
+                    focusedGroupIndex === null && styles.legendChipTextActive,
+                  ]}
+                >
+                  Todos
+                </Text>
+              </Pressable>
+
+              {groupLegend.map((item, idx) => {
+                const selected = focusedGroupIndex === item.groupIndex;
+                return (
+                  <Pressable
+                    key={`legend-${item.groupIndex}-${idx}`}
+                    style={({ pressed }) => [
+                      styles.legendChip,
+                      selected && styles.legendChipActive,
+                      pressed && styles.legendChipPressed,
+                    ]}
+                    onPress={() => {
+                      setFocusedGroupIndex(selected ? null : item.groupIndex);
+                    }}
+                  >
+                    <View
+                      style={[
+                        styles.legendDot,
+                        { backgroundColor: item.color, borderColor: item.color },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.legendChipText,
+                        selected && styles.legendChipTextActive,
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {`G${item.groupIndex + 1}: ${item.label}`}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
 
         <View
           style={[
@@ -1075,6 +1175,60 @@ const styles = StyleSheet.create({
   gridContainer: {
     padding: 12,
     paddingTop: 14,
+  },
+  legendCard: {
+    marginHorizontal: 12,
+    marginTop: 6,
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: DUO.border,
+    backgroundColor: DUO.card,
+  },
+  legendTitle: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: DUO.muted,
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: 8,
+  },
+  legendRow: {
+    gap: 8,
+    paddingRight: 4,
+  },
+  legendChip: {
+    minHeight: 36,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: DUO.border,
+    backgroundColor: "#F2F8EC",
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+  },
+  legendChipActive: {
+    backgroundColor: DUO.green,
+    borderColor: DUO.green,
+  },
+  legendChipPressed: {
+    transform: [{ translateY: 1 }],
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  legendChipText: {
+    color: DUO.ink,
+    fontSize: 12,
+    fontWeight: "800",
+    maxWidth: 150,
+  },
+  legendChipTextActive: {
+    color: "#FFFFFF",
   },
   dropdownButtonStyle: {
     minHeight: 44,

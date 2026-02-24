@@ -445,6 +445,7 @@ export class KMaps {
     this.vectorResult = [
       {
         value: constant,
+        groupIndex: 0,
         style: {
           color: this.colors[0],
         },
@@ -548,6 +549,7 @@ export class KMaps {
     termData.forEach((term, index) => {
       this.vectorResult.push({
         value: term.math,
+        groupIndex: index,
         style: {
           color: this.colors[index % this.colors.length],
         },
@@ -684,7 +686,12 @@ export class KMaps {
           }
           j++;
 
-          this.boxColors.push({ row, column: col, style: element });
+          this.boxColors.push({
+            row,
+            column: col,
+            groupIndex: c,
+            style: element,
+          });
         }
       }
     }

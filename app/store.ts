@@ -29,6 +29,8 @@ interface ResultStore {
   setVariableName: (index: number, value: string) => void;
   variableRotation: number;
   rotateVariables: () => void;
+  focusedGroupIndex: number | null;
+  setFocusedGroupIndex: (groupIndex: number | null) => void;
   isPro: boolean;
   setIsPro: (isPro: boolean) => void;
   adsMutedUntil: number;
@@ -132,6 +134,9 @@ export const useStore = create<ResultStore>((set) => ({
         variables: rotated,
       };
     }),
+  focusedGroupIndex: null,
+  setFocusedGroupIndex: (groupIndex: number | null) =>
+    set({ focusedGroupIndex: groupIndex }),
   isPro: false,
   setIsPro: async (isPro: boolean) => {
     set({ isPro });

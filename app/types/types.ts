@@ -8,10 +8,12 @@ export interface Position {
 export interface BoxColor {
   row: number;
   column: number;
+  groupIndex?: number;
   style: any;
 }
 
 export interface VectorResultItem {
   value: string;
+  groupIndex?: number;
   style: any;
 }

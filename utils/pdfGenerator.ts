@@ -14,6 +14,7 @@ interface CircuitData {
 
 interface VectorResultItemLike {
   value: string;
+  groupIndex?: number;
   style?: {
     color?: string;
   };
@@ -22,6 +23,7 @@ interface VectorResultItemLike {
 interface BoxColorLike {
   row: number;
   column: number;
+  groupIndex?: number;
   style: Record<string, unknown>;
 }
 
@@ -193,6 +195,46 @@ const getMapAxisNames = (
   return { top: `${base[0]}${base[1]}`, side: `${base[2]}${base[3]}` };
 };
 
+const buildMapRowsHtml = (
+  rotatedMap: ReturnType<typeof buildRotatedMap>,
+  values: string[],
+  overlaysByCell: Map<string, BoxColorLike[]>,
+  focusedGroupIndex: number | null = null,
+) =>
+  rotatedMap.rowLabels
+    .map((rowLabel, row) => {
+      const cells = rotatedMap.indexGrid[row]
+        .map((index, column) => {
+          const value = values[index] ?? "0";
+          const overlays = (overlaysByCell.get(`${row}-${column}`) ?? [])
+            .filter((overlay) =>
+              focusedGroupIndex === null
+                ? true
+                : overlay.groupIndex === focusedGroupIndex,
+            )
+            .map(
+              (overlay, overlayIndex) =>
+                `<div class="map-overlay" style="${styleToCss(
+                  overlay.style,
+                )};inset:${overlayIndex * 3}px;"></div>`,
+            )
+            .join("");
+          return `
+            <td>
+              <div class="map-cell">
+                <span class="map-index">${index}</span>
+                <span class="map-value">${escapeHtml(value)}</span>
+                ${overlays}
+              </div>
+            </td>
+          `;
+        })
+        .join("");
+
+      return `<tr><th>${rowLabel}</th>${cells}</tr>`;
+    })
+    .join("");
+
 const buildSessionHTML = (data: SessionPDFData) => {
   const expression =
     data.resultExpression?.trim() || buildExpressionFallback(data) || "N/A";
@@ -245,32 +287,72 @@ const buildSessionHTML = (data: SessionPDFData) => {
     },
   ).join("");
 
-  const mapRows = rotatedMap.rowLabels
-    .map((rowLabel, row) => {
-      const cells = rotatedMap.indexGrid[row]
-        .map((index, column) => {
-          const value = data.values[index] ?? "0";
-          const overlays = (overlayByCell.get(`${row}-${column}`) ?? [])
-            .map(
-              (overlay, overlayIndex) =>
-                `<div class="map-overlay" style="${styleToCss(
-                  overlay.style,
-                )};inset:${overlayIndex * 3}px;"></div>`,
-            )
-            .join("");
-          return `
-            <td>
-              <div class="map-cell">
-                <span class="map-index">${index}</span>
-                <span class="map-value">${escapeHtml(value)}</span>
-                ${overlays}
-              </div>
-            </td>
-          `;
-        })
-        .join("");
+  const mapRows = buildMapRowsHtml(rotatedMap, data.values, overlayByCell);
 
-      return `<tr><th>${rowLabel}</th>${cells}</tr>`;
+  const termByGroupIndex = new Map<
+    number,
+    { label: string; color: string }
+  >();
+  (data.vectorResult ?? []).forEach((item) => {
+    if (
+      typeof item.groupIndex !== "number" ||
+      item.style?.color === "black" ||
+      !item.value.trim()
+    ) {
+      return;
+    }
+
+    termByGroupIndex.set(item.groupIndex, {
+      label: item.value,
+      color: item.style?.color ?? "#2f4858",
+    });
+  });
+
+  const groupIndices = Array.from(
+    new Set(
+      (data.boxColors ?? [])
+        .map((item) => item.groupIndex)
+        .filter((value): value is number => typeof value === "number"),
+    ),
+  ).sort((a, b) => a - b);
+
+  const detailedGroupPages = groupIndices
+    .map((groupIndex) => {
+      const info = termByGroupIndex.get(groupIndex);
+      const rows = buildMapRowsHtml(
+        rotatedMap,
+        data.values,
+        overlayByCell,
+        groupIndex,
+      );
+      const coveredCells = (data.boxColors ?? []).filter(
+        (item) => item.groupIndex === groupIndex,
+      ).length;
+
+      return `
+        <div class="page page-break">
+          <div class="section map-wrap map-section">
+            <h2>Detalle de grupo G${groupIndex + 1}</h2>
+            <div class="group-meta">
+              <span class="group-chip" style="background:${escapeHtml(
+                info?.color ?? "#2f4858",
+              )};"></span>
+              <strong>Término:</strong> ${escapeHtml(info?.label ?? "N/A")}
+              <span class="group-sep">|</span>
+              <strong>Celdas:</strong> ${coveredCells}
+            </div>
+            <table class="map-table">
+              <thead>
+                <tr>
+                  <th class="axis">${escapeHtml(axisNames.side)} \\ ${escapeHtml(axisNames.top)}</th>
+                  ${rotatedMap.colLabels.map((label) => `<th class="axis">${label}</th>`).join("")}
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
     })
     .join("");
 
@@ -320,6 +402,9 @@ const buildSessionHTML = (data: SessionPDFData) => {
             .map-index { position: absolute; top: 3px; left: 4px; font-size: 10px; color: #253841; }
             .map-value { position: absolute; top: 18px; left: 0; right: 0; font-size: 21px; font-weight: 800; color: #000; text-align: center; }
             .map-overlay { position: absolute; inset: 0; box-sizing: border-box; pointer-events: none; }
+            .group-meta { margin: 8px 0 10px; font-size: 12px; color: #2f4858; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+            .group-chip { width:12px; height:12px; border-radius:999px; border:1px solid #1f352b; display:inline-block; }
+            .group-sep { color:#7a8a74; font-weight:700; }
             .equiv-list { margin: 8px 0 0 16px; padding: 0; }
             .equiv-list li { margin-bottom: 4px; }
             .foot { margin-top: 16px; color: #72806c; font-size: 11px; text-align: right; }
@@ -383,6 +468,8 @@ const buildSessionHTML = (data: SessionPDFData) => {
               <ul class="equiv-list">${equivalents}</ul>
             </div>
           </div>
+
+          ${detailedGroupPages}
 
           <div class="page page-break">
             <div class="section circuit-section">

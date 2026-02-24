@@ -18,11 +18,12 @@ interface GridBoxProps {
 }
 
 const GridBox = ({ index, row, column }: GridBoxProps) => {
-  const { boxColors, values, setValues, resultType } = useStore();
+  const { boxColors, values, setValues, resultType, focusedGroupIndex } =
+    useStore();
 
   const boxes: BoxColor[] = useMemo(() => {
     return boxColors.filter((box) => {
-      return box.row == row && box.column == column;
+      return box.row === row && box.column === column;
     });
   }, [boxColors, row, column]);
 
@@ -82,10 +83,19 @@ const GridBox = ({ index, row, column }: GridBoxProps) => {
               {value}
             </Text>
           </View>
-          {boxes.map(({ style, row, column }) => (
+          {boxes.map(({ style, row, column, groupIndex }) => (
             <View
-              key={`#${row},${column},${style.borderColor}`}
-              style={{ ...styles.overlayBox, ...style }}
+              key={`#${row},${column},${groupIndex ?? "na"},${style.borderColor}`}
+              style={[
+                styles.overlayBox,
+                style,
+                focusedGroupIndex !== null &&
+                  groupIndex !== focusedGroupIndex &&
+                  styles.overlayMuted,
+                focusedGroupIndex !== null &&
+                  groupIndex === focusedGroupIndex &&
+                  styles.overlayFocused,
+              ]}
             />
           ))}
         </TouchableOpacity>
@@ -134,6 +144,12 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     opacity: 0.5,
+  },
+  overlayMuted: {
+    opacity: 0.14,
+  },
+  overlayFocused: {
+    opacity: 0.8,
   },
   value: {
     fontSize: 23,
