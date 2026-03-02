@@ -45,8 +45,8 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import FourVariables from "./Grids/FourVariablesGrid";
 import FiveVariablesGrid from "./Grids/FiveVariablesGrid";
+import FourVariables from "./Grids/FourVariablesGrid";
 import ThreeVariablesGrid from "./Grids/ThreeVariablesGrid";
 import TwoVariablesGrid from "./Grids/TwoVariablesGrid";
 import useDebounce from "./hooks/useDebounce";
@@ -66,6 +66,7 @@ const INTERSTITIAL_MIN_GAP_MS = 90 * 1000;
 const ENGAGEMENT_DIALOG_LAST_SHOWN_KEY = "@engagement_dialog_last_shown";
 const ENGAGEMENT_DIALOG_EXERCISE_THRESHOLD = 3;
 const ENGAGEMENT_DIALOG_COOLDOWN_MS = 18 * 60 * 60 * 1000;
+const SHARE_VERSION = 1;
 
 const ESTIMATED_BANNER_HEIGHT = 56;
 const RESULT_DOCK_HEIGHT = 84;
@@ -76,6 +77,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
   const [copyFeedbackVisible, setCopyFeedbackVisible] = useState(false);
   const [isVariableMenuOpen, setIsVariableMenuOpen] = useState(false);
   const [showEngagementDialog, setShowEngagementDialog] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
+  const [importCode, setImportCode] = useState("");
   const insets = useSafeAreaInsets();
   const interstitialOpenCountRef = useRef(0);
   const interstitialLastShownAtRef = useRef(0);
@@ -87,6 +90,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
   const resultDockScale = useSharedValue(1);
   const copyBadgeOpacity = useSharedValue(0);
   const copyBadgeTranslateY = useSharedValue(-6);
+  const lastHandledShareCodeRef = useRef<string>("");
 
   const {
     result,
@@ -94,6 +98,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     setResult,
     setBoxColors,
     boxColors,
+    values,
     variableQuantity,
     setVariableQuantity,
     setAllValues,
@@ -440,6 +445,109 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       );
     }
   };
+  /* 
+  const applySharedCode = useCallback(
+    (rawInput: string) => {
+      try {
+        const code = extractShareCode(rawInput);
+        if (!code) {
+          Alert.alert(
+            "Código inválido",
+            "No se encontró un código para importar.",
+          );
+          return false;
+        }
+
+        const payload = decodeSharePayload(code);
+        if (lastHandledShareCodeRef.current === code) {
+          return true;
+        }
+        lastHandledShareCodeRef.current = code;
+
+        setVariableQuantity(payload.n);
+        setResultType(payload.t);
+        setValues(payload.vals.split(""));
+        setView("map");
+
+        for (let i = 0; i < payload.rot; i++) {
+          rotateVariables();
+        }
+
+        payload.vars?.slice(0, payload.n).forEach((variableName, index) => {
+          setVariableName(index, variableName);
+        });
+
+        Alert.alert(
+          "Ejercicio importado",
+          "Se cargó correctamente el mapa compartido.",
+        );
+        return true;
+      } catch {
+        Alert.alert(
+          "Código inválido",
+          "No se pudo importar. Revisa que el enlace/código esté completo.",
+        );
+        return false;
+      }
+    },
+    [
+      rotateVariables,
+      setResultType,
+      setVariableName,
+      setVariableQuantity,
+      setValues,
+      setView,
+    ],
+  );
+
+  useEffect(() => {
+    Linking.getInitialURL()
+      .then((url) => {
+        if (url) {
+          applySharedCode(url);
+        }
+      })
+      .catch(() => {});
+
+    const subscription = Linking.addEventListener("url", ({ url }) => {
+      if (url) {
+        applySharedCode(url);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [applySharedCode]); 
+
+  const handleShareExercise = async () => {
+    try {
+      const payloadCode = encodeSharePayload({
+        v: SHARE_VERSION,
+        n: variableQuantity,
+        t: resultType,
+        vals: values.join(""),
+        rot: variableRotation,
+        vars: variables.slice(0, variableQuantity),
+      });
+      const url = buildShareUrl(payloadCode);
+      await Share.share({
+        title: "Mapa de Karnaugh",
+        message: `Resuelve este ejercicio:\n${url}`,
+      });
+    } catch {
+      Alert.alert("Error", "No se pudo generar el enlace para compartir.");
+    }
+  };
+
+  const handleImportSubmit = () => {
+    const imported = applySharedCode(importCode);
+    if (!imported) {
+      return;
+    }
+    setImportCode("");
+    setShowImportDialog(false);
+  }; */
 
   const handleCopyResult = () => {
     if (!resultPlainText) {
@@ -502,11 +610,30 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     <SafeAreaView style={styles.container}>
       <Reanimated.View style={[styles.header, headerAnimatedStyle]}>
         <View>
-          <Text style={styles.badge}>ESTUDIO GUIADO</Text>
-          <Text style={styles.title}>Mapas de Karnaugh</Text>
+          <Text style={styles.title}>Karnaugh</Text>
         </View>
 
         <View style={styles.headerActions}>
+          {/* <Pressable
+            style={({ pressed }) => [
+              styles.shareButton,
+              pressed && styles.historyButtonPressed,
+            ]}
+            onPress={() => {
+              void handleShareExercise();
+            }}
+          >
+            <Icon name="ios-share" size={17} color="#fff" />
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.importButton,
+              pressed && styles.historyButtonPressed,
+            ]}
+            onPress={() => setShowImportDialog(true)}
+          >
+            <Icon name="input" size={17} color="#fff" />
+          </Pressable> */}
           <Pressable
             style={({ pressed }) => [
               styles.historyButton,
@@ -596,8 +723,13 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             <Text style={styles.controlLabel}>Nombres de variables</Text>
             <View style={styles.variablesEditorRow}>
               {variables.slice(0, variableQuantity).map((variable, index) => (
-                <View key={`variable-edit-${index}`} style={styles.variableInputWrap}>
-                  <Text style={styles.variableInputLabel}>{`V${index + 1}`}</Text>
+                <View
+                  key={`variable-edit-${index}`}
+                  style={styles.variableInputWrap}
+                >
+                  <Text
+                    style={styles.variableInputLabel}
+                  >{`V${index + 1}`}</Text>
                   <TextInput
                     value={variable}
                     maxLength={3}
@@ -607,10 +739,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                     onChangeText={(text) => setVariableName(index, text)}
                     onEndEditing={() => {
                       if (!variables[index]) {
-                        setVariableName(
-                          index,
-                          String.fromCharCode(65 + index),
-                        );
+                        setVariableName(index, String.fromCharCode(65 + index));
                       }
                     }}
                   />
@@ -683,7 +812,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                     <View
                       style={[
                         styles.legendDot,
-                        { backgroundColor: item.color, borderColor: item.color },
+                        {
+                          backgroundColor: item.color,
+                          borderColor: item.color,
+                        },
                       ]}
                     />
                     <Text
@@ -769,6 +901,57 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         </Pressable>
       </Reanimated.View>
       {!adsSuppressed && <MyBannerAd />}
+
+      {/* <Modal
+        visible={showImportDialog}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowImportDialog(false)}
+      >
+        <View style={styles.dialogBackdrop}>
+          <View style={styles.dialogCard}>
+            <Text style={styles.dialogTitle}>Importar ejercicio</Text>
+            <Text style={styles.dialogBody}>
+              Pega el enlace o código compartido para cargar el mapa.
+            </Text>
+
+            <TextInput
+              value={importCode}
+              onChangeText={setImportCode}
+              autoCapitalize="none"
+              autoCorrect={false}
+              multiline
+              numberOfLines={4}
+              style={styles.importInput}
+              placeholder="rnkarnoughmap2026://share?d=... o código"
+              placeholderTextColor="#7A8A74"
+            />
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.dialogPrimaryAction,
+                pressed && styles.actionButtonPressed,
+              ]}
+              onPress={handleImportSubmit}
+            >
+              <Text style={styles.dialogPrimaryActionText}>Cargar código</Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.dialogSecondaryAction,
+                pressed && styles.actionButtonPressed,
+              ]}
+              onPress={() => {
+                setImportCode("");
+                setShowImportDialog(false);
+              }}
+            >
+              <Text style={styles.dialogSecondaryActionText}>Cancelar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal> */}
 
       <Modal
         visible={showEngagementDialog}
@@ -1005,6 +1188,26 @@ const styles = StyleSheet.create({
     backgroundColor: DUO.blue,
     borderBottomWidth: 3,
     borderBottomColor: DUO.blueDark,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shareButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 11,
+    backgroundColor: "#2D7FF9",
+    borderBottomWidth: 3,
+    borderBottomColor: "#1A4EA0",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  importButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 11,
+    backgroundColor: "#FFB020",
+    borderBottomWidth: 3,
+    borderBottomColor: "#D48C00",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1404,6 +1607,18 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 19,
     marginBottom: 4,
+  },
+  importInput: {
+    minHeight: 96,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: DUO.border,
+    backgroundColor: "#F9FCF5",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 13,
+    color: DUO.ink,
+    textAlignVertical: "top",
   },
   dialogPrimaryAction: {
     minHeight: 46,

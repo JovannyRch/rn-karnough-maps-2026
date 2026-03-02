@@ -9,7 +9,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "build": "cd android && ./gradlew assembleRelease"
+    "build": "cd /Users/jovannyramirez/Documents/code/apps/rn_karnough_map_2026 && cd android && ./gradlew bundleRelease && open app/build/outputs/bundle/release"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
