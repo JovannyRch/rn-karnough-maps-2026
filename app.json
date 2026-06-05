@@ -10,16 +10,7 @@
       "edgeToEdgeEnabled": true,
       "package": "com.jovannyrch.kmaps",
       "predictiveBackGestureEnabled": false,
-      "versionCode": 38
-    },
-    "experiments": {
-      "reactCompiler": false,
-      "typedRoutes": true
-    },
-    "icon": "./assets/images/icon.png",
-    "ios": {
-      "bundleIdentifier": "com.jovannyrch.kmaps",
-      "supportsTablet": true
+"versionCode": 39
     },
     "name": "Mapas de Karnough",
     "newArchEnabled": true,
@@ -49,7 +40,7 @@
     "scheme": "rnkarnoughmap2026",
     "slug": "rn_karnough_map_2026",
     "userInterfaceStyle": "automatic",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "web": {
       "favicon": "./assets/images/favicon.png",
       "output": "static"

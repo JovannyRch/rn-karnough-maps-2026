@@ -34,7 +34,8 @@ export default function ProScreen({ navigation }: ProScreenProps) {
   const [isLoadingProduct, setIsLoadingProduct] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
-  const [priceLabel, setPriceLabel] = useState("$2.99 USD");
+  const [priceLabel, setPriceLabel] = useState<string | null>(null);
+  const [iapError, setIapError] = useState(false);
   const fade = useSharedValue(0);
   const lift = useSharedValue(18);
 
@@ -59,7 +60,9 @@ export default function ProScreen({ navigation }: ProScreenProps) {
           setPriceLabel(product.localizedPrice);
         }
       } catch (error) {
-        console.log("Unable to load IAP product", error);
+        if (!cancelled) {
+          setIapError(true);
+        }
       } finally {
         if (!cancelled) {
           setIsLoadingProduct(false);
@@ -189,17 +192,21 @@ export default function ProScreen({ navigation }: ProScreenProps) {
             ))}
           </View>
 
-          {!isPro && (
+          {!isPro && !iapError && (
             <View style={styles.priceCard}>
               <Text style={styles.priceLabel}>Precio especial</Text>
-              <Text style={styles.price}>{priceLabel}</Text>
+              {priceLabel ? (
+                <Text style={styles.price}>{priceLabel}</Text>
+              ) : (
+                <ActivityIndicator color={DUO.green} />
+              )}
               <Text style={styles.priceNote}>
                 Pago único • Sin renovación automática
               </Text>
             </View>
           )}
 
-          {!isPro && (
+          {!isPro && !iapError && (
             <Pressable
               style={({ pressed }) => [
                 styles.primaryButton,
@@ -217,7 +224,7 @@ export default function ProScreen({ navigation }: ProScreenProps) {
             </Pressable>
           )}
 
-          {!isPro && (
+          {!isPro && !iapError && (
             <Pressable
               style={({ pressed }) => [
                 styles.secondaryButton,
