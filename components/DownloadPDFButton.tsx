@@ -10,12 +10,14 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 
 interface DownloadPDFButtonProps {
   compact?: boolean;
 }
 
 const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({ compact = false }) => {
+  const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const { resultType, variableQuantity, circuitVector, result, variables } =
     useStore();
@@ -35,19 +37,17 @@ const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({ compact = false }) => {
       const uri = await generateCircuitPDF(circuitData);
 
       Alert.alert(
-        "PDF Generado",
-        `El circuito fue generado correctamente.${
-          uri
-            ? "\nPuedes compartirlo o guardarlo desde el diálogo del sistema."
-            : ""
+        t("result.circuitPdf.successTitle"),
+        `${t("result.circuitPdf.successMessage")}${
+          uri ? t("result.circuitPdf.shareHint") : ""
         }`,
         [{ text: "OK" }],
       );
     } catch (error) {
       console.error("Error al generar PDF:", error);
       Alert.alert(
-        "Error",
-        "Hubo un problema al generar el PDF. Por favor, inténtalo de nuevo.",
+        t("result.circuitPdf.errorTitle"),
+        t("result.circuitPdf.errorMessage"),
         [{ text: "OK" }],
       );
     } finally {
@@ -76,7 +76,9 @@ const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({ compact = false }) => {
         />
       )}
       <Text style={styles.buttonText}>
-        {isGenerating ? "Generando PDF..." : "Descargar circuito en PDF"}
+        {isGenerating
+          ? t("result.circuitPdf.generating")
+          : t("result.circuitPdf.button")}
       </Text>
     </TouchableOpacity>
   );

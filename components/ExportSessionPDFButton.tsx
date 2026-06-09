@@ -15,6 +15,7 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 
 const INTERSTITIAL_EXPORT_UNIT_ID = __DEV__
   ? TestIds.INTERSTITIAL
@@ -31,6 +32,7 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
   compact = false,
   disabled = false,
 }) => {
+  const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isWaitingAd, setIsWaitingAd] = useState(false);
   const [interstitialLoaded, setInterstitialLoaded] = useState(false);
@@ -117,19 +119,17 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
       });
 
       Alert.alert(
-        "PDF de sesión generado",
-        `Se exportó la sesión completa.${
-          uri
-            ? "\nPuedes compartirlo o guardarlo desde el diálogo del sistema."
-            : ""
+        t("result.sessionPdf.successTitle"),
+        `${t("result.sessionPdf.successMessage")}${
+          uri ? t("result.sessionPdf.shareHint") : ""
         }`,
         [{ text: "OK" }],
       );
     } catch (error) {
       console.error("Error al exportar sesión PDF:", error);
       Alert.alert(
-        "Error",
-        "No fue posible exportar la sesión completa en PDF. Inténtalo de nuevo.",
+        t("result.sessionPdf.errorTitle"),
+        t("result.sessionPdf.errorMessage"),
         [{ text: "OK" }],
       );
     } finally {
@@ -201,10 +201,10 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
       )}
       <Text style={styles.buttonText}>
         {isGenerating
-          ? "Exportando sesión..."
+          ? t("result.sessionPdf.generating")
           : isWaitingAd
-            ? "Mostrando anuncio..."
-            : "Exportar sesión completa"}
+            ? t("result.sessionPdf.showingAd")
+            : t("result.sessionPdf.button")}
       </Text>
     </TouchableOpacity>
   );

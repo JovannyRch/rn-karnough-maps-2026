@@ -17,6 +17,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import DownloadPDFButton from "@/components/DownloadPDFButton";
 import ExportSessionPDFButton from "@/components/ExportSessionPDFButton";
@@ -32,6 +33,7 @@ interface ResultScreenProps {
 }
 
 const ResultScreen = ({ navigation }: ResultScreenProps) => {
+  const { t } = useTranslation();
   const { isPro, adsMutedUntil, resultType, variableQuantity, values, result } =
     useStore();
   const adsSuppressed = isPro || adsMutedUntil > Date.now();
@@ -54,8 +56,8 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
     <SafeAreaView style={styles.container}>
       <Reanimated.View style={[styles.header, entranceAnimatedStyle]}>
         <View>
-          <Text style={styles.badge}>SALIDA LÓGICA</Text>
-          <Text style={styles.title}>Circuito</Text>
+          <Text style={styles.badge}>{t("result.badge")}</Text>
+          <Text style={styles.title}>{t("result.title")}</Text>
         </View>
         <ProButton navigation={navigation} />
       </Reanimated.View>
@@ -71,10 +73,14 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
           <ResultRow />
           <View style={styles.metaRow}>
             <View style={styles.metaPill}>
-              <Text style={styles.metaText}>Tipo: {resultType}</Text>
+              <Text style={styles.metaText}>
+                {t("result.type", { type: resultType })}
+              </Text>
             </View>
             <View style={styles.metaPill}>
-              <Text style={styles.metaText}>Variables: {variableQuantity}</Text>
+              <Text style={styles.metaText}>
+                {t("result.variables", { count: variableQuantity })}
+              </Text>
             </View>
           </View>
           <View style={styles.actionsRow}>
@@ -96,8 +102,12 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
             resultType={resultType}
             currentResult={result}
           />
-          <Text style={styles.sectionTitle}>Diagrama del circuito</Text>
+          <Text style={styles.sectionTitle}>
+            {t("result.circuitDiagram")}
+          </Text>
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t("result.accessibility.fullscreen")}
             style={({ pressed }) => [
               styles.fullscreenButton,
               pressed && styles.buttonPressed,
@@ -105,7 +115,7 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
             onPress={() => setIsCircuitFullscreen(true)}
           >
             <Text style={styles.fullscreenButtonText}>
-              Ver en pantalla completa
+              {t("result.fullscreen")}
             </Text>
           </Pressable>
           <View style={styles.circuitCard}>
@@ -123,15 +133,17 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
       >
         <SafeAreaView style={styles.fullscreenContainer}>
           <View style={styles.fullscreenHeader}>
-            <Text style={styles.fullscreenTitle}>Circuito</Text>
+            <Text style={styles.fullscreenTitle}>{t("result.title")}</Text>
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t("result.accessibility.closeFullscreen")}
               style={({ pressed }) => [
                 styles.fullscreenCloseButton,
                 pressed && styles.buttonPressed,
               ]}
               onPress={() => setIsCircuitFullscreen(false)}
             >
-              <Text style={styles.fullscreenCloseText}>Cerrar</Text>
+              <Text style={styles.fullscreenCloseText}>{t("result.close")}</Text>
             </Pressable>
           </View>
           <View style={styles.fullscreenCircuitCard}>

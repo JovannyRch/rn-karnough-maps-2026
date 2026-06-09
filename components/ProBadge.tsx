@@ -1,17 +1,23 @@
 import useStore from "@/app/store";
 import { DUO } from "@/constants/duoTheme";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 interface ProButtonProps {
   navigation: any;
 }
 
 export function ProButton({ navigation }: ProButtonProps) {
+  const { t } = useTranslation();
   const { isPro } = useStore();
 
   if (isPro) {
     return (
-      <View style={styles.proBadge}>
+      <View
+        accessible
+        accessibilityLabel={t("pro.accessibility.active")}
+        style={styles.proBadge}
+      >
         <Text style={styles.proEmoji}>👑</Text>
         <Text style={styles.proTextActive}>PRO</Text>
       </View>
@@ -20,6 +26,8 @@ export function ProButton({ navigation }: ProButtonProps) {
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t("pro.accessibility.open")}
       onPress={() => navigation.navigate("ProScreen")}
       style={({ pressed }) => [styles.proButton, pressed && styles.proPressed]}
     >

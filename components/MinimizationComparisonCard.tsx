@@ -9,6 +9,7 @@ import { buildMinimizationComparison } from "@/utils/minimizationComparator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 const EQUIV_INTERSTITIAL_COUNTER_KEY = "@equiv_open_count";
 const EQUIV_INTERSTITIAL_LAST_SHOWN_KEY = "@equiv_last_shown_at";
@@ -28,6 +29,7 @@ export default function MinimizationComparisonCard({
   resultType,
   currentResult,
 }: MinimizationComparisonCardProps) {
+  const { t } = useTranslation();
   const { isPro, adsMutedUntil } = useStore();
   const adsSuppressed = isPro || adsMutedUntil > Date.now();
   const [expanded, setExpanded] = useState(false);
@@ -156,7 +158,7 @@ export default function MinimizationComparisonCard({
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Comparador de minimización</Text>
+      <Text style={styles.title}>{t("result.comparison.title")}</Text>
 
       {/*  <View style={styles.row}>
         <Text style={styles.label}>Tu resultado</Text>
@@ -164,18 +166,20 @@ export default function MinimizationComparisonCard({
       </View>
  */}
       <View style={styles.row}>
-        <Text style={styles.label}>Quine-McCluskey</Text>
+        <Text style={styles.label}>{t("result.comparison.exactMethod")}</Text>
         <Text style={styles.value}>{comparison.exactExpression}</Text>
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Heurístico (tipo Espresso)</Text>
+        <Text style={styles.label}>
+          {t("result.comparison.heuristicMethod")}
+        </Text>
         <Text style={styles.value}>{comparison.heuristicExpression}</Text>
       </View>
 
       <View style={styles.metaRow}>
         <Text style={styles.helperText}>
-          Validado por tabla de verdad en celdas definidas (se ignoran X).
+          {t("result.comparison.validation")}
         </Text>
         {comparison.currentResultEquivalent !== null && (
           <Text
@@ -187,14 +191,16 @@ export default function MinimizationComparisonCard({
             ]}
           >
             {comparison.currentResultEquivalent
-              ? "Tu resultado es equivalente"
-              : "Tu resultado difiere del exacto"}
+              ? t("result.comparison.equivalent")
+              : t("result.comparison.different")}
           </Text>
         )}
         <Text style={styles.metaText}>
           {comparison.hasMultipleEquivalent
-            ? `Hay ${comparison.equivalentSolutions} soluciones mínimas equivalentes.`
-            : "Se encontró una solución mínima única."}
+            ? t("result.comparison.equivalentSolutions", {
+                count: comparison.equivalentSolutions,
+              })
+            : t("result.comparison.uniqueSolution")}
         </Text>
         <View style={styles.heuristicRow}>
           <Text
@@ -204,10 +210,14 @@ export default function MinimizationComparisonCard({
             ]}
           >
             {comparison.heuristicIsOptimal
-              ? "Heurística óptima"
-              : "Heurística no óptima"}
+              ? t("result.comparison.heuristicOptimal")
+              : t("result.comparison.heuristicNotOptimal")}
           </Text>
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t(
+              "result.comparison.accessibility.heuristicHelp",
+            )}
             style={({ pressed }) => [
               styles.helpButton,
               pressed && styles.pressed,
@@ -220,8 +230,7 @@ export default function MinimizationComparisonCard({
         {showHeuristicHelp && (
           <View style={styles.helpCard}>
             <Text style={styles.helpCardText}>
-              Óptima: la heurística encontró una forma mínima. No óptima: la
-              expresión funciona, pero puede simplificarse más.
+              {t("result.comparison.heuristicHelp")}
             </Text>
           </View>
         )}
@@ -247,8 +256,8 @@ export default function MinimizationComparisonCard({
               </View>
               <Text style={styles.expandButtonText}>
                 {expanded
-                  ? "Ocultar soluciones equivalentes"
-                  : "Ver soluciones equivalentes"}
+                  ? t("result.comparison.hideEquivalent")
+                  : t("result.comparison.showEquivalent")}
               </Text>
               <Text style={styles.expandChevron}>{expanded ? "▲" : "▼"}</Text>
             </View>

@@ -23,6 +23,7 @@ import Reanimated, {
   withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import useStore from "./store";
 
 interface ProScreenProps {
@@ -30,6 +31,7 @@ interface ProScreenProps {
 }
 
 export default function ProScreen({ navigation }: ProScreenProps) {
+  const { t } = useTranslation();
   const { isPro, setIsPro } = useStore();
   const [isLoadingProduct, setIsLoadingProduct] = useState(false);
   const [isPurchasing, setIsPurchasing] = useState(false);
@@ -59,7 +61,7 @@ export default function ProScreen({ navigation }: ProScreenProps) {
         if (!cancelled && product?.localizedPrice) {
           setPriceLabel(product.localizedPrice);
         }
-      } catch (error) {
+      } catch {
         if (!cancelled) {
           setIapError(true);
         }
@@ -86,8 +88,8 @@ export default function ProScreen({ navigation }: ProScreenProps) {
   const handlePurchase = async () => {
     if (!isIapConfigured()) {
       Alert.alert(
-        "Compras no configuradas",
-        "Falta instalar/configurar react-native-iap para compras reales.",
+        t("pro.alerts.notConfiguredTitle"),
+        t("pro.alerts.purchaseNotConfigured"),
       );
       return;
     }
@@ -102,12 +104,15 @@ export default function ProScreen({ navigation }: ProScreenProps) {
       const success = await purchasePro();
 
       if (!success) {
-        Alert.alert("Compra no completada", "No se detectó una compra válida.");
+        Alert.alert(
+          t("pro.alerts.incompleteTitle"),
+          t("pro.alerts.incompleteMessage"),
+        );
         return;
       }
 
       setIsPro(true);
-      Alert.alert("¡Gracias!", "Has adquirido la versión PRO.", [
+      Alert.alert(t("pro.alerts.thanksTitle"), t("pro.alerts.thanksMessage"), [
         {
           text: "OK",
           onPress: () => navigation.goBack(),
@@ -115,7 +120,10 @@ export default function ProScreen({ navigation }: ProScreenProps) {
       ]);
     } catch (error) {
       console.log("IAP purchase error", error);
-      Alert.alert("Error", "No fue posible completar la compra.");
+      Alert.alert(
+        t("pro.alerts.purchaseErrorTitle"),
+        t("pro.alerts.purchaseErrorMessage"),
+      );
     } finally {
       setIsPurchasing(false);
     }
@@ -124,8 +132,8 @@ export default function ProScreen({ navigation }: ProScreenProps) {
   const handleRestore = async () => {
     if (!isIapConfigured()) {
       Alert.alert(
-        "Compras no configuradas",
-        "Falta instalar/configurar react-native-iap para restaurar compras.",
+        t("pro.alerts.notConfiguredTitle"),
+        t("pro.alerts.restoreNotConfigured"),
       );
       return;
     }
@@ -141,27 +149,33 @@ export default function ProScreen({ navigation }: ProScreenProps) {
 
       if (!restored) {
         Alert.alert(
-          "Sin compras encontradas",
-          "No se encontró una compra PRO para esta cuenta.",
+          t("pro.alerts.notFoundTitle"),
+          t("pro.alerts.notFoundMessage"),
         );
         return;
       }
 
       setIsPro(true);
-      Alert.alert("Restaurado", "Tu compra PRO fue restaurada correctamente.");
+      Alert.alert(
+        t("pro.alerts.restoredTitle"),
+        t("pro.alerts.restoredMessage"),
+      );
     } catch (error) {
       console.log("IAP restore error", error);
-      Alert.alert("Error", "No fue posible restaurar compras.");
+      Alert.alert(
+        t("pro.alerts.restoreErrorTitle"),
+        t("pro.alerts.restoreErrorMessage"),
+      );
     } finally {
       setIsRestoring(false);
     }
   };
 
   const proFeatures = [
-    "Sin anuncios publicitarios",
-    "Flujo de estudio sin interrupciones",
-    "Apoyo al desarrollo continuo",
-    "Compra única, sin suscripción",
+    t("pro.features.noAds"),
+    t("pro.features.uninterrupted"),
+    t("pro.features.support"),
+    t("pro.features.oneTime"),
   ];
 
   return (
@@ -171,17 +185,17 @@ export default function ProScreen({ navigation }: ProScreenProps) {
           <View style={styles.hero}>
             <Text style={styles.heroIcon}>{isPro ? "👑" : "⭐"}</Text>
             <Text style={styles.title}>
-              {isPro ? "PRO Activado" : "Versión PRO"}
+              {isPro ? t("pro.activeTitle") : t("pro.title")}
             </Text>
             <Text style={styles.subtitle}>
               {isPro
-                ? "Gracias por apoyar la app."
-                : "Desbloquea una experiencia enfocada en resolver más rápido."}
+                ? t("pro.activeSubtitle")
+                : t("pro.subtitle")}
             </Text>
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Beneficios</Text>
+            <Text style={styles.cardTitle}>{t("pro.benefits")}</Text>
             {proFeatures.map((feature) => (
               <View key={feature} style={styles.featureRow}>
                 <View style={styles.checkBadge}>
@@ -194,14 +208,14 @@ export default function ProScreen({ navigation }: ProScreenProps) {
 
           {!isPro && !iapError && (
             <View style={styles.priceCard}>
-              <Text style={styles.priceLabel}>Precio especial</Text>
+              <Text style={styles.priceLabel}>{t("pro.specialPrice")}</Text>
               {priceLabel ? (
                 <Text style={styles.price}>{priceLabel}</Text>
               ) : (
                 <ActivityIndicator color={DUO.green} />
               )}
               <Text style={styles.priceNote}>
-                Pago único • Sin renovación automática
+                {t("pro.priceNote")}
               </Text>
             </View>
           )}
@@ -219,7 +233,7 @@ export default function ProScreen({ navigation }: ProScreenProps) {
               {isPurchasing || isLoadingProduct ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text style={styles.primaryButtonText}>Comprar versión PRO</Text>
+                <Text style={styles.primaryButtonText}>{t("pro.buy")}</Text>
               )}
             </Pressable>
           )}
@@ -237,7 +251,9 @@ export default function ProScreen({ navigation }: ProScreenProps) {
               {isRestoring ? (
                 <ActivityIndicator color={DUO.greenDark} />
               ) : (
-                <Text style={styles.secondaryButtonText}>Restaurar compras</Text>
+                <Text style={styles.secondaryButtonText}>
+                  {t("pro.restore")}
+                </Text>
               )}
             </Pressable>
           )}
@@ -250,7 +266,7 @@ export default function ProScreen({ navigation }: ProScreenProps) {
             onPress={() => navigation.goBack()}
           >
             <Text style={styles.ghostButtonText}>
-              {isPro ? "Volver" : "Tal vez después"}
+              {isPro ? t("pro.back") : t("pro.later")}
             </Text>
           </Pressable>
         </ScrollView>

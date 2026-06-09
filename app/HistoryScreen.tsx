@@ -1,5 +1,6 @@
 import { MyBannerAd } from "@/components/MyBannerAd";
 import { DUO } from "@/constants/duoTheme";
+import { getCurrentLocale } from "@/i18n";
 import {
   ExerciseHistoryEntry,
   clearExerciseHistory,
@@ -19,6 +20,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import useStore from "./store";
 
 interface HistoryScreenProps {
@@ -32,9 +34,9 @@ type HistoryListItem =
   | { type: "section"; title: string; key: string }
   | { type: "item"; key: string; item: ExerciseHistoryEntry };
 
-const formatDate = (iso: string) => {
+const formatDate = (iso: string, locale: string) => {
   const date = new Date(iso);
-  return date.toLocaleString("es-MX", {
+  return date.toLocaleString(locale, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -43,6 +45,8 @@ const formatDate = (iso: string) => {
 };
 
 export default function HistoryScreen({ navigation }: HistoryScreenProps) {
+  const { t } = useTranslation();
+  const locale = getCurrentLocale();
   const [history, setHistory] = useState<ExerciseHistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -72,12 +76,12 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
 
   const handleDelete = (entry: ExerciseHistoryEntry) => {
     Alert.alert(
-      "Eliminar ejercicio",
-      "¿Seguro que quieres borrar este ejercicio del historial?",
+      t("history.deleteDialog.title"),
+      t("history.deleteDialog.message"),
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: t("history.deleteDialog.cancel"), style: "cancel" },
         {
-          text: "Eliminar",
+          text: t("history.deleteDialog.confirm"),
           style: "destructive",
           onPress: async () => {
             await removeExerciseHistoryEntry(entry.id);
@@ -94,12 +98,12 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
     }
 
     Alert.alert(
-      "Limpiar historial",
-      "Se eliminarán todos los ejercicios guardados.",
+      t("history.clearDialog.title"),
+      t("history.clearDialog.message"),
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: t("history.clearDialog.cancel"), style: "cancel" },
         {
-          text: "Limpiar",
+          text: t("history.clearDialog.confirm"),
           style: "destructive",
           onPress: async () => {
             await clearExerciseHistory();
@@ -158,7 +162,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
     if (favoriteEntries.length > 0) {
       sections.push({
         type: "section",
-        title: "⭐ Favoritos",
+        title: t("history.sections.favorites"),
         key: "section-favorites",
       });
       favoriteEntries.forEach((item) => {
@@ -169,7 +173,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
     if (regularEntries.length > 0) {
       sections.push({
         type: "section",
-        title: "Historial",
+        title: t("history.sections.history"),
         key: "section-history",
       });
       regularEntries.forEach((item) => {
@@ -178,17 +182,19 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
     }
 
     return sections;
-  }, [favoriteEntries, regularEntries]);
+  }, [favoriteEntries, regularEntries, t]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.badge}>PROGRESO</Text>
-          <Text style={styles.title}>Historial</Text>
+          <Text style={styles.badge}>{t("history.badge")}</Text>
+          <Text style={styles.title}>{t("history.title")}</Text>
         </View>
 
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("history.accessibility.clearHistory")}
           onPress={handleClearAll}
           style={({ pressed }) => [
             styles.clearButton,
@@ -198,7 +204,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
           disabled={history.length === 0}
         >
           <MaterialIcons name="delete-sweep" size={18} color="#fff" />
-          <Text style={styles.clearButtonText}>Limpiar</Text>
+          <Text style={styles.clearButtonText}>{t("history.clear")}</Text>
         </Pressable>
       </View>
 
@@ -208,12 +214,14 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder="Buscar por resultado"
+            placeholder={t("history.searchPlaceholder")}
             placeholderTextColor={DUO.muted}
             style={styles.searchInput}
           />
           {searchText.length > 0 && (
             <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t("history.accessibility.clearSearch")}
               onPress={() => setSearchText("")}
               style={({ pressed }) => [pressed && styles.pressed]}
             >
@@ -224,7 +232,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
 
         <View style={styles.filtersRow}>
           <FilterChip
-            label="Favoritos"
+            label={t("history.filters.favorites")}
             active={favoriteFilter === "FAVORITES"}
             onPress={() =>
               setFavoriteFilter(
@@ -233,7 +241,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
             }
           />
           <FilterChip
-            label="Todo"
+            label={t("history.filters.all")}
             active={typeFilter === "ALL"}
             onPress={() => setTypeFilter("ALL")}
           />
@@ -251,7 +259,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
 
         <View style={styles.filtersRow}>
           <FilterChip
-            label="Cualquier var"
+            label={t("history.filters.anyVariables")}
             active={variableFilter === "ALL"}
             onPress={() => setVariableFilter("ALL")}
           />
@@ -301,22 +309,30 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
                   </View>
                   <View style={styles.pill}>
                     <Text style={styles.pillText}>
-                      {entry.variableQuantity} vars
+                      {t("history.variableCount", {
+                        count: entry.variableQuantity,
+                      })}
                     </Text>
                   </View>
                 </View>
                 <Text style={styles.dateText}>
-                  {formatDate(entry.createdAt)}
+                  {formatDate(entry.createdAt, locale)}
                 </Text>
               </View>
 
-              <Text style={styles.resultLabel}>Resultado</Text>
+              <Text style={styles.resultLabel}>{t("history.result")}</Text>
               <Text numberOfLines={2} style={styles.resultText}>
                 {entry.result}
               </Text>
 
               <View style={styles.actionsRow}>
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t(
+                    entry.isFavorite
+                      ? "history.accessibility.removeFavorite"
+                      : "history.accessibility.addFavorite",
+                  )}
                   style={({ pressed }) => [
                     styles.favoriteButton,
                     entry.isFavorite && styles.favoriteButtonActive,
@@ -332,6 +348,8 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
                 </Pressable>
 
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t("history.accessibility.useExercise")}
                   style={({ pressed }) => [
                     styles.useButton,
                     pressed && styles.pressed,
@@ -339,10 +357,14 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
                   onPress={() => handleUseExercise(entry)}
                 >
                   <MaterialIcons name="play-arrow" size={18} color="#fff" />
-                  <Text style={styles.useButtonText}>Usar</Text>
+                  <Text style={styles.useButtonText}>{t("history.use")}</Text>
                 </Pressable>
 
                 <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t(
+                    "history.accessibility.deleteExercise",
+                  )}
                   style={({ pressed }) => [
                     styles.deleteButton,
                     pressed && styles.pressed,
@@ -368,13 +390,13 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
             />
             <Text style={styles.emptyTitle}>
               {hasActiveFilters
-                ? "Sin coincidencias"
-                : "Sin ejercicios guardados"}
+                ? t("history.empty.filteredTitle")
+                : t("history.empty.title")}
             </Text>
             <Text style={styles.emptyText}>
               {hasActiveFilters
-                ? "Ajusta los filtros o limpia la búsqueda para ver más resultados."
-                : "Resuelve mapas y abre circuito para guardar tu progreso aquí."}
+                ? t("history.empty.filteredMessage")
+                : t("history.empty.message")}
             </Text>
           </View>
         }

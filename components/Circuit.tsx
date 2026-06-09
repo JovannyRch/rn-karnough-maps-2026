@@ -92,6 +92,8 @@ export const CircuitComponent = memo(
   },
 );
 
+CircuitComponent.displayName = "CircuitComponent";
+
 const styles = StyleSheet.create({
   scroll: {
     flex: 1,

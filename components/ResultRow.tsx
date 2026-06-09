@@ -1,7 +1,9 @@
 import useStore from "@/app/store";
 import { StyleSheet, Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 const ResultRow = () => {
+  const { t } = useTranslation();
   const { vectorResult } = useStore();
 
   if (vectorResult.length === 0) {
@@ -11,7 +13,7 @@ const ResultRow = () => {
   return (
     <View style={styles.resultContainer}>
       <View style={styles.headerPill}>
-        <Text style={styles.headerText}>Resultado mínimo</Text>
+        <Text style={styles.headerText}>{t("result.minimumResult")}</Text>
       </View>
       <View style={styles.resultVector}>
         {vectorResult.map((item, index) => (

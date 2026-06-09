@@ -46,6 +46,7 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import FiveVariablesGrid from "./Grids/FiveVariablesGrid";
 import FourVariables from "./Grids/FourVariablesGrid";
 import ThreeVariablesGrid from "./Grids/ThreeVariablesGrid";
@@ -73,6 +74,7 @@ const ESTIMATED_BANNER_HEIGHT = 56;
 const RESULT_DOCK_HEIGHT = 84;
 
 export default function GridScreen({ navigation, route }: GridScreenProps) {
+  const { t } = useTranslation();
   const [interstitialLoaded, setInterstitialLoaded] = useState(false);
   const [interstitial, setInterstitial] = useState<any>(null);
   const [copyFeedbackVisible, setCopyFeedbackVisible] = useState(false);
@@ -316,12 +318,12 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
 
   const variableOptions = useMemo<VariableOption[]>(
     () => [
-      { label: "2 Variables", value: 2 },
-      { label: "3 Variables", value: 3 },
-      { label: "4 Variables", value: 4 },
-      { label: "5 Variables", value: 5 },
+      { label: t("grid.controls.variableCount", { count: 2 }), value: 2 },
+      { label: t("grid.controls.variableCount", { count: 3 }), value: 3 },
+      { label: t("grid.controls.variableCount", { count: 4 }), value: 4 },
+      { label: t("grid.controls.variableCount", { count: 5 }), value: 5 },
     ],
-    [],
+    [t],
   );
 
   const resultPlainText = useMemo(() => {
@@ -441,8 +443,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     setShowEngagementDialog(false);
     if (!opened) {
       Alert.alert(
-        "Calificar app",
-        "Ahora no fue posible abrir la reseña. Puedes intentarlo más tarde.",
+        t("grid.review.unavailableTitle"),
+        t("grid.review.unavailableMessage"),
       );
     }
   };
@@ -611,7 +613,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     <SafeAreaView style={styles.container}>
       <Reanimated.View style={[styles.header, headerAnimatedStyle]}>
         <View>
-          <Text style={styles.title}>Karnaugh</Text>
+          <Text style={styles.title}>{t("grid.title")}</Text>
         </View>
 
         <View style={styles.headerActions}>
@@ -637,6 +639,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             <Icon name="input" size={17} color="#fff" />
           </Pressable> */}
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t("grid.accessibility.history")}
             style={({ pressed }) => [
               styles.historyButton,
               pressed && styles.historyButtonPressed,
@@ -653,7 +657,9 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         <Reanimated.View style={[styles.controlsCard, controlsAnimatedStyle]}>
           <View style={styles.controlRow}>
             <View style={styles.controlItem}>
-              <Text style={styles.controlLabel}>Variables</Text>
+              <Text style={styles.controlLabel}>
+                {t("grid.controls.variables")}
+              </Text>
               <VariableSelector
                 options={variableOptions}
                 value={variableQuantity as 2 | 3 | 4 | 5}
@@ -667,7 +673,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             </View>
 
             <View style={styles.controlItem}>
-              <Text style={styles.controlLabel}>Tipo</Text>
+              <Text style={styles.controlLabel}>{t("grid.controls.type")}</Text>
               <View style={styles.segmentedControl}>
                 <ChoiceButton
                   text="SOP"
@@ -685,15 +691,15 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
 
           <View style={styles.controlRow}>
             <View style={styles.controlItem}>
-              <Text style={styles.controlLabel}>Vista</Text>
+              <Text style={styles.controlLabel}>{t("grid.controls.view")}</Text>
               <View style={styles.segmentedControl}>
                 <ChoiceButton
-                  text="Mapa"
+                  text={t("grid.controls.map")}
                   active={view === "map"}
                   onPress={() => setView("map")}
                 />
                 <ChoiceButton
-                  text="Tabla"
+                  text={t("grid.controls.table")}
                   active={view === "table"}
                   onPress={() => setView("table")}
                 />
@@ -705,7 +711,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                 <>
                   <Text style={styles.controlLabel}></Text>
                   <ActionButton
-                    label="Rotar variables"
+                    label={t("grid.controls.rotateVariables")}
                     active={variableRotation > 0}
                     onPress={rotateVariables}
                   />
@@ -715,14 +721,18 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
           </View>
 
           <View style={styles.quickActionsRow}>
-            <Text style={styles.quickActionsLabel}>Llenar con</Text>
+            <Text style={styles.quickActionsLabel}>
+              {t("grid.controls.fillWith")}
+            </Text>
             <QuickChip onPress={() => setAllValues("1")} label="1s" />
             <QuickChip onPress={() => setAllValues("0")} label="0s" />
             <QuickChip onPress={() => setAllValues("X")} label="Xs" />
           </View>
 
           <View style={styles.variablesEditorSection}>
-            <Text style={styles.controlLabel}>Nombres de variables</Text>
+            <Text style={styles.controlLabel}>
+              {t("grid.controls.variableNames")}
+            </Text>
             <View style={styles.variablesEditorRow}>
               {variables.slice(0, variableQuantity).map((variable, index) => (
                 <View
@@ -733,6 +743,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                     style={styles.variableInputLabel}
                   >{`V${index + 1}`}</Text>
                   <TextInput
+                    accessibilityLabel={t(
+                      "grid.accessibility.variableInput",
+                      { number: index + 1 },
+                    )}
                     value={variable}
                     maxLength={3}
                     autoCapitalize="characters"
@@ -773,7 +787,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
 
         {view === "map" && groupLegend.length > 0 && (
           <View style={styles.legendCard}>
-            <Text style={styles.legendTitle}>Foco por grupo</Text>
+            <Text style={styles.legendTitle}>{t("grid.groups.title")}</Text>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -793,7 +807,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                     focusedGroupIndex === null && styles.legendChipTextActive,
                   ]}
                 >
-                  Todos
+                  {t("grid.groups.all")}
                 </Text>
               </Pressable>
 
@@ -827,7 +841,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                       ]}
                       numberOfLines={1}
                     >
-                      {`G${item.groupIndex + 1}: ${item.label}`}
+                      {t("grid.groups.label", {
+                        number: item.groupIndex + 1,
+                        expression: item.label,
+                      })}
                     </Text>
                   </Pressable>
                 );
@@ -860,11 +877,15 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         ]}
       >
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("grid.accessibility.copyResult")}
           style={styles.resultDockTextBlock}
           onPress={handleCopyResult}
           disabled={!resultPlainText}
         >
-          <Text style={styles.resultDockLabel}>Resultado</Text>
+          <Text style={styles.resultDockLabel}>
+            {t("grid.result.title")}
+          </Text>
           {vectorResult.length > 0 ? (
             <View style={styles.resultDockVector}>
               {vectorResult.map((item, index) => (
@@ -878,19 +899,23 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             </View>
           ) : (
             <Text style={styles.resultDockValue} numberOfLines={1}>
-              Selecciona valores para obtener la expresión
+              {t("grid.result.empty")}
             </Text>
           )}
           {!!resultPlainText && (
-            <Text style={styles.resultDockHint}>Toca para copiar</Text>
+            <Text style={styles.resultDockHint}>
+              {t("grid.result.copyHint")}
+            </Text>
           )}
         </Pressable>
         {copyFeedbackVisible && (
           <Reanimated.View style={[styles.copyBadge, copyBadgeAnimatedStyle]}>
-            <Text style={styles.copyBadgeText}>Copiado</Text>
+            <Text style={styles.copyBadgeText}>{t("grid.result.copied")}</Text>
           </Reanimated.View>
         )}
         <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("grid.accessibility.openCircuit")}
           style={({ pressed }) => [
             styles.resultDockButton,
             !result && styles.resultDockButtonDisabled,
@@ -899,7 +924,9 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
           onPress={openResultScreen}
           disabled={!result}
         >
-          <Text style={styles.resultDockButtonText}>Circuito</Text>
+          <Text style={styles.resultDockButtonText}>
+            {t("grid.result.circuit")}
+          </Text>
         </Pressable>
       </Reanimated.View>
       {!adsSuppressed && <MyBannerAd />}
@@ -963,9 +990,11 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       >
         <View style={styles.dialogBackdrop}>
           <View style={styles.dialogCard}>
-            <Text style={styles.dialogTitle}>¿Te está gustando la app?</Text>
+            <Text style={styles.dialogTitle}>
+              {t("grid.engagement.title")}
+            </Text>
             <Text style={styles.dialogBody}>
-              Si te ayuda a estudiar, puedes apoyar el proyecto.
+              {t("grid.engagement.body")}
             </Text>
 
             <Pressable
@@ -979,7 +1008,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               }}
             >
               <Text style={styles.dialogPrimaryActionText}>
-                Comprar versión PRO
+                {t("grid.engagement.buyPro")}
               </Text>
             </Pressable>
 
@@ -993,7 +1022,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               }}
             >
               <Text style={styles.dialogSecondaryActionText}>
-                Calificar app
+                {t("grid.engagement.rateApp")}
               </Text>
             </Pressable>
 
@@ -1001,7 +1030,9 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               style={({ pressed }) => [pressed && styles.actionButtonPressed]}
               onPress={() => setShowEngagementDialog(false)}
             >
-              <Text style={styles.dialogDismissText}>Más tarde</Text>
+              <Text style={styles.dialogDismissText}>
+                {t("grid.engagement.later")}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -1042,7 +1073,7 @@ const VariableSelector = ({
     <View>
       <Pressable onPress={onToggle} style={styles.dropdownButtonStyle}>
         <Text style={styles.dropdownButtonTxtStyle}>
-          {selectedItem?.label || `${value} Variables`}
+          {selectedItem?.label ?? String(value)}
         </Text>
         <Icon
           name={isOpen ? "keyboard-arrow-up" : "keyboard-arrow-down"}
