@@ -1,4 +1,5 @@
 import ExportSessionPDFButton from "@/components/ExportSessionPDFButton";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { MyBannerAd } from "@/components/MyBannerAd";
 import { ProButton } from "@/components/ProBadge";
 import TableView from "@/components/TableView";
@@ -614,6 +615,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         </View>
 
         <View style={styles.headerActions}>
+          <LanguageToggle />
           {/* <Pressable
             style={({ pressed }) => [
               styles.shareButton,

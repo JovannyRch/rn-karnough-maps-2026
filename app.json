@@ -10,7 +10,7 @@
       "edgeToEdgeEnabled": true,
       "package": "com.jovannyrch.kmaps",
       "predictiveBackGestureEnabled": false,
-"versionCode": 39
+      "versionCode": 39
     },
     "name": "Mapas de Karnough",
     "newArchEnabled": true,
@@ -35,7 +35,8 @@
           "androidAppId": "ca-app-pub-4665787383933447~4424008395",
           "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz"
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "scheme": "rnkarnoughmap2026",
     "slug": "rn_karnough_map_2026",

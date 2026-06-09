@@ -1,6 +1,8 @@
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { DUO } from "@/constants/duoTheme";
 import { markOnboardingSeen } from "@/utils/onboarding";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import type { TFunction } from "i18next";
 import { useMemo, useRef, useState } from "react";
 import {
   FlatList,
@@ -12,6 +14,7 @@ import {
   View,
   ViewToken,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface OnboardingScreenProps {
@@ -26,28 +29,25 @@ interface Slide {
   accent: string;
 }
 
-const SLIDES: Slide[] = [
+const getSlides = (t: TFunction): Slide[] => [
   {
     id: "sop-pos",
-    title: "SOP vs POS",
-    description:
-      "SOP minimiza con 1s. POS minimiza con 0s. Cambia el tipo arriba para resolver en el formato que te pidan.",
+    title: t("onboarding.slides.sopPos.title"),
+    description: t("onboarding.slides.sopPos.description"),
     icon: "tune",
     accent: DUO.blue,
   },
   {
     id: "values",
-    title: "Cambiar 0 / 1 / X",
-    description:
-      "Toca cada celda para alternar 0 → 1 → X. Usa chips rápidos para llenar todo el mapa en un solo toque.",
+    title: t("onboarding.slides.values.title"),
+    description: t("onboarding.slides.values.description"),
     icon: "touch-app",
     accent: DUO.green,
   },
   {
     id: "circuit",
-    title: "Leer el circuito",
-    description:
-      "El resultado se actualiza abajo. Toca Circuito para ver compuertas y exportar PDF del diagrama.",
+    title: t("onboarding.slides.circuit.title"),
+    description: t("onboarding.slides.circuit.description"),
     icon: "schema",
     accent: DUO.yellow,
   },
@@ -56,13 +56,15 @@ const SLIDES: Slide[] = [
 export default function OnboardingScreen({
   navigation,
 }: OnboardingScreenProps) {
+  const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const [activeIndex, setActiveIndex] = useState(0);
   const listRef = useRef<FlatList<Slide> | null>(null);
   const slideWidth = Math.max(width - 32, 0);
   const compactLayout = height < 760;
+  const slides = useMemo(() => getSlides(t), [t]);
 
-  const isLast = activeIndex === SLIDES.length - 1;
+  const isLast = activeIndex === slides.length - 1;
 
   const handleDone = async () => {
     await markOnboardingSeen();
@@ -112,7 +114,12 @@ export default function OnboardingScreen({
             color={item.accent}
           />
         </View>
-        <Text style={[styles.slideTitle, compactLayout && styles.slideTitleCompact]}>
+        <Text
+          style={[
+            styles.slideTitle,
+            compactLayout && styles.slideTitleCompact,
+          ]}
+        >
           {item.title}
         </Text>
         <Text
@@ -130,26 +137,29 @@ export default function OnboardingScreen({
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topRow}>
-        <Text style={styles.badge}>BIENVENIDO</Text>
-        <Pressable
-          style={({ pressed }) => [
-            styles.skipButton,
-            pressed && styles.pressed,
-          ]}
-          onPress={handleDone}
-        >
-          <Text style={styles.skipText}>Saltar</Text>
-        </Pressable>
+        <Text style={styles.badge}>{t("onboarding.badge")}</Text>
+        <View style={styles.topActions}>
+          <LanguageToggle />
+          <Pressable
+            style={({ pressed }) => [
+              styles.skipButton,
+              pressed && styles.pressed,
+            ]}
+            onPress={handleDone}
+          >
+            <Text style={styles.skipText}>{t("onboarding.skip")}</Text>
+          </Pressable>
+        </View>
       </View>
 
       <Text style={[styles.title, compactLayout && styles.titleCompact]}>
-        Empieza en 3 pasos
+        {t("onboarding.title")}
       </Text>
 
       <FlatList
         ref={listRef}
         style={styles.slidesList}
-        data={SLIDES}
+        data={slides}
         keyExtractor={(item) => item.id}
         renderItem={renderSlide}
         horizontal
@@ -163,7 +173,7 @@ export default function OnboardingScreen({
 
       <View style={styles.footer}>
         <View style={styles.dotsRow}>
-          {SLIDES.map((slide, index) => (
+          {slides.map((slide, index) => (
             <View
               key={slide.id}
               style={[styles.dot, index === activeIndex && styles.dotActive]}
@@ -176,7 +186,7 @@ export default function OnboardingScreen({
           onPress={handleNext}
         >
           <Text style={styles.ctaText}>
-            {isLast ? "Comenzar" : "Siguiente"}
+            {isLast ? t("onboarding.start") : t("onboarding.next")}
           </Text>
         </Pressable>
       </View>
@@ -195,6 +205,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  topActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   badge: {
     color: DUO.blueDark,
