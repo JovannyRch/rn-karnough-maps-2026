@@ -23,7 +23,18 @@ const normalizeLanguage = (value?: string | null): AppLanguage | null => {
     return null;
   }
 
-  const languageCode = value.split("-")[0].toLowerCase();
+  const normalized = value.replace("_", "-").toLowerCase();
+
+  if (normalized.startsWith("zh")) {
+    const isTraditional =
+      normalized.includes("hant") ||
+      ["zh-tw", "zh-hk", "zh-mo"].some((locale) =>
+        normalized.startsWith(locale),
+      );
+    return isTraditional ? "zh-TW" : "zh-CN";
+  }
+
+  const languageCode = normalized.split("-")[0];
   return isSupportedLanguage(languageCode) ? languageCode : null;
 };
 
@@ -87,7 +98,20 @@ export const changeAppLanguage = async (
   }
 };
 
+const localesByLanguage: Record<AppLanguage, string> = {
+  es: "es-MX",
+  en: "en-US",
+  pt: "pt-BR",
+  fr: "fr-FR",
+  de: "de-DE",
+  it: "it-IT",
+  ja: "ja-JP",
+  ko: "ko-KR",
+  "zh-CN": "zh-CN",
+  "zh-TW": "zh-TW",
+};
+
 export const getCurrentLocale = (): string =>
-  getCurrentLanguage() === "en" ? "en-US" : "es-MX";
+  localesByLanguage[getCurrentLanguage()];
 
 export default i18n;

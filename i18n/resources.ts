@@ -1,3 +1,12 @@
+import { deTranslation } from "./locales/de";
+import { frTranslation } from "./locales/fr";
+import { itTranslation } from "./locales/it";
+import { jaTranslation } from "./locales/ja";
+import { koTranslation } from "./locales/ko";
+import { ptTranslation } from "./locales/pt";
+import { zhCNTranslation } from "./locales/zh-CN";
+import { zhTWTranslation } from "./locales/zh-TW";
+
 export const resources = {
   es: {
     translation: {
@@ -5,10 +14,20 @@ export const resources = {
         languages: {
           es: "Español",
           en: "Inglés",
+          pt: "Portugués",
+          fr: "Francés",
+          de: "Alemán",
+          it: "Italiano",
+          ja: "Japonés",
+          ko: "Coreano",
+          "zh-CN": "Chino simplificado",
+          "zh-TW": "Chino tradicional",
         },
         languageSelector: {
           accessibilityLabel: "Cambiar idioma. Idioma actual: {{language}}",
-          accessibilityHint: "Cambia entre español e inglés",
+          accessibilityHint: "Abre la lista de idiomas disponibles",
+          title: "Seleccionar idioma",
+          close: "Cerrar selector de idioma",
         },
         accessibility: {
           mapCell: "Celda {{index}}, valor {{value}}",
@@ -291,10 +310,20 @@ export const resources = {
         languages: {
           es: "Spanish",
           en: "English",
+          pt: "Portuguese",
+          fr: "French",
+          de: "German",
+          it: "Italian",
+          ja: "Japanese",
+          ko: "Korean",
+          "zh-CN": "Simplified Chinese",
+          "zh-TW": "Traditional Chinese",
         },
         languageSelector: {
           accessibilityLabel: "Change language. Current language: {{language}}",
-          accessibilityHint: "Switches between Spanish and English",
+          accessibilityHint: "Opens the list of available languages",
+          title: "Select language",
+          close: "Close language selector",
         },
         accessibility: {
           mapCell: "Cell {{index}}, value {{value}}",
@@ -570,6 +599,30 @@ export const resources = {
         },
       },
     },
+  },
+  pt: {
+    translation: ptTranslation,
+  },
+  fr: {
+    translation: frTranslation,
+  },
+  de: {
+    translation: deTranslation,
+  },
+  it: {
+    translation: itTranslation,
+  },
+  ja: {
+    translation: jaTranslation,
+  },
+  ko: {
+    translation: koTranslation,
+  },
+  "zh-CN": {
+    translation: zhCNTranslation,
+  },
+  "zh-TW": {
+    translation: zhTWTranslation,
   },
 } as const;
 

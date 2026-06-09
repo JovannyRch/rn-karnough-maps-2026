@@ -1,0 +1,284 @@
+export const deTranslation = {
+  common: {
+    languages: {
+      es: "Spanisch",
+      en: "Englisch",
+      pt: "Portugiesisch",
+      fr: "Französisch",
+      de: "Deutsch",
+      it: "Italienisch",
+      ja: "Japanisch",
+      ko: "Koreanisch",
+      "zh-CN": "Vereinfachtes Chinesisch",
+      "zh-TW": "Traditionelles Chinesisch",
+    },
+    languageSelector: {
+      accessibilityLabel: "Sprache ändern. Aktuelle Sprache: {{language}}",
+      accessibilityHint: "Öffnet die Liste der verfügbaren Sprachen",
+      title: "Sprache auswählen",
+      close: "Sprachauswahl schließen",
+    },
+    accessibility: {
+      mapCell: "Zelle {{index}}, Wert {{value}}",
+      tableCell: "Ergebnis der Zeile {{index}}, Wert {{value}}",
+    },
+  },
+  navigation: { appTitle: "K-Maps" },
+  notFound: {
+    title: "Hoppla",
+    message: "Diese Seite existiert nicht.",
+    hint: "Gehe zurück, um fortzufahren.",
+  },
+  table: { result: "Ergebnis", groups: "Gruppen" },
+  grid: {
+    title: "Karnaugh",
+    accessibility: {
+      history: "Verlauf öffnen",
+      variableInput: "Name der Variable {{number}}",
+      copyResult: "Ergebnis kopieren",
+      openCircuit: "Schaltung öffnen",
+    },
+    controls: {
+      variables: "Variablen",
+      variableCount: "{{count}} Variablen",
+      type: "Typ",
+      view: "Ansicht",
+      map: "KV-Diagramm",
+      table: "Tabelle",
+      rotateVariables: "Variablen drehen",
+      fillWith: "Füllen mit",
+      variableNames: "Variablennamen",
+    },
+    groups: {
+      title: "Fokus nach Gruppe",
+      all: "Alle",
+      label: "G{{number}}: {{expression}}",
+    },
+    result: {
+      title: "Ergebnis",
+      empty: "Werte auswählen, um den Ausdruck zu erzeugen",
+      copyHint: "Zum Kopieren tippen",
+      copied: "Kopiert",
+      circuit: "Schaltung",
+    },
+    review: {
+      unavailableTitle: "App bewerten",
+      unavailableMessage:
+        "Die Bewertung kann gerade nicht geöffnet werden. Versuche es später erneut.",
+    },
+    engagement: {
+      title: "Gefällt dir die App?",
+      body: "Wenn sie dir beim Lernen hilft, kannst du das Projekt unterstützen.",
+      buyPro: "PRO-Version kaufen",
+      rateApp: "App bewerten",
+      later: "Später",
+    },
+  },
+  result: {
+    badge: "LOGIKAUSGANG",
+    title: "Schaltung",
+    type: "Typ: {{type}}",
+    variables: "Variablen: {{count}}",
+    minimumResult: "Minimales Ergebnis",
+    circuitDiagram: "Schaltbild",
+    fullscreen: "Im Vollbild anzeigen",
+    close: "Schließen",
+    accessibility: {
+      fullscreen: "Schaltung im Vollbild öffnen",
+      closeFullscreen: "Vollbildansicht der Schaltung schließen",
+    },
+    circuitPdf: {
+      button: "Schaltung als PDF herunterladen",
+      generating: "PDF wird erstellt...",
+      successTitle: "PDF erstellt",
+      successMessage: "Die Schaltung wurde erfolgreich erstellt.",
+      shareHint:
+        "\nDu kannst sie über den Systemdialog teilen oder speichern.",
+      errorTitle: "Fehler",
+      errorMessage:
+        "Beim Erstellen der PDF ist ein Problem aufgetreten. Versuche es erneut.",
+    },
+    sessionPdf: {
+      button: "Vollständige Sitzung exportieren",
+      generating: "Sitzung wird exportiert...",
+      showingAd: "Werbung wird angezeigt...",
+      successTitle: "Sitzungs-PDF erstellt",
+      successMessage: "Die vollständige Sitzung wurde exportiert.",
+      shareHint:
+        "\nDu kannst sie über den Systemdialog teilen oder speichern.",
+      errorTitle: "Fehler",
+      errorMessage:
+        "Die vollständige Sitzung konnte nicht als PDF exportiert werden. Versuche es erneut.",
+    },
+    comparison: {
+      title: "Minimierungsvergleich",
+      exactMethod: "Quine-McCluskey",
+      heuristicMethod: "Heuristik (Espresso-Stil)",
+      validation:
+        "Mit einer Wahrheitstabelle für definierte Zellen geprüft (X-Werte werden ignoriert).",
+      equivalent: "Dein Ergebnis ist äquivalent",
+      different: "Dein Ergebnis weicht von der exakten Lösung ab",
+      equivalentSolutions:
+        "Es gibt {{count}} äquivalente minimale Lösungen.",
+      uniqueSolution: "Eine eindeutige minimale Lösung wurde gefunden.",
+      heuristicOptimal: "Optimale Heuristik",
+      heuristicNotOptimal: "Nicht optimale Heuristik",
+      heuristicHelp:
+        "Optimal: Die Heuristik hat eine Minimalform gefunden. Nicht optimal: Der Ausdruck funktioniert, kann aber weiter vereinfacht werden.",
+      showEquivalent: "Äquivalente Lösungen anzeigen",
+      hideEquivalent: "Äquivalente Lösungen ausblenden",
+      accessibility: {
+        heuristicHelp: "Erklärung der Heuristik anzeigen",
+      },
+    },
+  },
+  history: {
+    badge: "FORTSCHRITT",
+    title: "Verlauf",
+    clear: "Leeren",
+    searchPlaceholder: "Nach Ergebnis suchen",
+    filters: {
+      favorites: "Favoriten",
+      all: "Alle",
+      anyVariables: "Beliebige Variablen",
+    },
+    sections: { favorites: "⭐ Favoriten", history: "Verlauf" },
+    variableCount: "{{count}} Var.",
+    result: "Ergebnis",
+    use: "Verwenden",
+    deleteDialog: {
+      title: "Aufgabe löschen",
+      message: "Möchtest du diese Aufgabe wirklich aus dem Verlauf löschen?",
+      cancel: "Abbrechen",
+      confirm: "Löschen",
+    },
+    clearDialog: {
+      title: "Verlauf leeren",
+      message: "Alle gespeicherten Aufgaben werden gelöscht.",
+      cancel: "Abbrechen",
+      confirm: "Leeren",
+    },
+    empty: {
+      filteredTitle: "Keine Treffer",
+      filteredMessage:
+        "Passe die Filter an oder lösche die Suche, um mehr Ergebnisse zu sehen.",
+      title: "Keine gespeicherten Aufgaben",
+      message:
+        "Löse KV-Diagramme und öffne die Schaltung, um deinen Fortschritt hier zu speichern.",
+    },
+    accessibility: {
+      clearHistory: "Gesamten Verlauf leeren",
+      clearSearch: "Suche löschen",
+      addFavorite: "Aufgabe zu Favoriten hinzufügen",
+      removeFavorite: "Aufgabe aus Favoriten entfernen",
+      useExercise: "Diese Aufgabe verwenden",
+      deleteExercise: "Diese Aufgabe löschen",
+    },
+  },
+  pro: {
+    activeTitle: "PRO aktiviert",
+    title: "PRO-Version",
+    activeSubtitle: "Danke für deine Unterstützung.",
+    subtitle:
+      "Schalte eine fokussierte Erfahrung frei und löse Aufgaben schneller.",
+    benefits: "Vorteile",
+    features: {
+      noAds: "Keine Werbung",
+      uninterrupted: "Ungestörtes Lernen",
+      support: "Unterstützung der Weiterentwicklung",
+      oneTime: "Einmaliger Kauf, kein Abonnement",
+    },
+    specialPrice: "Sonderpreis",
+    priceNote: "Einmalige Zahlung • Keine automatische Verlängerung",
+    buy: "PRO-Version kaufen",
+    restore: "Käufe wiederherstellen",
+    back: "Zurück",
+    later: "Vielleicht später",
+    accessibility: {
+      open: "Informationen zur PRO-Version öffnen",
+      active: "PRO-Version aktiviert",
+    },
+    alerts: {
+      notConfiguredTitle: "Käufe nicht konfiguriert",
+      purchaseNotConfigured:
+        "react-native-iap muss für echte Käufe installiert oder konfiguriert sein.",
+      restoreNotConfigured:
+        "react-native-iap muss zum Wiederherstellen von Käufen installiert oder konfiguriert sein.",
+      incompleteTitle: "Kauf nicht abgeschlossen",
+      incompleteMessage: "Es wurde kein gültiger Kauf erkannt.",
+      thanksTitle: "Vielen Dank!",
+      thanksMessage: "Du hast die PRO-Version erworben.",
+      purchaseErrorTitle: "Fehler",
+      purchaseErrorMessage: "Der Kauf konnte nicht abgeschlossen werden.",
+      notFoundTitle: "Keine Käufe gefunden",
+      notFoundMessage: "Für dieses Konto wurde kein PRO-Kauf gefunden.",
+      restoredTitle: "Wiederhergestellt",
+      restoredMessage: "Dein PRO-Kauf wurde erfolgreich wiederhergestellt.",
+      restoreErrorTitle: "Fehler",
+      restoreErrorMessage: "Käufe konnten nicht wiederhergestellt werden.",
+    },
+  },
+  pdf: {
+    common: {
+      variables: "Variablen",
+      type: "Typ",
+      result: "Ergebnis",
+      groups: "Gruppen",
+      circuit: "Schaltung",
+      expression: "Ausdruck",
+      generatedAt: "Erstellt am",
+      productOfSums: "Produkt von Summen (POS)",
+      sumOfProducts: "Summe von Produkten (SOP)",
+      unavailableCircuit: "Die Schaltung konnte nicht erstellt werden.",
+      sharingUnavailable: "Teilen ist auf diesem Gerät nicht verfügbar",
+    },
+    session: {
+      documentTitle: "Vollständige Sitzung - Karnaugh-Diagramme",
+      finalExpression: "Endgültiger Ausdruck",
+      coloredMap: "Farbiges Karnaugh-Diagramm",
+      truthTable: "Wahrheitstabelle",
+      comparison: "Minimierungsvergleich",
+      heuristic: "Heuristik (Espresso-Stil)",
+      equivalent: "Dein Ergebnis entspricht der exakten Lösung.",
+      different: "Dein Ergebnis weicht von der exakten Lösung ab.",
+      equivalentSolutions:
+        "Es gibt {{count}} äquivalente minimale Lösungen.",
+      uniqueSolution: "Eine eindeutige minimale Lösung wurde gefunden.",
+      groupDetail: "Details der Gruppe G{{number}}",
+      term: "Term",
+      cells: "Zellen",
+      shareTitle: "Vollständige Sitzung exportieren",
+    },
+    circuit: {
+      documentTitle: "Logikschaltung - Karnaugh-Diagramme",
+      heading: "Logikschaltung",
+      generatedAutomatically:
+        "Karnaugh-Diagramme - Automatisch erstellt",
+      shareTitle: "Schaltungs-PDF herunterladen",
+    },
+  },
+  onboarding: {
+    badge: "WILLKOMMEN",
+    skip: "Überspringen",
+    title: "In 3 Schritten starten",
+    next: "Weiter",
+    start: "Starten",
+    slides: {
+      sopPos: {
+        title: "SOP vs. POS",
+        description:
+          "SOP minimiert mit Einsen. POS minimiert mit Nullen. Ändere oben den Typ passend zum benötigten Format.",
+      },
+      values: {
+        title: "0 / 1 / X ändern",
+        description:
+          "Tippe auf jede Zelle, um zwischen 0 → 1 → X zu wechseln. Mit den Schnellschaltflächen füllst du das gesamte Diagramm.",
+      },
+      circuit: {
+        title: "Schaltung lesen",
+        description:
+          "Das Ergebnis wird unten aktualisiert. Tippe auf Schaltung, um die Gatter anzuzeigen und das Diagramm als PDF zu exportieren.",
+      },
+    },
+  },
+} as const;

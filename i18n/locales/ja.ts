@@ -1,0 +1,288 @@
+export const jaTranslation = {
+  common: {
+    languages: {
+      es: "スペイン語",
+      en: "英語",
+      pt: "ポルトガル語",
+      fr: "フランス語",
+      de: "ドイツ語",
+      it: "イタリア語",
+      ja: "日本語",
+      ko: "韓国語",
+      "zh-CN": "簡体字中国語",
+      "zh-TW": "繁体字中国語",
+    },
+    languageSelector: {
+      accessibilityLabel: "言語を変更。現在の言語：{{language}}",
+      accessibilityHint: "利用可能な言語の一覧を開きます",
+      title: "言語を選択",
+      close: "言語選択を閉じる",
+    },
+    accessibility: {
+      mapCell: "セル{{index}}、値{{value}}",
+      tableCell: "行{{index}}の結果、値{{value}}",
+    },
+  },
+  navigation: {
+    appTitle: "K-Maps",
+  },
+  notFound: {
+    title: "エラー",
+    message: "この画面は存在しません。",
+    hint: "前の画面に戻ってください。",
+  },
+  table: {
+    result: "結果",
+    groups: "グループ",
+  },
+  grid: {
+    title: "カルノー図",
+    accessibility: {
+      history: "履歴を開く",
+      variableInput: "変数{{number}}の名前",
+      copyResult: "結果をコピー",
+      openCircuit: "回路を開く",
+    },
+    controls: {
+      variables: "変数",
+      variableCount: "{{count}}変数",
+      type: "形式",
+      view: "表示",
+      map: "マップ",
+      table: "表",
+      rotateVariables: "変数を入れ替える",
+      fillWith: "一括入力",
+      variableNames: "変数名",
+    },
+    groups: {
+      title: "グループを強調",
+      all: "すべて",
+      label: "G{{number}}：{{expression}}",
+    },
+    result: {
+      title: "結果",
+      empty: "値を選択すると論理式が生成されます",
+      copyHint: "タップしてコピー",
+      copied: "コピーしました",
+      circuit: "回路",
+    },
+    review: {
+      unavailableTitle: "アプリを評価",
+      unavailableMessage:
+        "現在レビュー画面を開けません。後でもう一度お試しください。",
+    },
+    engagement: {
+      title: "アプリは役に立っていますか？",
+      body: "学習に役立っている場合は、プロジェクトを支援できます。",
+      buyPro: "PRO版を購入",
+      rateApp: "アプリを評価",
+      later: "後で",
+    },
+  },
+  result: {
+    badge: "論理出力",
+    title: "回路",
+    type: "形式：{{type}}",
+    variables: "変数：{{count}}",
+    minimumResult: "最小化結果",
+    circuitDiagram: "回路図",
+    fullscreen: "全画面で表示",
+    close: "閉じる",
+    accessibility: {
+      fullscreen: "回路を全画面で開く",
+      closeFullscreen: "回路の全画面表示を閉じる",
+    },
+    circuitPdf: {
+      button: "回路PDFをダウンロード",
+      generating: "PDFを生成中...",
+      successTitle: "PDFを生成しました",
+      successMessage: "回路を正常に生成しました。",
+      shareHint:
+        "\nシステムのダイアログから共有または保存できます。",
+      errorTitle: "エラー",
+      errorMessage:
+        "PDFの生成中に問題が発生しました。もう一度お試しください。",
+    },
+    sessionPdf: {
+      button: "セッション全体をエクスポート",
+      generating: "セッションをエクスポート中...",
+      showingAd: "広告を表示中...",
+      successTitle: "セッションPDFを生成しました",
+      successMessage: "セッション全体をエクスポートしました。",
+      shareHint:
+        "\nシステムのダイアログから共有または保存できます。",
+      errorTitle: "エラー",
+      errorMessage:
+        "セッション全体をPDFとしてエクスポートできませんでした。もう一度お試しください。",
+    },
+    comparison: {
+      title: "最小化結果の比較",
+      exactMethod: "クワイン・マクラスキー法",
+      heuristicMethod: "ヒューリスティック（Espresso方式）",
+      validation:
+        "定義済みセルの真理値表で検証済みです（Xは無視されます）。",
+      equivalent: "結果は等価です",
+      different: "結果が厳密解と異なります",
+      equivalentSolutions: "等価な最小解が{{count}}個あります。",
+      uniqueSolution: "一意の最小解が見つかりました。",
+      heuristicOptimal: "最適なヒューリスティック解",
+      heuristicNotOptimal: "最適でないヒューリスティック解",
+      heuristicHelp:
+        "最適：最小形が得られました。最適でない：式は正しいものの、さらに簡単にできます。",
+      showEquivalent: "等価な解を表示",
+      hideEquivalent: "等価な解を非表示",
+      accessibility: {
+        heuristicHelp: "ヒューリスティックの説明を表示",
+      },
+    },
+  },
+  history: {
+    badge: "学習記録",
+    title: "履歴",
+    clear: "消去",
+    searchPlaceholder: "結果で検索",
+    filters: {
+      favorites: "お気に入り",
+      all: "すべて",
+      anyVariables: "変数数を指定しない",
+    },
+    sections: {
+      favorites: "⭐ お気に入り",
+      history: "履歴",
+    },
+    variableCount: "{{count}}変数",
+    result: "結果",
+    use: "使用",
+    deleteDialog: {
+      title: "問題を削除",
+      message: "この問題を履歴から削除しますか？",
+      cancel: "キャンセル",
+      confirm: "削除",
+    },
+    clearDialog: {
+      title: "履歴を消去",
+      message: "保存されているすべての問題が削除されます。",
+      cancel: "キャンセル",
+      confirm: "消去",
+    },
+    empty: {
+      filteredTitle: "一致する結果がありません",
+      filteredMessage:
+        "フィルターを変更するか、検索を消去してください。",
+      title: "保存された問題はありません",
+      message:
+        "カルノー図を解いて回路を開くと、ここに学習記録が保存されます。",
+    },
+    accessibility: {
+      clearHistory: "すべての履歴を消去",
+      clearSearch: "検索を消去",
+      addFavorite: "問題をお気に入りに追加",
+      removeFavorite: "問題をお気に入りから削除",
+      useExercise: "この問題を使用",
+      deleteExercise: "この問題を削除",
+    },
+  },
+  pro: {
+    activeTitle: "PRO版が有効です",
+    title: "PRO版",
+    activeSubtitle: "アプリをご支援いただきありがとうございます。",
+    subtitle: "広告なしで、より集中して問題を解けます。",
+    benefits: "特典",
+    features: {
+      noAds: "広告なし",
+      uninterrupted: "学習を中断しない",
+      support: "継続的な開発を支援",
+      oneTime: "買い切り、サブスクリプションなし",
+    },
+    specialPrice: "特別価格",
+    priceNote: "一回限りのお支払い • 自動更新なし",
+    buy: "PRO版を購入",
+    restore: "購入を復元",
+    back: "戻る",
+    later: "後で検討",
+    accessibility: {
+      open: "PRO版の情報を開く",
+      active: "PRO版が有効です",
+    },
+    alerts: {
+      notConfiguredTitle: "購入機能が未設定です",
+      purchaseNotConfigured:
+        "実際の購入にはreact-native-iapのインストールまたは設定が必要です。",
+      restoreNotConfigured:
+        "購入の復元にはreact-native-iapのインストールまたは設定が必要です。",
+      incompleteTitle: "購入が完了していません",
+      incompleteMessage: "有効な購入を確認できませんでした。",
+      thanksTitle: "ありがとうございます！",
+      thanksMessage: "PRO版を購入しました。",
+      purchaseErrorTitle: "エラー",
+      purchaseErrorMessage: "購入を完了できませんでした。",
+      notFoundTitle: "購入が見つかりません",
+      notFoundMessage: "このアカウントのPRO版購入履歴が見つかりません。",
+      restoredTitle: "復元しました",
+      restoredMessage: "PRO版の購入を正常に復元しました。",
+      restoreErrorTitle: "エラー",
+      restoreErrorMessage: "購入を復元できませんでした。",
+    },
+  },
+  pdf: {
+    common: {
+      variables: "変数",
+      type: "形式",
+      result: "結果",
+      groups: "グループ",
+      circuit: "回路",
+      expression: "論理式",
+      generatedAt: "生成日時",
+      productOfSums: "和の積（POS）",
+      sumOfProducts: "積の和（SOP）",
+      unavailableCircuit: "回路を生成できませんでした。",
+      sharingUnavailable: "この端末では共有機能を利用できません",
+    },
+    session: {
+      documentTitle: "セッション全体 - カルノー図",
+      finalExpression: "最終的な論理式",
+      coloredMap: "色分けされたカルノー図",
+      truthTable: "真理値表",
+      comparison: "最小化結果の比較",
+      heuristic: "ヒューリスティック（Espresso方式）",
+      equivalent: "結果は厳密解と等価です。",
+      different: "結果が厳密解と異なります。",
+      equivalentSolutions: "等価な最小解が{{count}}個あります。",
+      uniqueSolution: "一意の最小解が見つかりました。",
+      groupDetail: "グループG{{number}}の詳細",
+      term: "項",
+      cells: "セル",
+      shareTitle: "セッション全体をエクスポート",
+    },
+    circuit: {
+      documentTitle: "論理回路 - カルノー図",
+      heading: "論理回路",
+      generatedAutomatically: "カルノー図 - 自動生成",
+      shareTitle: "回路PDFをダウンロード",
+    },
+  },
+  onboarding: {
+    badge: "ようこそ",
+    skip: "スキップ",
+    title: "3ステップで始めましょう",
+    next: "次へ",
+    start: "始める",
+    slides: {
+      sopPos: {
+        title: "SOPとPOS",
+        description:
+          "SOPは1を使って最小化し、POSは0を使って最小化します。必要な形式に合わせて上部の形式を変更してください。",
+      },
+      values: {
+        title: "0 / 1 / Xを変更",
+        description:
+          "各セルをタップすると0 → 1 → Xの順に切り替わります。クイックボタンでマップ全体を一度に入力できます。",
+      },
+      circuit: {
+        title: "回路の確認",
+        description:
+          "結果は下部に表示されます。「回路」をタップするとゲートを確認し、回路図をPDFで保存できます。",
+      },
+    },
+  },
+} as const;
