@@ -10,9 +10,22 @@ export const resources = {
           accessibilityLabel: "Cambiar idioma. Idioma actual: {{language}}",
           accessibilityHint: "Cambia entre español e inglés",
         },
+        accessibility: {
+          mapCell: "Celda {{index}}, valor {{value}}",
+          tableCell: "Resultado de la fila {{index}}, valor {{value}}",
+        },
       },
       navigation: {
         appTitle: "K-Maps",
+      },
+      notFound: {
+        title: "Oops",
+        message: "Esta pantalla no existe.",
+        hint: "Vuelve atrás para continuar.",
+      },
+      table: {
+        result: "Resultado",
+        groups: "Grupos",
       },
       grid: {
         title: "Karnaugh",
@@ -206,6 +219,46 @@ export const resources = {
           restoreErrorMessage: "No fue posible restaurar compras.",
         },
       },
+      pdf: {
+        common: {
+          variables: "Variables",
+          type: "Tipo",
+          result: "Resultado",
+          groups: "Grupos",
+          circuit: "Circuito",
+          expression: "Expresión",
+          generatedAt: "Fecha de generación",
+          productOfSums: "Producto de Sumas (POS)",
+          sumOfProducts: "Suma de Productos (SOP)",
+          unavailableCircuit: "No se pudo generar el circuito.",
+          sharingUnavailable:
+            "Compartir no está disponible en este dispositivo",
+        },
+        session: {
+          documentTitle: "Sesión completa - Mapas de Karnaugh",
+          finalExpression: "Expresión final",
+          coloredMap: "Mapa de Karnaugh coloreado",
+          truthTable: "Tabla de verdad",
+          comparison: "Comparador de minimización",
+          heuristic: "Heurístico (tipo Espresso)",
+          equivalent: "Tu resultado es equivalente al exacto.",
+          different: "Tu resultado difiere del exacto.",
+          equivalentSolutions:
+            "Hay {{count}} soluciones mínimas equivalentes.",
+          uniqueSolution: "Se encontró una solución mínima única.",
+          groupDetail: "Detalle de grupo G{{number}}",
+          term: "Término",
+          cells: "Celdas",
+          shareTitle: "Exportar sesión completa",
+        },
+        circuit: {
+          documentTitle: "Circuito lógico - Mapas de Karnaugh",
+          heading: "Circuito lógico",
+          generatedAutomatically:
+            "Mapas de Karnaugh - Generado automáticamente",
+          shareTitle: "Descargar circuito PDF",
+        },
+      },
       onboarding: {
         badge: "BIENVENIDO",
         skip: "Saltar",
@@ -243,9 +296,22 @@ export const resources = {
           accessibilityLabel: "Change language. Current language: {{language}}",
           accessibilityHint: "Switches between Spanish and English",
         },
+        accessibility: {
+          mapCell: "Cell {{index}}, value {{value}}",
+          tableCell: "Result for row {{index}}, value {{value}}",
+        },
       },
       navigation: {
         appTitle: "K-Maps",
+      },
+      notFound: {
+        title: "Oops",
+        message: "This screen does not exist.",
+        hint: "Go back to continue.",
+      },
+      table: {
+        result: "Result",
+        groups: "Groups",
       },
       grid: {
         title: "Karnaugh",
@@ -437,6 +503,46 @@ export const resources = {
           restoredMessage: "Your PRO purchase was restored successfully.",
           restoreErrorTitle: "Error",
           restoreErrorMessage: "Purchases could not be restored.",
+        },
+      },
+      pdf: {
+        common: {
+          variables: "Variables",
+          type: "Type",
+          result: "Result",
+          groups: "Groups",
+          circuit: "Circuit",
+          expression: "Expression",
+          generatedAt: "Generated on",
+          productOfSums: "Product of Sums (POS)",
+          sumOfProducts: "Sum of Products (SOP)",
+          unavailableCircuit: "The circuit could not be generated.",
+          sharingUnavailable:
+            "Sharing is not available on this device",
+        },
+        session: {
+          documentTitle: "Full session - Karnaugh Maps",
+          finalExpression: "Final expression",
+          coloredMap: "Colored Karnaugh map",
+          truthTable: "Truth table",
+          comparison: "Minimization comparison",
+          heuristic: "Heuristic (Espresso-style)",
+          equivalent: "Your result is equivalent to the exact solution.",
+          different: "Your result differs from the exact solution.",
+          equivalentSolutions:
+            "There are {{count}} equivalent minimum solutions.",
+          uniqueSolution: "A unique minimum solution was found.",
+          groupDetail: "Group G{{number}} detail",
+          term: "Term",
+          cells: "Cells",
+          shareTitle: "Export full session",
+        },
+        circuit: {
+          documentTitle: "Logic circuit - Karnaugh Maps",
+          heading: "Logic circuit",
+          generatedAutomatically:
+            "Karnaugh Maps - Generated automatically",
+          shareTitle: "Download circuit PDF",
         },
       },
       onboarding: {

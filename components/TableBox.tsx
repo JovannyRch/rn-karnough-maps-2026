@@ -2,6 +2,7 @@ import useStore from "@/app/store";
 import { nextSquareState } from "@/app/utils";
 import { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -24,6 +25,7 @@ const styles = StyleSheet.create({
 });
 
 export const TableBox = ({ index }: { index: number }) => {
+  const { t } = useTranslation();
   const { values, setValues } = useStore();
   const pressScale = useSharedValue(1);
   const pulseScale = useSharedValue(1);
@@ -49,6 +51,11 @@ export const TableBox = ({ index }: { index: number }) => {
   return (
     <Animated.View style={touchAnimatedStyle}>
       <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel={t("common.accessibility.tableCell", {
+          index,
+          value,
+        })}
         onPress={() => handleOnPress(index)}
         onPressIn={() => {
           pressScale.value = withTiming(0.94, { duration: 80 });

@@ -4,6 +4,7 @@ import { generateCircuitHTML } from "@/utils/pdfGenerator";
 import { memo, useMemo } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
+import { useTranslation } from "react-i18next";
 
 //TODO: Refactor this component
 
@@ -14,9 +15,12 @@ interface CircuitComponentProps {
 
 export const CircuitComponent = memo(
   ({ bottomPadding = 120, enableZoom = false }: CircuitComponentProps) => {
+    const { i18n } = useTranslation();
+    const currentLanguage = i18n.resolvedLanguage;
     const { resultType, variableQuantity, circuitVector, variables } = useStore();
 
     const htmlContent = useMemo(() => {
+      void currentLanguage;
       const circuit = generateCircuitHTML({
         resultType,
         variableQuantity,
@@ -48,7 +52,14 @@ export const CircuitComponent = memo(
         </body>
       </html>
     `;
-    }, [resultType, variableQuantity, circuitVector, variables, enableZoom]);
+    }, [
+      resultType,
+      variableQuantity,
+      circuitVector,
+      variables,
+      enableZoom,
+      currentLanguage,
+    ]);
 
     const estimatedHeight = useMemo(() => {
       if (circuitVector.length === 0) {

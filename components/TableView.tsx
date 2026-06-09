@@ -3,6 +3,7 @@ import { buildGroupColorsByMinterm } from "@/utils/groupColorLookup";
 import { useMemo } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Cell, Row, Table, TableWrapper } from "react-native-table-component";
+import { useTranslation } from "react-i18next";
 import { TableBox } from "./TableBox";
 
 const decimalToBinary = (decimal: number, length: number) => {
@@ -10,10 +11,16 @@ const decimalToBinary = (decimal: number, length: number) => {
 };
 
 const TableView = () => {
+  const { t } = useTranslation();
   const { variableQuantity, variableRotation, boxColors, variables } =
     useStore();
 
-  const header = ["#", variables.join(""), "Resultado", "Grupos"];
+  const header = [
+    "#",
+    variables.join(""),
+    t("table.result"),
+    t("table.groups"),
+  ];
   const columnWidths = useMemo(
     () => [56, Math.max(110, 70 + variableQuantity * 16), 116, 108],
     [variableQuantity],

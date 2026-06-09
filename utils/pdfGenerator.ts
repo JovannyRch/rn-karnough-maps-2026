@@ -2,6 +2,7 @@ import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import { buildMinimizationComparison } from "./minimizationComparator";
 import { buildRotatedMap } from "@/app/utils/rotationMapping";
+import i18n, { getCurrentLanguage, getCurrentLocale } from "@/i18n";
 import { buildGroupColorsByMinterm } from "./groupColorLookup";
 
 interface CircuitData {
@@ -54,6 +55,14 @@ const TERM_COLORS = [
   "#CD7F32",
   "#ff6699",
 ];
+
+const translate = (key: string, options?: Record<string, unknown>): string =>
+  i18n.t(key, options);
+
+const getSolveTypeLabel = (resultType: string): string =>
+  resultType === "POS"
+    ? translate("pdf.common.productOfSums")
+    : translate("pdf.common.sumOfProducts");
 
 const getVariables = (quantity: number): string[] => {
   if (quantity === 2) return ["A", "B"];
@@ -332,14 +341,20 @@ const buildSessionHTML = (data: SessionPDFData) => {
       return `
         <div class="page page-break">
           <div class="section map-wrap map-section">
-            <h2>Detalle de grupo G${groupIndex + 1}</h2>
+            <h2>${escapeHtml(
+              translate("pdf.session.groupDetail", {
+                number: groupIndex + 1,
+              }),
+            )}</h2>
             <div class="group-meta">
               <span class="group-chip" style="background:${escapeHtml(
                 info?.color ?? "#2f4858",
               )};"></span>
-              <strong>Término:</strong> ${escapeHtml(info?.label ?? "N/A")}
+              <strong>${escapeHtml(translate("pdf.session.term"))}:</strong> ${escapeHtml(
+                info?.label ?? "N/A",
+              )}
               <span class="group-sep">|</span>
-              <strong>Celdas:</strong> ${coveredCells}
+              <strong>${escapeHtml(translate("pdf.session.cells"))}:</strong> ${coveredCells}
             </div>
             <table class="map-table">
               <thead>
@@ -367,11 +382,11 @@ const buildSessionHTML = (data: SessionPDFData) => {
 
   return `
       <!DOCTYPE html>
-      <html>
+      <html lang="${getCurrentLanguage()}">
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Sesión Completa - Mapas de Karnaugh</title>
+          <title>${escapeHtml(translate("pdf.session.documentTitle"))}</title>
           <style>
             @page { size: A4; margin: 14mm; }
             body { font-family: Arial, sans-serif; margin: 16px; color: #22331f; }
@@ -413,19 +428,21 @@ const buildSessionHTML = (data: SessionPDFData) => {
         <body>
           <div class="page">
             <div class="header">
-              <h1>Sesión Completa - Mapas de Karnaugh</h1>
-              <div class="meta">Variables: ${data.variableQuantity} | Tipo: ${
-                data.resultType === "POS" ? "Producto de Sumas (POS)" : "Suma de Productos (SOP)"
-              }</div>
+              <h1>${escapeHtml(translate("pdf.session.documentTitle"))}</h1>
+              <div class="meta">${escapeHtml(
+                translate("pdf.common.variables"),
+              )}: ${data.variableQuantity} | ${escapeHtml(
+                translate("pdf.common.type"),
+              )}: ${escapeHtml(getSolveTypeLabel(data.resultType))}</div>
             </div>
 
             <div class="section">
-              <h2>Expresión final</h2>
+              <h2>${escapeHtml(translate("pdf.session.finalExpression"))}</h2>
               <div class="result">${expressionColorized}</div>
             </div>
 
             <div class="section map-wrap map-section">
-              <h2>Mapa de Karnaugh coloreado</h2>
+              <h2>${escapeHtml(translate("pdf.session.coloredMap"))}</h2>
               <table class="map-table">
                 <thead>
                   <tr>
@@ -440,30 +457,38 @@ const buildSessionHTML = (data: SessionPDFData) => {
 
           <div class="page page-break">
             <div class="section table-section">
-              <h2>Tabla de verdad</h2>
+              <h2>${escapeHtml(translate("pdf.session.truthTable"))}</h2>
               <table>
                 <thead>
                   <tr><th>#</th><th>${escapeHtml(
                     (data.variables?.slice(0, data.variableQuantity) ?? getVariables(data.variableQuantity)).join(""),
-                  )}</th><th>Resultado</th><th>Grupos</th></tr>
+                  )}</th><th>${escapeHtml(
+                    translate("pdf.common.result"),
+                  )}</th><th>${escapeHtml(
+                    translate("pdf.common.groups"),
+                  )}</th></tr>
                 </thead>
                 <tbody>${truthRows}</tbody>
               </table>
             </div>
 
             <div class="section compare-section">
-              <h2>Comparador de minimización</h2>
+              <h2>${escapeHtml(translate("pdf.session.comparison"))}</h2>
               <div>Quine-McCluskey: <strong>${escapeHtml(comparison.exactExpression)}</strong></div>
-              <div>Heurístico (tipo Espresso): <strong>${escapeHtml(comparison.heuristicExpression)}</strong></div>
+              <div>${escapeHtml(translate("pdf.session.heuristic"))}: <strong>${escapeHtml(comparison.heuristicExpression)}</strong></div>
               <div style="margin-top:6px;">${
                 comparison.currentResultEquivalent
-                  ? "Tu resultado es equivalente al exacto."
-                  : "Tu resultado difiere del exacto."
+                  ? escapeHtml(translate("pdf.session.equivalent"))
+                  : escapeHtml(translate("pdf.session.different"))
               }</div>
               <div style="margin-top:6px;">${
                 comparison.hasMultipleEquivalent
-                  ? `Hay ${comparison.equivalentSolutions} soluciones mínimas equivalentes.`
-                  : "Se encontró una solución mínima única."
+                  ? escapeHtml(
+                      translate("pdf.session.equivalentSolutions", {
+                        count: comparison.equivalentSolutions,
+                      }),
+                    )
+                  : escapeHtml(translate("pdf.session.uniqueSolution"))
               }</div>
               <ul class="equiv-list">${equivalents}</ul>
             </div>
@@ -473,12 +498,14 @@ const buildSessionHTML = (data: SessionPDFData) => {
 
           <div class="page page-break">
             <div class="section circuit-section">
-              <h2>Circuito</h2>
+              <h2>${escapeHtml(translate("pdf.common.circuit"))}</h2>
               ${circuitHTML}
             </div>
           </div>
 
-          <div class="foot">Fecha de generación: ${new Date().toLocaleDateString("es-ES")}</div>
+          <div class="foot">${escapeHtml(
+            translate("pdf.common.generatedAt"),
+          )}: ${new Date().toLocaleDateString(getCurrentLocale())}</div>
         </body>
       </html>
     `;
@@ -786,7 +813,9 @@ export const generateCircuitHTML = (data: CircuitData): string => {
   }
 
   return `
-    <div style="padding: 8px 12px; color: #666; font-family: Arial, sans-serif;">No se pudo generar el circuito.</div>
+    <div style="padding: 8px 12px; color: #666; font-family: Arial, sans-serif;">${escapeHtml(
+      translate("pdf.common.unavailableCircuit"),
+    )}</div>
   `;
 };
 
@@ -800,10 +829,10 @@ export const generateCircuitPDF = async (
 
     const fullHTML = `
       <!DOCTYPE html>
-      <html>
+      <html lang="${getCurrentLanguage()}">
         <head>
           <meta charset="utf-8">
-          <title>Circuito Lógico - Mapas de Karnaugh</title>
+          <title>${escapeHtml(translate("pdf.circuit.documentTitle"))}</title>
           <style>
             body {
               font-family: Arial, sans-serif;
@@ -851,14 +880,18 @@ export const generateCircuitPDF = async (
         </head>
         <body>
           <div class="header">
-            <h1>Circuito Lógico</h1>
-            <p>Mapas de Karnaugh - Generado automáticamente</p>
-            <p>Variables: ${data.variableQuantity} | Tipo: ${
-              data.resultType === "POS"
-                ? "Producto de Sumas (POS)"
-                : "Suma de Productos (SOP)"
-            }</p>
-            <p class="expression">Expresión: ${escapeHtml(expression)}</p>
+            <h1>${escapeHtml(translate("pdf.circuit.heading"))}</h1>
+            <p>${escapeHtml(
+              translate("pdf.circuit.generatedAutomatically"),
+            )}</p>
+            <p>${escapeHtml(
+              translate("pdf.common.variables"),
+            )}: ${data.variableQuantity} | ${escapeHtml(
+              translate("pdf.common.type"),
+            )}: ${escapeHtml(getSolveTypeLabel(data.resultType))}</p>
+            <p class="expression">${escapeHtml(
+              translate("pdf.common.expression"),
+            )}: ${escapeHtml(expression)}</p>
           </div>
 
           <div class="circuit-container">
@@ -866,9 +899,9 @@ export const generateCircuitPDF = async (
           </div>
 
           <div class="info">
-            <p>Fecha de generación: ${new Date().toLocaleDateString(
-              "es-ES",
-            )}</p>
+            <p>${escapeHtml(
+              translate("pdf.common.generatedAt"),
+            )}: ${new Date().toLocaleDateString(getCurrentLocale())}</p>
           </div>
         </body>
       </html>
@@ -882,11 +915,11 @@ export const generateCircuitPDF = async (
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(uri, {
         mimeType: "application/pdf",
-        dialogTitle: "Descargar Circuito PDF",
+        dialogTitle: translate("pdf.circuit.shareTitle"),
         UTI: "com.adobe.pdf",
       });
     } else {
-      throw new Error("Sharing no está disponible en este dispositivo");
+      throw new Error(translate("pdf.common.sharingUnavailable"));
     }
 
     return uri;
@@ -910,11 +943,11 @@ export const generateSessionPDF = async (
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(uri, {
         mimeType: "application/pdf",
-        dialogTitle: "Exportar sesión completa",
+        dialogTitle: translate("pdf.session.shareTitle"),
         UTI: "com.adobe.pdf",
       });
     } else {
-      throw new Error("Sharing no está disponible en este dispositivo");
+      throw new Error(translate("pdf.common.sharingUnavailable"));
     }
 
     return uri;

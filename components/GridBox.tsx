@@ -3,6 +3,7 @@ import { BoxColor } from "@/app/types/types";
 import { nextSquareState } from "@/app/utils";
 import { useEffect, useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -18,6 +19,7 @@ interface GridBoxProps {
 }
 
 const GridBox = ({ index, row, column }: GridBoxProps) => {
+  const { t } = useTranslation();
   const { boxColors, values, setValues, resultType, focusedGroupIndex } =
     useStore();
 
@@ -52,6 +54,11 @@ const GridBox = ({ index, row, column }: GridBoxProps) => {
     <View style={styles.box}>
       <Animated.View style={[styles.touchAnim, touchAnimatedStyle]}>
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={t("common.accessibility.mapCell", {
+            index,
+            value,
+          })}
           style={styles.touch}
           onPress={() => handleOnPress(index)}
           onPressIn={() => {
