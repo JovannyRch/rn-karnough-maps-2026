@@ -78,6 +78,16 @@ export const zhTWTranslation = {
   "navigation": {
     "appTitle": "K-Maps"
   },
+  "expression": {
+    "title": "運算式填圖",
+    "body": "輸入使用你的變數的布林運算式，卡諾圖將依其真值表填入。",
+    "placeholder": "如 AB′ + C(D + A′)",
+    "action": "填入卡諾圖",
+    "cancel": "取消",
+    "clear": "清除",
+    "errorSyntax": "運算式無效。請檢查括號與運算子。",
+    "errorUnknown": "未知符號：{{token}}"
+  },
   "steps": {
     "button": "逐步講解",
     "title": "第 {{current}} 組，共 {{total}} 組",

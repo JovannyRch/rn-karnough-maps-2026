@@ -74,6 +74,16 @@ export const itTranslation = {
       later: "Più tardi",
     },
   },
+  expression: {
+    title: "Espressione nella mappa",
+    body: "Digita un'espressione booleana con le tue variabili; la mappa sarà riempita dalla sua tabella di verità.",
+    placeholder: "es. AB′ + C(D + A′)",
+    action: "Riempi mappa",
+    cancel: "Annulla",
+    clear: "Cancella",
+    errorSyntax: "Espressione non valida. Controlla parentesi e operatori.",
+    errorUnknown: "Simbolo sconosciuto: {{token}}",
+  },
   steps: {
     button: "Passo dopo passo",
     title: "Gruppo {{current}} di {{total}}",

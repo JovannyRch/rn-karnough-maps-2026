@@ -12,6 +12,10 @@ interface CircuitData {
   circuitVector: string[];
   resultExpression?: string;
   variables?: string[];
+  /** Pre-rendered SVG of the circuit as currently shown in the app
+   *  (variant/compact aware). When present it replaces the legacy
+   *  HTML circuit rendering. */
+  circuitSvg?: string;
 }
 
 interface VectorResultItemLike {
@@ -577,6 +581,14 @@ const orGate = (x: number, y: number, w: number, h: number) => {
 };
 
 export const generateCircuitHTML = (data: CircuitData): string => {
+  if (data.circuitSvg) {
+    return `
+      <div style="position: relative; padding: 6px; overflow-x: auto;">
+        ${data.circuitSvg}
+      </div>
+    `;
+  }
+
   const { resultType, variableQuantity, circuitVector } = data;
   const solveType: SolveType = resultType === "POS" ? "POS" : "SOP";
 

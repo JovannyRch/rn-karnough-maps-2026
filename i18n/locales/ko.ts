@@ -78,6 +78,16 @@ export const koTranslation = {
   "navigation": {
     "appTitle": "K-Maps"
   },
+  "expression": {
+    "title": "식으로 채우기",
+    "body": "변수를 사용해 불 식을 입력하면 진리표에 따라 맵이 채워집니다.",
+    "placeholder": "예: AB′ + C(D + A′)",
+    "action": "맵 채우기",
+    "cancel": "취소",
+    "clear": "지우기",
+    "errorSyntax": "잘못된 식입니다. 괄호와 연산자를 확인하세요.",
+    "errorUnknown": "알 수 없는 기호: {{token}}"
+  },
   "steps": {
     "button": "단계별 풀이",
     "title": "그룹 {{current}} / {{total}}",

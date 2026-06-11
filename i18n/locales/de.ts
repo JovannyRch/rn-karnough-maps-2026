@@ -74,6 +74,16 @@ export const deTranslation = {
       later: "Später",
     },
   },
+  expression: {
+    title: "Ausdruck in Karte",
+    body: "Gib einen booleschen Ausdruck mit deinen Variablen ein; die Karte wird aus seiner Wahrheitstabelle gefüllt.",
+    placeholder: "z. B. AB′ + C(D + A′)",
+    action: "Karte füllen",
+    cancel: "Abbrechen",
+    clear: "Leeren",
+    errorSyntax: "Ungültiger Ausdruck. Prüfe Klammern und Operatoren.",
+    errorUnknown: "Unbekanntes Symbol: {{token}}",
+  },
   steps: {
     button: "Schritt für Schritt",
     title: "Gruppe {{current}} von {{total}}",

@@ -146,7 +146,7 @@ const buildNetwork = (
   // Universal-gate variants. "Matched" combinations (NAND+SOP, NOR+POS) are
   // the classic two-level conversion; "dual" combinations feed complemented
   // literals into the term gates (De Morgan) and invert the final output.
-  const gate: GateKind = variant;
+  const gate: GateKind = variant === "nand" ? "nand" : "nor";
   const matched = (variant === "nand") === sop;
   let outputInverter = false;
 
@@ -214,7 +214,9 @@ export const buildCircuitScene = (
   variant: CircuitVariant,
   compact = false,
 ): CircuitScene | null => {
-  if (model.kind !== "network") {
+  // Block implementations (MUX, decoder) have their own scene builders in
+  // implementations.ts.
+  if (model.kind !== "network" || variant === "mux" || variant === "decoder") {
     return null;
   }
 

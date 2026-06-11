@@ -90,6 +90,16 @@ export const resources = {
           later: "Más tarde",
         },
       },
+      expression: {
+        title: "Expresión al mapa",
+        body: "Escribe una expresión booleana con tus variables; el mapa se llenará con su tabla de verdad.",
+        placeholder: "ej. AB′ + C(D + A′)",
+        action: "Llenar mapa",
+        cancel: "Cancelar",
+        clear: "Borrar",
+        errorSyntax: "Expresión inválida. Revisa paréntesis y operadores.",
+        errorUnknown: "Símbolo desconocido: {{token}}",
+      },
       steps: {
         button: "Paso a paso",
         title: "Grupo {{current}} de {{total}}",
@@ -440,6 +450,16 @@ export const resources = {
           rateApp: "Rate app",
           later: "Later",
         },
+      },
+      expression: {
+        title: "Expression to map",
+        body: "Type a Boolean expression with your variables; the map will be filled from its truth table.",
+        placeholder: "e.g. AB′ + C(D + A′)",
+        action: "Fill map",
+        cancel: "Cancel",
+        clear: "Clear",
+        errorSyntax: "Invalid expression. Check parentheses and operators.",
+        errorUnknown: "Unknown symbol: {{token}}",
       },
       steps: {
         button: "Step by step",

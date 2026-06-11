@@ -78,6 +78,16 @@ export const zhCNTranslation = {
       "buyPro": "购买专业版"
     }
   },
+  "expression": {
+    "title": "表达式填图",
+    "body": "输入使用你的变量的布尔表达式，卡诺图将按其真值表填充。",
+    "placeholder": "如 AB′ + C(D + A′)",
+    "action": "填充卡诺图",
+    "cancel": "取消",
+    "clear": "清空",
+    "errorSyntax": "表达式无效。请检查括号和运算符。",
+    "errorUnknown": "未知符号：{{token}}"
+  },
   "steps": {
     "button": "逐步讲解",
     "title": "第 {{current}} 组，共 {{total}} 组",

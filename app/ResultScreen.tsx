@@ -89,7 +89,11 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
             </View>
           </View>
           <View style={styles.actionsRow}>
-            <DownloadPDFButton compact />
+            <DownloadPDFButton
+              compact
+              circuitVariant={circuitVariant}
+              circuitCompact={circuitCompact}
+            />
             {/* <Pressable
               style={({ pressed }) => [
                 styles.backButton,
@@ -100,7 +104,10 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
               <Text style={styles.backButtonText}>Editar mapa</Text>
             </Pressable> */}
           </View>
-          <ExportSessionPDFButton />
+          <ExportSessionPDFButton
+            circuitVariant={circuitVariant}
+            circuitCompact={circuitCompact}
+          />
           <MinimizationComparisonCard
             values={values}
             variableQuantity={variableQuantity}

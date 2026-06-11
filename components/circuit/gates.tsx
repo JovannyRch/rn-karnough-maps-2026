@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import { Circle, Path, Text as SvgText } from "react-native-svg";
 
-import { bubbleRadius, GateKind } from "./layout";
+import { gateBodyPath, gateBubble, gateLabel } from "./gatePaths";
+import { GateKind } from "./layout";
 
 interface GateGlyphProps {
   kind: GateKind;
@@ -16,40 +17,6 @@ interface GateGlyphProps {
   strokeWidth?: number;
 }
 
-const andPath = (x: number, y: number, w: number, h: number): string => {
-  const r = h / 2;
-  return [
-    `M ${x} ${y - r}`,
-    `H ${x + w - r}`,
-    `A ${r} ${r} 0 0 1 ${x + w - r} ${y + r}`,
-    `H ${x}`,
-    "Z",
-  ].join(" ");
-};
-
-const orPath = (x: number, y: number, w: number, h: number): string => {
-  const top = y - h / 2;
-  const bottom = y + h / 2;
-  return [
-    `M ${x} ${top}`,
-    `Q ${x + w * 0.62} ${top} ${x + w} ${y}`,
-    `Q ${x + w * 0.62} ${bottom} ${x} ${bottom}`,
-    `Q ${x + w * 0.3} ${y} ${x} ${top}`,
-    "Z",
-  ].join(" ");
-};
-
-const notPath = (x: number, y: number, w: number, h: number): string =>
-  `M ${x} ${y - h / 2} L ${x} ${y + h / 2} L ${x + w} ${y} Z`;
-
-const GATE_TEXT: Record<GateKind, string> = {
-  and: "AND",
-  or: "OR",
-  nand: "NAND",
-  nor: "NOR",
-  not: "NOT",
-};
-
 export const GateGlyph = ({
   kind,
   x,
@@ -62,51 +29,41 @@ export const GateGlyph = ({
   showLabel,
   strokeWidth = 2,
 }: GateGlyphProps) => {
-  const path =
-    kind === "and" || kind === "nand"
-      ? andPath(x, y, w, h)
-      : kind === "not"
-        ? notPath(x, y, w, h)
-        : orPath(x, y, w, h);
-
-  const hasBubble = kind === "nand" || kind === "nor" || kind === "not";
-  const r = bubbleRadius(h);
-  const labelText = GATE_TEXT[kind];
-  const labelSize = labelText.length > 3 ? 8.5 : 9.5;
-  const labelX = kind === "or" || kind === "nor" ? x + w * 0.46 : x + w * 0.44;
+  const bubble = gateBubble(kind, x, y, w, h);
+  const label = showLabel ? gateLabel(kind, x, y, w) : null;
 
   return (
     <Fragment>
       <Path
-        d={path}
+        d={gateBodyPath(kind, x, y, w, h)}
         fill={fill}
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinejoin="round"
         opacity={opacity}
       />
-      {hasBubble && (
+      {bubble && (
         <Circle
-          cx={x + w + r}
-          cy={y}
-          r={r}
+          cx={bubble.cx}
+          cy={bubble.cy}
+          r={bubble.r}
           fill={fill}
           stroke={stroke}
           strokeWidth={strokeWidth}
           opacity={opacity}
         />
       )}
-      {showLabel && kind !== "not" && (
+      {label && (
         <SvgText
-          x={labelX}
-          y={y + labelSize * 0.36}
-          fontSize={labelSize}
+          x={label.x}
+          y={label.y}
+          fontSize={label.size}
           fontWeight="800"
           fill={stroke}
           textAnchor="middle"
           opacity={opacity}
         >
-          {labelText}
+          {label.text}
         </SvgText>
       )}
     </Fragment>

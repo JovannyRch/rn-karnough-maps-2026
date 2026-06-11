@@ -74,6 +74,16 @@ export const frTranslation = {
       later: "Plus tard",
     },
   },
+  expression: {
+    title: "Expression vers carte",
+    body: "Saisissez une expression booléenne avec vos variables ; la carte sera remplie à partir de sa table de vérité.",
+    placeholder: "ex. AB′ + C(D + A′)",
+    action: "Remplir la carte",
+    cancel: "Annuler",
+    clear: "Effacer",
+    errorSyntax: "Expression invalide. Vérifiez les parenthèses et les opérateurs.",
+    errorUnknown: "Symbole inconnu : {{token}}",
+  },
   steps: {
     button: "Pas à pas",
     title: "Groupe {{current}} sur {{total}}",

@@ -1,4 +1,6 @@
 import useStore from "@/app/store";
+import { CircuitVariant } from "@/components/circuit/model";
+import { buildCircuitSvg } from "@/components/circuit/sceneToSvg";
 import {
   addAdListener,
   createInterstitialAd,
@@ -26,11 +28,15 @@ const INTERSTITIAL_POLL_MS = 120;
 interface ExportSessionPDFButtonProps {
   compact?: boolean;
   disabled?: boolean;
+  circuitVariant?: CircuitVariant;
+  circuitCompact?: boolean;
 }
 
 const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
   compact = false,
   disabled = false,
+  circuitVariant = "standard",
+  circuitCompact = false,
 }) => {
   const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -116,6 +122,17 @@ const ExportSessionPDFButton: FC<ExportSessionPDFButtonProps> = ({
         vectorResult,
         boxColors,
         variables,
+        circuitSvg:
+          buildCircuitSvg({
+            circuitVector,
+            resultType,
+            variables,
+            variant: circuitVariant,
+            compact: circuitCompact,
+            values,
+            variableQuantity,
+            variableRotation,
+          }) ?? undefined,
       });
 
       Alert.alert(

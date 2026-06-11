@@ -79,6 +79,16 @@ export const jaTranslation = {
       later: "後で",
     },
   },
+  expression: {
+    title: "式からマップ",
+    body: "変数を使ってブール式を入力すると、その真理値表でマップが埋まります。",
+    placeholder: "例: AB′ + C(D + A′)",
+    action: "マップに反映",
+    cancel: "キャンセル",
+    clear: "クリア",
+    errorSyntax: "式が無効です。括弧と演算子を確認してください。",
+    errorUnknown: "不明な記号: {{token}}",
+  },
   steps: {
     button: "ステップ解説",
     title: "グループ {{current}} / {{total}}",

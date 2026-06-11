@@ -1,4 +1,6 @@
 import useStore from "@/app/store";
+import { CircuitVariant } from "@/components/circuit/model";
+import { buildCircuitSvg } from "@/components/circuit/sceneToSvg";
 import { DUO } from "@/constants/duoTheme";
 import { generateCircuitPDF } from "@/utils/pdfGenerator";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -14,13 +16,26 @@ import { useTranslation } from "react-i18next";
 
 interface DownloadPDFButtonProps {
   compact?: boolean;
+  circuitVariant?: CircuitVariant;
+  circuitCompact?: boolean;
 }
 
-const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({ compact = false }) => {
+const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({
+  compact = false,
+  circuitVariant = "standard",
+  circuitCompact = false,
+}) => {
   const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
-  const { resultType, variableQuantity, circuitVector, result, variables } =
-    useStore();
+  const {
+    resultType,
+    variableQuantity,
+    circuitVector,
+    result,
+    variables,
+    values,
+    variableRotation,
+  } = useStore();
 
   const handleDownloadPDF = async () => {
     try {
@@ -32,6 +47,17 @@ const DownloadPDFButton: FC<DownloadPDFButtonProps> = ({ compact = false }) => {
         circuitVector,
         resultExpression: result,
         variables,
+        circuitSvg:
+          buildCircuitSvg({
+            circuitVector,
+            resultType,
+            variables,
+            variant: circuitVariant,
+            compact: circuitCompact,
+            values,
+            variableQuantity,
+            variableRotation,
+          }) ?? undefined,
       };
 
       const uri = await generateCircuitPDF(circuitData);

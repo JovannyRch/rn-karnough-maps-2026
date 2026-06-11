@@ -1,4 +1,5 @@
 import ExportSessionPDFButton from "@/components/ExportSessionPDFButton";
+import ExpressionInputDialog from "@/components/ExpressionInputDialog";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { MyBannerAd } from "@/components/MyBannerAd";
 import { ProButton } from "@/components/ProBadge";
@@ -90,6 +91,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
   const [isVariableMenuOpen, setIsVariableMenuOpen] = useState(false);
   const [showEngagementDialog, setShowEngagementDialog] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
+  const [showExpressionDialog, setShowExpressionDialog] = useState(false);
   const [importCode, setImportCode] = useState("");
   const insets = useSafeAreaInsets();
   const interstitialOpenCountRef = useRef(0);
@@ -748,6 +750,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             <QuickChip onPress={() => setAllValues("1")} label="1s" />
             <QuickChip onPress={() => setAllValues("0")} label="0s" />
             <QuickChip onPress={() => setAllValues("X")} label="Xs" />
+            <QuickChip
+              onPress={() => setShowExpressionDialog(true)}
+              label="ƒ(x)"
+            />
           </View>
 
           <View style={styles.variablesEditorSection}>
@@ -983,6 +989,11 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         </Pressable>
       </Reanimated.View>
       {!adsSuppressed && <MyBannerAd />}
+
+      <ExpressionInputDialog
+        visible={showExpressionDialog}
+        onClose={() => setShowExpressionDialog(false)}
+      />
 
       <Modal
         visible={showImportDialog}
