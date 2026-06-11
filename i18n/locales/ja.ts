@@ -79,6 +79,16 @@ export const jaTranslation = {
       later: "後で",
     },
   },
+  expression: {
+    title: "式からマップ",
+    body: "変数を使ってブール式を入力すると、その真理値表でマップが埋まります。",
+    placeholder: "例: AB′ + C(D + A′)",
+    action: "マップに反映",
+    cancel: "キャンセル",
+    clear: "クリア",
+    errorSyntax: "式が無効です。括弧と演算子を確認してください。",
+    errorUnknown: "不明な記号: {{token}}",
+  },
   steps: {
     button: "ステップ解説",
     title: "グループ {{current}} / {{total}}",
@@ -131,6 +141,12 @@ export const jaTranslation = {
       zoomHint: "ピンチでズーム · ダブルタップでリセット",
       compact: "コンパクト",
       stats: "ゲート: {{gates}} · 入力: {{inputs}} · 段数: {{levels}}",
+      mux: "MUX",
+      decoder: "デコーダ",
+      muxNote:
+        "{{size}}:1 マルチプレクサで実装。データ入力は {{variable}} が担います。",
+      decoderNote:
+        "{{inputs}}→{{outputs}} デコーダで実装。必要な最小項を OR ゲートでまとめます。",
     },
     accessibility: {
       fullscreen: "回路を全画面で開く",

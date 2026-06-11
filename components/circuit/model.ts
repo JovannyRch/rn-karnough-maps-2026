@@ -6,8 +6,11 @@ export type SolveType = "SOP" | "POS";
  *               NAND-NAND conversion; for POS the terms take complemented
  *               literals and an output inverter restores F.
  * "nor"      -> NOR gates only, symmetric to the above (matched for POS).
+ * "mux"      -> single 2^(n-1):1 multiplexer; the last variable drives the
+ *               data inputs, the others the select lines.
+ * "decoder"  -> n-to-2^n line decoder with an OR gate over the minterms.
  */
-export type CircuitVariant = "standard" | "nand" | "nor";
+export type CircuitVariant = "standard" | "nand" | "nor" | "mux" | "decoder";
 
 export interface Literal {
   name: string;

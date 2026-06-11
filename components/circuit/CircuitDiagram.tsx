@@ -1,5 +1,11 @@
 import { memo } from "react";
-import Svg, { Circle, Line, Rect, Text as SvgText } from "react-native-svg";
+import Svg, {
+  Circle,
+  Line,
+  Path,
+  Rect,
+  Text as SvgText,
+} from "react-native-svg";
 
 import { getGroupColor } from "@/constants/groupColors";
 import { GateGlyph } from "./gates";
@@ -66,6 +72,18 @@ const CircuitDiagram = ({
           />
         );
       })}
+
+      {scene.boxes.map((box, idx) => (
+        <Path
+          key={`b-${idx}`}
+          d={box.d}
+          fill={GATE_FILL}
+          stroke={INK}
+          strokeWidth={2}
+          strokeLinejoin="round"
+          opacity={selectedTerm === null ? 1 : 0.42}
+        />
+      ))}
 
       {scene.gates.map((gate, idx) => (
         <GateGlyph

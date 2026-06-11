@@ -74,6 +74,16 @@ export const ptTranslation = {
       later: "Mais tarde",
     },
   },
+  expression: {
+    title: "Expressão para o mapa",
+    body: "Digite uma expressão booleana com suas variáveis; o mapa será preenchido pela tabela verdade.",
+    placeholder: "ex. AB′ + C(D + A′)",
+    action: "Preencher mapa",
+    cancel: "Cancelar",
+    clear: "Limpar",
+    errorSyntax: "Expressão inválida. Verifique parênteses e operadores.",
+    errorUnknown: "Símbolo desconhecido: {{token}}",
+  },
   steps: {
     button: "Passo a passo",
     title: "Grupo {{current}} de {{total}}",
@@ -128,6 +138,12 @@ export const ptTranslation = {
       zoomHint: "Belisque para ampliar · toque duas vezes para redefinir",
       compact: "Compacto",
       stats: "Portas: {{gates}} · Entradas: {{inputs}} · Níveis: {{levels}}",
+      mux: "MUX",
+      decoder: "Decodificador",
+      muxNote:
+        "Implementado com um multiplexador {{size}}:1 — {{variable}} alimenta as entradas de dados.",
+      decoderNote:
+        "Implementado com um decodificador {{inputs}} para {{outputs}}; a porta OR combina os mintermos necessários.",
     },
     accessibility: {
       fullscreen: "Abrir o circuito em tela cheia",

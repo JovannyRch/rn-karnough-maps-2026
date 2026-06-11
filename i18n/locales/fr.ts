@@ -74,6 +74,16 @@ export const frTranslation = {
       later: "Plus tard",
     },
   },
+  expression: {
+    title: "Expression vers carte",
+    body: "Saisissez une expression booléenne avec vos variables ; la carte sera remplie à partir de sa table de vérité.",
+    placeholder: "ex. AB′ + C(D + A′)",
+    action: "Remplir la carte",
+    cancel: "Annuler",
+    clear: "Effacer",
+    errorSyntax: "Expression invalide. Vérifiez les parenthèses et les opérateurs.",
+    errorUnknown: "Symbole inconnu : {{token}}",
+  },
   steps: {
     button: "Pas à pas",
     title: "Groupe {{current}} sur {{total}}",
@@ -130,6 +140,12 @@ export const frTranslation = {
       zoomHint: "Pincez pour zoomer · appuyez deux fois pour réinitialiser",
       compact: "Compact",
       stats: "Portes : {{gates}} · Entrées : {{inputs}} · Niveaux : {{levels}}",
+      mux: "MUX",
+      decoder: "Décodeur",
+      muxNote:
+        "Réalisé avec un multiplexeur {{size}}:1 — {{variable}} alimente les entrées de données.",
+      decoderNote:
+        "Réalisé avec un décodeur {{inputs}} vers {{outputs}} ; la porte OR combine les minterms requis.",
     },
     accessibility: {
       fullscreen: "Ouvrir le circuit en plein écran",

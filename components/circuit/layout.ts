@@ -62,6 +62,11 @@ export interface CircuitStats {
   levels: number;
 }
 
+/** Free-form component body (MUX trapezoid, decoder rectangle) as an SVG path. */
+export interface SceneBox {
+  d: string;
+}
+
 export interface CircuitScene {
   width: number;
   height: number;
@@ -70,6 +75,7 @@ export interface CircuitScene {
   junctions: SceneJunction[];
   labels: SceneLabel[];
   hits: SceneHit[];
+  boxes: SceneBox[];
   stats: CircuitStats;
 }
 
@@ -84,7 +90,7 @@ export const gateOutputX = (kind: GateKind, x: number, w: number, h: number) =>
 
 /** OR-shaped gates have a concave input edge; wires overlap a little and the
  *  gate fill (drawn afterwards) covers the excess. */
-const gateInputX = (kind: GateKind, x: number, w: number): number =>
+export const gateInputX = (kind: GateKind, x: number, w: number): number =>
   kind === "or" || kind === "nor" ? x + Math.min(12, w * 0.2) : x;
 
 const spreadPinYs = (count: number, centerY: number, spacing: number) => {
@@ -140,7 +146,7 @@ const buildNetwork = (
   // Universal-gate variants. "Matched" combinations (NAND+SOP, NOR+POS) are
   // the classic two-level conversion; "dual" combinations feed complemented
   // literals into the term gates (De Morgan) and invert the final output.
-  const gate: GateKind = variant;
+  const gate: GateKind = variant === "nand" ? "nand" : "nor";
   const matched = (variant === "nand") === sop;
   let outputInverter = false;
 
@@ -208,7 +214,9 @@ export const buildCircuitScene = (
   variant: CircuitVariant,
   compact = false,
 ): CircuitScene | null => {
-  if (model.kind !== "network") {
+  // Block implementations (MUX, decoder) have their own scene builders in
+  // implementations.ts.
+  if (model.kind !== "network" || variant === "mux" || variant === "decoder") {
     return null;
   }
 
@@ -666,6 +674,7 @@ export const buildCircuitScene = (
     junctions,
     labels,
     hits,
+    boxes: [],
     stats: {
       gates: statGates,
       inputs: statInputs,

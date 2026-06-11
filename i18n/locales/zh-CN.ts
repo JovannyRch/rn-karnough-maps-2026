@@ -78,6 +78,16 @@ export const zhCNTranslation = {
       "buyPro": "购买专业版"
     }
   },
+  "expression": {
+    "title": "表达式填图",
+    "body": "输入使用你的变量的布尔表达式，卡诺图将按其真值表填充。",
+    "placeholder": "如 AB′ + C(D + A′)",
+    "action": "填充卡诺图",
+    "cancel": "取消",
+    "clear": "清空",
+    "errorSyntax": "表达式无效。请检查括号和运算符。",
+    "errorUnknown": "未知符号：{{token}}"
+  },
   "steps": {
     "button": "逐步讲解",
     "title": "第 {{current}} 组，共 {{total}} 组",
@@ -120,7 +130,11 @@ export const zhCNTranslation = {
       "tapHint": "点击某一项即可在卡诺图中高亮对应分组。",
       "zoomHint": "双指缩放 · 双击重置",
       "compact": "紧凑",
-      "stats": "门: {{gates}} · 输入: {{inputs}} · 级数: {{levels}}"
+      "stats": "门: {{gates}} · 输入: {{inputs}} · 级数: {{levels}}",
+      "mux": "MUX",
+      "decoder": "译码器",
+      "muxNote": "使用 {{size}}:1 多路选择器实现——数据输入由 {{variable}} 驱动。",
+      "decoderNote": "使用 {{inputs}} 线-{{outputs}} 线译码器实现；OR 门组合所需的最小项。"
     },
     "variables": "变量：{{count}}",
     "close": "关闭",

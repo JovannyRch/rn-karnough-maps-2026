@@ -78,6 +78,16 @@ export const zhTWTranslation = {
   "navigation": {
     "appTitle": "K-Maps"
   },
+  "expression": {
+    "title": "運算式填圖",
+    "body": "輸入使用你的變數的布林運算式，卡諾圖將依其真值表填入。",
+    "placeholder": "如 AB′ + C(D + A′)",
+    "action": "填入卡諾圖",
+    "cancel": "取消",
+    "clear": "清除",
+    "errorSyntax": "運算式無效。請檢查括號與運算子。",
+    "errorUnknown": "未知符號：{{token}}"
+  },
   "steps": {
     "button": "逐步講解",
     "title": "第 {{current}} 組，共 {{total}} 組",
@@ -120,7 +130,11 @@ export const zhTWTranslation = {
       "tapHint": "點選某一項即可在卡諾圖中標示對應群組。",
       "zoomHint": "雙指縮放 · 點兩下重置",
       "compact": "緊湊",
-      "stats": "閘: {{gates}} · 輸入: {{inputs}} · 級數: {{levels}}"
+      "stats": "閘: {{gates}} · 輸入: {{inputs}} · 級數: {{levels}}",
+      "mux": "MUX",
+      "decoder": "解碼器",
+      "muxNote": "使用 {{size}}:1 多工器實作——資料輸入由 {{variable}} 驅動。",
+      "decoderNote": "使用 {{inputs}} 對 {{outputs}} 解碼器實作；OR 閘組合所需的最小項。"
     },
     "fullscreen": "全螢幕檢視",
     "close": "關閉",
