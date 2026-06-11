@@ -8,6 +8,7 @@ import {
   removeExerciseHistoryEntry,
   toggleExerciseFavorite,
 } from "@/utils/exerciseHistory";
+import { hapticSuccess } from "@/utils/haptics";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -115,6 +116,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
   };
 
   const handleToggleFavorite = async (entry: ExerciseHistoryEntry) => {
+    hapticSuccess();
     await toggleExerciseFavorite(entry.id);
     loadHistory();
   };
@@ -333,6 +335,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
                       ? "history.accessibility.removeFavorite"
                       : "history.accessibility.addFavorite",
                   )}
+                  hitSlop={6}
                   style={({ pressed }) => [
                     styles.favoriteButton,
                     entry.isFavorite && styles.favoriteButtonActive,
@@ -365,6 +368,7 @@ export default function HistoryScreen({ navigation }: HistoryScreenProps) {
                   accessibilityLabel={t(
                     "history.accessibility.deleteExercise",
                   )}
+                  hitSlop={6}
                   style={({ pressed }) => [
                     styles.deleteButton,
                     pressed && styles.pressed,

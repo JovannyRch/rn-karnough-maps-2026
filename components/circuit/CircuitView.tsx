@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import useStore from "@/app/store";
 import { DUO } from "@/constants/duoTheme";
 import { getGroupColor } from "@/constants/groupColors";
+import { hapticSelect } from "@/utils/haptics";
+import Icon from "@expo/vector-icons/MaterialIcons";
 import CircuitDiagram from "./CircuitDiagram";
 import { buildDecoderScene, buildMuxScene } from "./implementations";
 import { buildCircuitScene } from "./layout";
@@ -21,6 +23,8 @@ interface CircuitViewProps {
   compact: boolean;
   onCompactChange: (compact: boolean) => void;
   fullscreen?: boolean;
+  /** When provided, shows a corner expand button that opens fullscreen. */
+  onExpand?: () => void;
 }
 
 const CircuitView = ({
@@ -29,6 +33,7 @@ const CircuitView = ({
   compact,
   onCompactChange,
   fullscreen = false,
+  onExpand,
 }: CircuitViewProps) => {
   const { t } = useTranslation();
   const {
@@ -82,6 +87,7 @@ const CircuitView = ({
       : null;
 
   const handleSelectTerm = (termIndex: number) => {
+    hapticSelect();
     setFocusedGroupIndex(selectedTerm === termIndex ? null : termIndex);
   };
 
@@ -131,10 +137,27 @@ const CircuitView = ({
 
   return (
     <View style={fullscreen ? styles.rootFullscreen : styles.root}>
+      {onExpand && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("result.accessibility.fullscreen")}
+          hitSlop={6}
+          style={({ pressed }) => [
+            styles.expandButton,
+            pressed && styles.expandButtonPressed,
+          ]}
+          onPress={() => {
+            hapticSelect();
+            onExpand();
+          }}
+        >
+          <Icon name="fullscreen" size={20} color={DUO.blueDark} />
+        </Pressable>
+      )}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.variantScroll}
+        style={[styles.variantScroll, onExpand && styles.variantScrollInset]}
         contentContainerStyle={styles.variantRow}
       >
         {(
@@ -154,7 +177,10 @@ const CircuitView = ({
               accessibilityState={{ selected: active }}
               accessibilityLabel={label}
               style={[styles.variantChip, active && styles.variantChipActive]}
-              onPress={() => onVariantChange(value)}
+              onPress={() => {
+                hapticSelect();
+                onVariantChange(value);
+              }}
             >
               <Text
                 style={[
@@ -185,7 +211,10 @@ const CircuitView = ({
             accessibilityState={{ checked: compact }}
             accessibilityLabel={t("result.circuit.compact")}
             style={[styles.compactChip, compact && styles.compactChipActive]}
-            onPress={() => onCompactChange(!compact)}
+            onPress={() => {
+              hapticSelect();
+              onCompactChange(!compact);
+            }}
           >
             <Text
               style={[
@@ -333,12 +362,32 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   constantText: {
-    color: "#2F4858",
+    color: DUO.slate,
     fontSize: 30,
     fontWeight: "900",
   },
   variantScroll: {
     flexGrow: 0,
+  },
+  variantScrollInset: {
+    marginRight: 50,
+  },
+  expandButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 5,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: DUO.border,
+    backgroundColor: DUO.card,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  expandButtonPressed: {
+    transform: [{ translateY: 1 }],
   },
   variantRow: {
     flexDirection: "row",
@@ -357,7 +406,7 @@ const styles = StyleSheet.create({
   },
   variantChipActive: {
     borderColor: DUO.blue,
-    backgroundColor: "#EAF7FE",
+    backgroundColor: DUO.blueSoft,
   },
   variantChipText: {
     color: DUO.muted,
@@ -400,7 +449,7 @@ const styles = StyleSheet.create({
   },
   compactChipActive: {
     borderColor: DUO.blue,
-    backgroundColor: "#EAF7FE",
+    backgroundColor: DUO.blueSoft,
   },
   compactChipText: {
     color: DUO.muted,
@@ -424,7 +473,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: DUO.border,
-    backgroundColor: "#F2F8EC",
+    backgroundColor: DUO.greenFaint,
     paddingHorizontal: 12,
     flexDirection: "row",
     alignItems: "center",
@@ -432,7 +481,7 @@ const styles = StyleSheet.create({
   },
   legendChipActive: {
     borderColor: DUO.blue,
-    backgroundColor: "#EAF7FE",
+    backgroundColor: DUO.blueSoft,
   },
   legendChipText: {
     color: DUO.ink,

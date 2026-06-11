@@ -324,7 +324,7 @@ export const jaTranslation = {
   onboarding: {
     badge: "ようこそ",
     skip: "スキップ",
-    title: "3ステップで始めましょう",
+    title: "はじめに",
     next: "次へ",
     start: "始める",
     slides: {
@@ -341,7 +341,17 @@ export const jaTranslation = {
       circuit: {
         title: "回路の確認",
         description:
-          "結果は下部に表示されます。「回路」をタップするとゲートを確認し、回路図をPDFで保存できます。",
+          "結果をリアルタイムの回路で表示。標準・NAND・NOR・MUX・デコーダを切り替え、項をタップするとグループが強調されます。",
+      },
+      steps: {
+        title: "ステップで学ぶ",
+        description:
+          "グループを1つずつ表示し、なぜそのグループができるのか、どの変数が消えるのかを解説します。",
+      },
+      tools: {
+        title: "もっと速く",
+        description:
+          "ƒ(x) でブール式からマップを自動入力。問題はリンクで友達と共有できます。",
       },
     },
   },

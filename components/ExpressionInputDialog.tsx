@@ -3,7 +3,9 @@ import { expressionToValues } from "@/app/utils/expressionParser";
 import { DUO } from "@/constants/duoTheme";
 import { useState } from "react";
 import {
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -86,7 +88,10 @@ const ExpressionInputDialog = ({
       animationType="fade"
       onRequestClose={close}
     >
-      <View style={styles.backdrop}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={styles.backdrop}
+      >
         <View style={styles.card}>
           <Text style={styles.title}>{t("expression.title")}</Text>
           <Text style={styles.body}>{t("expression.body")}</Text>
@@ -101,7 +106,7 @@ const ExpressionInputDialog = ({
             autoCorrect={false}
             style={styles.input}
             placeholder={t("expression.placeholder")}
-            placeholderTextColor="#7A8A74"
+            placeholderTextColor={DUO.placeholder}
           />
 
           <ScrollView
@@ -170,7 +175,7 @@ const ExpressionInputDialog = ({
             </Text>
           </Pressable>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -178,7 +183,7 @@ const ExpressionInputDialog = ({
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: "rgba(28, 42, 26, 0.45)",
+    backgroundColor: DUO.overlay,
     alignItems: "center",
     justifyContent: "center",
     padding: 18,
@@ -229,7 +234,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: DUO.border,
-    backgroundColor: "#F2F8EC",
+    backgroundColor: DUO.greenFaint,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 8,
@@ -249,7 +254,7 @@ const styles = StyleSheet.create({
   },
   error: {
     marginTop: 10,
-    color: "#C03A2B",
+    color: DUO.danger,
     fontWeight: "700",
     fontSize: 12.5,
   },
@@ -264,7 +269,7 @@ const styles = StyleSheet.create({
     borderBottomColor: DUO.greenDark,
   },
   primaryActionText: {
-    color: "#FFFFFF",
+    color: DUO.white,
     fontWeight: "900",
     fontSize: 15,
   },

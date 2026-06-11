@@ -22,6 +22,7 @@ import {
   incrementCompletedExercises,
   requestInAppReviewOnce,
 } from "@/utils/inAppReview";
+import { hapticLight, hapticSelect } from "@/utils/haptics";
 import {
   buildShareUrl,
   decodeSharePayload,
@@ -34,8 +35,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Clipboard,
+  KeyboardAvoidingView,
   Linking,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   Share,
@@ -659,7 +662,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             ]}
             onPress={() => setShowImportDialog(true)}
           >
-            <Icon name="input" size={17} color="#fff" />
+            <Icon name="content-paste" size={17} color="#fff" />
           </Pressable>
           <Pressable
             accessibilityRole="button"
@@ -1001,7 +1004,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         animationType="fade"
         onRequestClose={() => setShowImportDialog(false)}
       >
-        <View style={styles.dialogBackdrop}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          style={styles.dialogBackdrop}
+        >
           <View style={styles.dialogCard}>
             <Text style={styles.dialogTitle}>{t("share.importTitle")}</Text>
             <Text style={styles.dialogBody}>{t("share.importBody")}</Text>
@@ -1015,7 +1021,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               numberOfLines={4}
               style={styles.importInput}
               placeholder={t("share.importPlaceholder")}
-              placeholderTextColor="#7A8A74"
+              placeholderTextColor={DUO.placeholder}
             />
 
             <Pressable
@@ -1045,7 +1051,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               </Text>
             </Pressable>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       <Modal
@@ -1177,7 +1183,10 @@ const ChoiceButton = ({ text, active, onPress }: ChoiceButtonProps) => {
         active && styles.choiceButtonActive,
         pressed && styles.choiceButtonPressed,
       ]}
-      onPress={onPress}
+      onPress={() => {
+        hapticSelect();
+        onPress();
+      }}
     >
       <Text
         style={[
@@ -1209,7 +1218,10 @@ const ActionButton = ({
   return (
     <Pressable
       disabled={disabled}
-      onPress={onPress}
+      onPress={() => {
+        hapticSelect();
+        onPress();
+      }}
       style={({ pressed }) => [
         styles.actionButton,
         active && styles.actionButtonActive,
@@ -1239,7 +1251,10 @@ const QuickChip = ({
 }) => {
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => {
+        hapticLight();
+        onPress();
+      }}
       style={({ pressed }) => [
         styles.quickActionButton,
         pressed && styles.quickActionButtonPressed,

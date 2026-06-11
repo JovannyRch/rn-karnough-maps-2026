@@ -218,6 +218,7 @@ export default function MinimizationComparisonCard({
             accessibilityLabel={t(
               "result.comparison.accessibility.heuristicHelp",
             )}
+            hitSlop={12}
             style={({ pressed }) => [
               styles.helpButton,
               pressed && styles.pressed,
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0.4,
-    color: "#fff",
+    color: DUO.white,
   },
   badgeOk: {
     backgroundColor: DUO.green,
@@ -364,7 +365,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: DUO.border,
-    backgroundColor: "#F7FBF2",
+    backgroundColor: DUO.bg,
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
@@ -382,13 +383,13 @@ const styles = StyleSheet.create({
     minHeight: 44,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#93D96B",
-    backgroundColor: "#F2FFE8",
+    borderColor: DUO.mintBorder,
+    backgroundColor: DUO.mintSoft,
     justifyContent: "center",
     paddingHorizontal: 12,
   },
   expandButtonActive: {
-    backgroundColor: "#E7FBD8",
+    backgroundColor: DUO.mint,
   },
   expandButtonContent: {
     flexDirection: "row",
@@ -405,7 +406,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   expandPillText: {
-    color: "#fff",
+    color: DUO.white,
     fontSize: 11,
     fontWeight: "900",
   },

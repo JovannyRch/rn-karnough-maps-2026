@@ -1,6 +1,8 @@
 import useStore from "@/app/store";
+import { DUO } from "@/constants/duoTheme";
 import { BoxColor } from "@/app/types/types";
 import { nextSquareState } from "@/app/utils";
+import { hapticLight } from "@/utils/haptics";
 import { useEffect, useMemo } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -36,6 +38,7 @@ const GridBox = ({ index, row, column }: GridBoxProps) => {
   }, [boxColors, row, column]);
 
   const handleOnPress = (index: number) => {
+    hapticLight();
     const newValues = [...values];
     newValues[index] = nextSquareState(values[index]);
     setValues(newValues);
@@ -130,9 +133,9 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 60,
     borderWidth: 0.3,
-    borderColor: "black",
+    borderColor: DUO.ink,
     justifyContent: "center",
-    backgroundColor: "#C7D0D8",
+    backgroundColor: DUO.cellBg,
   },
   touch: {
     display: "flex",
@@ -175,7 +178,7 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 23,
     textAlign: "center",
-    color: "black",
+    color: DUO.ink,
   },
 });
 export default GridBox;

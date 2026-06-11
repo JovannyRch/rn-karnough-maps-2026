@@ -346,7 +346,7 @@ export const resources = {
       onboarding: {
         badge: "BIENVENIDO",
         skip: "Saltar",
-        title: "Empieza en 3 pasos",
+        title: "Comienza aquí",
         next: "Siguiente",
         start: "Comenzar",
         slides: {
@@ -363,7 +363,17 @@ export const resources = {
           circuit: {
             title: "Leer el circuito",
             description:
-              "El resultado se actualiza abajo. Toca Circuito para ver compuertas y exportar PDF del diagrama.",
+              "Mira el resultado como un circuito en vivo — estándar, NAND, NOR, MUX o decodificador — y toca un término para resaltar su grupo en el mapa.",
+          },
+          steps: {
+            title: "Aprende paso a paso",
+            description:
+              "Revela la solución grupo por grupo, con una explicación de por qué se forma cada grupo y qué variables se eliminan.",
+          },
+          tools: {
+            title: "Trabaja más rápido",
+            description:
+              "Llena el mapa desde una expresión booleana con ƒ(x) y comparte cualquier ejercicio con tus compañeros mediante un enlace.",
           },
         },
       },
@@ -702,7 +712,7 @@ export const resources = {
       onboarding: {
         badge: "WELCOME",
         skip: "Skip",
-        title: "Get started in 3 steps",
+        title: "Get started",
         next: "Next",
         start: "Start",
         slides: {
@@ -719,7 +729,17 @@ export const resources = {
           circuit: {
             title: "Read the circuit",
             description:
-              "The result updates below. Tap Circuit to view the gates and export the diagram as a PDF.",
+              "See the result as a live circuit — standard, NAND, NOR, MUX or decoder — and tap a term to highlight its group on the map.",
+          },
+          steps: {
+            title: "Learn step by step",
+            description:
+              "Reveal the solution one group at a time, with an explanation of why each group forms and which variables drop out.",
+          },
+          tools: {
+            title: "Work faster",
+            description:
+              "Fill the map from a Boolean expression with ƒ(x), and share any exercise with classmates as a link.",
           },
         },
       },

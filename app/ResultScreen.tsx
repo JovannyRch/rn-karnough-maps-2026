@@ -88,56 +88,35 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
               </Text>
             </View>
           </View>
-          <View style={styles.actionsRow}>
-            <DownloadPDFButton
-              compact
-              circuitVariant={circuitVariant}
-              circuitCompact={circuitCompact}
-            />
-            {/* <Pressable
-              style={({ pressed }) => [
-                styles.backButton,
-                pressed && styles.buttonPressed,
-              ]}
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.backButtonText}>Editar mapa</Text>
-            </Pressable> */}
-          </View>
-          <ExportSessionPDFButton
-            circuitVariant={circuitVariant}
-            circuitCompact={circuitCompact}
-          />
-          <MinimizationComparisonCard
-            values={values}
-            variableQuantity={variableQuantity}
-            resultType={resultType}
-            currentResult={result}
-          />
           <Text style={styles.sectionTitle}>
             {t("result.circuitDiagram")}
           </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t("result.accessibility.fullscreen")}
-            style={({ pressed }) => [
-              styles.fullscreenButton,
-              pressed && styles.buttonPressed,
-            ]}
-            onPress={() => setIsCircuitFullscreen(true)}
-          >
-            <Text style={styles.fullscreenButtonText}>
-              {t("result.fullscreen")}
-            </Text>
-          </Pressable>
           <View style={styles.circuitCard}>
             <CircuitView
               variant={circuitVariant}
               onVariantChange={setCircuitVariant}
               compact={circuitCompact}
               onCompactChange={setCircuitCompact}
+              onExpand={() => setIsCircuitFullscreen(true)}
             />
           </View>
+          <MinimizationComparisonCard
+            values={values}
+            variableQuantity={variableQuantity}
+            resultType={resultType}
+            currentResult={result}
+          />
+          <View style={styles.actionsRow}>
+            <DownloadPDFButton
+              compact
+              circuitVariant={circuitVariant}
+              circuitCompact={circuitCompact}
+            />
+          </View>
+          <ExportSessionPDFButton
+            circuitVariant={circuitVariant}
+            circuitCompact={circuitCompact}
+          />
         </Reanimated.View>
       </ScrollView>
       {!adsSuppressed && <MyBannerAd />}
@@ -173,7 +152,6 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
               fullscreen
             />
           </View>
-          {!adsSuppressed && <MyBannerAd />}
         </SafeAreaView>
         </GestureHandlerRootView>
       </Modal>
@@ -237,21 +215,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 8,
   },
-  backButton: {
-    flex: 1,
-    minHeight: 48,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: DUO.borderStrong,
-    backgroundColor: DUO.card,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  backButtonText: {
-    color: DUO.ink,
-    fontWeight: "800",
-    fontSize: 14,
-  },
   buttonPressed: {
     transform: [{ translateY: 1 }],
   },
@@ -274,22 +237,6 @@ const styles = StyleSheet.create({
     borderColor: DUO.border,
     backgroundColor: DUO.card,
     overflow: "hidden",
-  },
-  fullscreenButton: {
-    marginHorizontal: 12,
-    marginBottom: 8,
-    minHeight: 44,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: DUO.borderStrong,
-    backgroundColor: DUO.card,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  fullscreenButtonText: {
-    color: DUO.ink,
-    fontWeight: "800",
-    fontSize: 13,
   },
   fullscreenContainer: {
     flex: 1,

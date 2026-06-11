@@ -51,6 +51,20 @@ const getSlides = (t: TFunction): Slide[] => [
     icon: "schema",
     accent: DUO.yellow,
   },
+  {
+    id: "steps",
+    title: t("onboarding.slides.steps.title"),
+    description: t("onboarding.slides.steps.description"),
+    icon: "school",
+    accent: DUO.orange,
+  },
+  {
+    id: "tools",
+    title: t("onboarding.slides.tools.title"),
+    description: t("onboarding.slides.tools.description"),
+    icon: "functions",
+    accent: DUO.blueDark,
+  },
 ];
 
 export default function OnboardingScreen({

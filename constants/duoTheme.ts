@@ -13,4 +13,22 @@ export const DUO = {
   yellow: "#FFC800",
   orange: "#FF9F1A",
   orangeDark: "#E17F00",
+
+  // Extended tokens — every styled component should reference these instead
+  // of hardcoding colors (prerequisite for theming/dark mode).
+  white: "#FFFFFF",
+  blueSoft: "#EAF7FE",
+  greenFaint: "#F2F8EC",
+  greenText: "#3A7F1A",
+  greenShadow: "#96BC7C",
+  mintSoft: "#F2FFE8",
+  mint: "#E7FBD8",
+  mintBorder: "#93D96B",
+  cellBg: "#C7D0D8",
+  tableText: "#2A4320",
+  tableTextStrong: "#1F352B",
+  slate: "#2F4858",
+  danger: "#C03A2B",
+  placeholder: "#7A8A74",
+  overlay: "rgba(28, 42, 26, 0.45)",
 } as const;

@@ -3,10 +3,11 @@ import { gateBodyPath, gateBubble, gateLabel } from "./gatePaths";
 import { buildDecoderScene, buildMuxScene } from "./implementations";
 import { buildCircuitScene, CircuitScene } from "./layout";
 import { CircuitVariant, parseCircuitModel, SolveType } from "./model";
-
-const INK = "#2F4858";
-const RAIL = "#9AAFA0";
-const GATE_FILL = "#FFFFFF";
+import {
+  CIRCUIT_GATE_FILL as GATE_FILL,
+  CIRCUIT_INK as INK,
+  CIRCUIT_RAIL as RAIL,
+} from "./palette";
 
 const escapeXml = (value: string): string =>
   value

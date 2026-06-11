@@ -325,7 +325,7 @@ export const frTranslation = {
   onboarding: {
     badge: "BIENVENUE",
     skip: "Passer",
-    title: "Commencez en 3 étapes",
+    title: "Commencez ici",
     next: "Suivant",
     start: "Commencer",
     slides: {
@@ -342,7 +342,17 @@ export const frTranslation = {
       circuit: {
         title: "Lire le circuit",
         description:
-          "Le résultat se met à jour ci-dessous. Touchez Circuit pour voir les portes et exporter le schéma en PDF.",
+          "Visualisez le résultat en circuit — standard, NAND, NOR, MUX ou décodeur — et touchez un terme pour surligner son groupe.",
+      },
+      steps: {
+        title: "Apprenez pas à pas",
+        description:
+          "Révélez la solution groupe par groupe, avec une explication de la formation de chaque groupe et des variables éliminées.",
+      },
+      tools: {
+        title: "Travaillez plus vite",
+        description:
+          "Remplissez la carte depuis une expression booléenne avec ƒ(x) et partagez vos exercices par lien.",
       },
     },
   },

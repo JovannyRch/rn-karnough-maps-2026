@@ -1,4 +1,5 @@
 import useStore from "@/app/store";
+import { DUO } from "@/constants/duoTheme";
 import { StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -33,10 +34,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 14,
     borderRadius: 18,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: DUO.card,
     borderWidth: 1,
-    borderColor: "#D9E8CC",
-    shadowColor: "#96BC7C",
+    borderColor: DUO.border,
+    shadowColor: DUO.greenShadow,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.12,
     shadowRadius: 10,
@@ -44,14 +45,14 @@ const styles = StyleSheet.create({
   },
   headerPill: {
     alignSelf: "flex-start",
-    backgroundColor: "#EAF8DE",
+    backgroundColor: DUO.greenSoft,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 5,
     marginBottom: 10,
   },
   headerText: {
-    color: "#3A7F1A",
+    color: DUO.greenText,
     fontSize: 12,
     fontWeight: "800",
     letterSpacing: 0.4,
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
   resultItem: {
     fontSize: 22,
     fontWeight: "800",
-    color: "#1C2A1A",
+    color: DUO.ink,
   },
 });
 

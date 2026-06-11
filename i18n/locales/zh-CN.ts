@@ -311,19 +311,27 @@ export const zhCNTranslation = {
     "skip": "跳过",
     "next": "下一个",
     "start": "开始",
-    "title": "只需 3 步即可开始使用",
+    "title": "开始使用",
     "slides": {
       "values": {
         "title": "更改 0 / 1 / X",
-        "description": "点击每个单元格即可循环 0 → 1 → X。使用快速筹码一键即可填满整个地图。"
+        "description": "点击每个单元格即可循环 0 → 1 → X。使用快捷按钮一键填满整个卡诺图。"
       },
       "sopPos": {
         "title": "SOP 与 POS",
-        "description": "SOP 最大限度地减少 1 秒的使用。 POS 最大限度地减少使用 0。更改上面的类型以使用您需要的格式进行求解。"
+        "description": "SOP 使用 1 进行化简，POS 使用 0 进行化简。在上方切换类型即可按需要的格式求解。"
       },
       "circuit": {
         "title": "读电路",
-        "description": "结果更新如下。点击电路查看门并将图表导出为 PDF。"
+        "description": "将结果显示为实时电路——标准、NAND、NOR、MUX 或译码器——点击某一项即可高亮其分组。"
+      },
+      "steps": {
+        "title": "逐步学习",
+        "description": "逐组展示解答，并解释每个分组的成因以及哪些变量被消去。"
+      },
+      "tools": {
+        "title": "更高效",
+        "description": "使用 ƒ(x) 从布尔表达式填充卡诺图，并通过链接与同学分享练习。"
       }
     }
   }

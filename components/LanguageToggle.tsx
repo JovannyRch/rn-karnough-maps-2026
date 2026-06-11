@@ -50,6 +50,7 @@ export const LanguageToggle = () => {
         )}
         accessibilityHint={t("common.languageSelector.accessibilityHint")}
         onPress={() => setIsOpen(true)}
+        hitSlop={6}
         style={({ pressed }) => [
           styles.button,
           pressed && styles.buttonPressed,
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
-    backgroundColor: "rgba(28, 42, 26, 0.45)",
+    backgroundColor: DUO.overlay,
   },
   dialog: {
     width: "100%",
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
   },
   optionSelected: {
     borderColor: DUO.blue,
-    backgroundColor: "#E8F7FE",
+    backgroundColor: DUO.blueSoft,
   },
   optionPressed: {
     opacity: 0.7,

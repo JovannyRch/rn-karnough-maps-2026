@@ -309,21 +309,29 @@ export const zhTWTranslation = {
   "onboarding": {
     "badge": "歡迎",
     "skip": "跳過",
-    "title": "只需 3 步驟即可開始使用",
+    "title": "開始使用",
     "next": "下一個",
     "start": "開始",
     "slides": {
       "sopPos": {
         "title": "SOP 與 POS",
-        "description": "SOP 最大限度地減少 1 秒的使用。 POS 最大限度地減少使用 0。更改上面的類型以使用您需要的格式進行求解。"
+        "description": "SOP 使用 1 進行化簡，POS 使用 0 進行化簡。在上方切換類型即可按需要的格式求解。"
       },
       "circuit": {
         "title": "讀電路",
-        "description": "結果更新如下。點擊電路查看門並將圖表匯出為 PDF。"
+        "description": "將結果顯示為即時電路——標準、NAND、NOR、MUX 或解碼器——點選某一項即可標示其群組。"
+      },
+      "steps": {
+        "title": "逐步學習",
+        "description": "逐組展示解答，並解釋每個群組的成因以及哪些變數被消去。"
+      },
+      "tools": {
+        "title": "更高效",
+        "description": "使用 ƒ(x) 從布林運算式填入卡諾圖，並透過連結與同學分享練習。"
       },
       "values": {
         "title": "更改 0 / 1 / X",
-        "description": "點選每個儲存格即可循環 0 → 1 → X。使用快速籌碼一鍵即可填滿整個地圖。"
+        "description": "點選每個儲存格即可循環 0 → 1 → X。使用快捷按鈕一鍵填滿整個卡諾圖。"
       }
     }
   }

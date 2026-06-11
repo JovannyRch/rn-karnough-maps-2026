@@ -1,4 +1,5 @@
 import useStore from "@/app/store";
+import { DUO } from "@/constants/duoTheme";
 import { buildGroupColorsByMinterm } from "@/utils/groupColorLookup";
 import { useMemo } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -111,22 +112,22 @@ const styles = StyleSheet.create({
   containerTable: {
     paddingHorizontal: 4,
     paddingVertical: 8,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: DUO.card,
     borderWidth: 1,
-    borderColor: "#D9E8CC",
+    borderColor: DUO.border,
     borderRadius: 16,
     minWidth: 300,
   },
   tableBorder: {
     borderWidth: 1,
-    borderColor: "#D9E8CC",
+    borderColor: DUO.border,
   },
   head: {
     height: 42,
-    backgroundColor: "#58CC02",
+    backgroundColor: DUO.green,
   },
   headText: {
-    color: "#FFFFFF",
+    color: DUO.white,
     textAlign: "center",
     fontSize: 14,
     fontWeight: "800",
@@ -139,15 +140,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   evenRow: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: DUO.card,
   },
   oddRow: {
-    backgroundColor: "#F7FBF2",
+    backgroundColor: DUO.bg,
   },
   text: {
     margin: 6,
     textAlign: "center",
-    color: "#2A4320",
+    color: DUO.tableText,
     fontSize: 14,
     fontWeight: "600",
   },
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#1f352b",
+    borderColor: DUO.tableTextStrong,
   },
 });
 

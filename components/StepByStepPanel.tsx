@@ -1,6 +1,7 @@
 import useStore from "@/app/store";
 import { DUO } from "@/constants/duoTheme";
 import { getGroupColor } from "@/constants/groupColors";
+import { hapticSelect } from "@/utils/haptics";
 import Icon from "@expo/vector-icons/MaterialIcons";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -37,6 +38,7 @@ const StepByStepPanel = ({ bottom }: StepByStepPanelProps) => {
   const target = resultType === "SOP" ? "1" : "0";
 
   const exit = () => {
+    hapticSelect();
     setStepIndex(null);
     setFocusedGroupIndex(null);
   };
@@ -49,6 +51,7 @@ const StepByStepPanel = ({ bottom }: StepByStepPanelProps) => {
       exit();
       return;
     }
+    hapticSelect();
     setStepIndex(next);
     setFocusedGroupIndex(next < total ? next : null);
   };
@@ -167,7 +170,7 @@ const styles = StyleSheet.create({
     borderColor: DUO.borderStrong,
     backgroundColor: DUO.card,
     padding: 14,
-    shadowColor: "#1C2A1A",
+    shadowColor: DUO.ink,
     shadowOpacity: 0.12,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
@@ -274,7 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   navButtonPrimaryText: {
-    color: "#FFFFFF",
+    color: DUO.white,
     fontWeight: "900",
     fontSize: 14,
   },

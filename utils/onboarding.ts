@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ONBOARDING_SEEN_KEY = "@onboarding_seen_v1";
+// Bumping the version re-shows the tour once after an update, doubling as a
+// "what's new" announcement (v2: step-by-step, circuit variants, ƒ(x), share).
+const ONBOARDING_SEEN_KEY = "@onboarding_seen_v2";
 
 export const hasSeenOnboarding = async (): Promise<boolean> => {
   try {

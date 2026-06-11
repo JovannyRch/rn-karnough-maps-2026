@@ -322,7 +322,7 @@ export const deTranslation = {
   onboarding: {
     badge: "WILLKOMMEN",
     skip: "Überspringen",
-    title: "In 3 Schritten starten",
+    title: "Los geht's",
     next: "Weiter",
     start: "Starten",
     slides: {
@@ -339,7 +339,17 @@ export const deTranslation = {
       circuit: {
         title: "Schaltung lesen",
         description:
-          "Das Ergebnis wird unten aktualisiert. Tippe auf Schaltung, um die Gatter anzuzeigen und das Diagramm als PDF zu exportieren.",
+          "Sieh das Ergebnis als Live-Schaltung — Standard, NAND, NOR, MUX oder Decoder — und tippe auf einen Term, um seine Gruppe hervorzuheben.",
+      },
+      steps: {
+        title: "Schritt für Schritt lernen",
+        description:
+          "Decke die Lösung Gruppe für Gruppe auf — mit Erklärung, warum jede Gruppe entsteht und welche Variablen entfallen.",
+      },
+      tools: {
+        title: "Schneller arbeiten",
+        description:
+          "Fülle die Karte mit ƒ(x) aus einem booleschen Ausdruck und teile jede Aufgabe per Link mit anderen.",
       },
     },
   },
