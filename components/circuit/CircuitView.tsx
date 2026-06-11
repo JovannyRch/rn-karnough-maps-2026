@@ -6,6 +6,7 @@ import useStore from "@/app/store";
 import { DUO } from "@/constants/duoTheme";
 import { getGroupColor } from "@/constants/groupColors";
 import CircuitDiagram from "./CircuitDiagram";
+import { buildDecoderScene, buildMuxScene } from "./implementations";
 import { buildCircuitScene } from "./layout";
 import {
   CircuitVariant,
@@ -34,20 +35,46 @@ const CircuitView = ({
     resultType,
     circuitVector,
     variables,
+    values,
+    variableQuantity,
+    variableRotation,
     focusedGroupIndex,
     setFocusedGroupIndex,
   } = useStore();
   const [inlineWidth, setInlineWidth] = useState(0);
+
+  const isBlockVariant = variant === "mux" || variant === "decoder";
 
   const model = useMemo(
     () => parseCircuitModel(circuitVector, resultType),
     [circuitVector, resultType],
   );
 
-  const scene = useMemo(
-    () => buildCircuitScene(model, variables, variant, compact),
-    [model, variables, variant, compact],
-  );
+  const scene = useMemo(() => {
+    if (model.kind !== "network") {
+      return null;
+    }
+    if (variant === "mux") {
+      return buildMuxScene(values, variableQuantity, variableRotation, variables);
+    }
+    if (variant === "decoder") {
+      return buildDecoderScene(
+        values,
+        variableQuantity,
+        variableRotation,
+        variables,
+      );
+    }
+    return buildCircuitScene(model, variables, variant, compact);
+  }, [
+    model,
+    variables,
+    variant,
+    compact,
+    values,
+    variableQuantity,
+    variableRotation,
+  ]);
 
   const selectedTerm =
     focusedGroupIndex !== null && focusedGroupIndex < model.terms.length
@@ -79,7 +106,17 @@ const CircuitView = ({
       ? t("result.circuit.nandNote")
       : variant === "nor"
         ? t("result.circuit.norNote")
-        : null;
+        : variant === "mux"
+          ? t("result.circuit.muxNote", {
+              size: 2 ** (variableQuantity - 1),
+              variable: variables[variableQuantity - 1],
+            })
+          : variant === "decoder"
+            ? t("result.circuit.decoderNote", {
+                inputs: variableQuantity,
+                outputs: 2 ** variableQuantity,
+              })
+            : null;
 
   const inlineScale =
     inlineWidth > 0 ? Math.min(1, (inlineWidth - 12) / scene.width) : 1;
@@ -87,19 +124,26 @@ const CircuitView = ({
   const diagram = (
     <CircuitDiagram
       scene={scene}
-      selectedTerm={selectedTerm}
-      onSelectTerm={handleSelectTerm}
+      selectedTerm={isBlockVariant ? null : selectedTerm}
+      onSelectTerm={isBlockVariant ? undefined : handleSelectTerm}
     />
   );
 
   return (
     <View style={fullscreen ? styles.rootFullscreen : styles.root}>
-      <View style={styles.variantRow}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.variantScroll}
+        contentContainerStyle={styles.variantRow}
+      >
         {(
           [
             ["standard", t("result.circuit.standard")],
             ["nand", t("result.circuit.nandOnly")],
             ["nor", t("result.circuit.norOnly")],
+            ["mux", t("result.circuit.mux")],
+            ["decoder", t("result.circuit.decoder")],
           ] as const
         ).map(([value, label]) => {
           const active = variant === value;
@@ -123,36 +167,39 @@ const CircuitView = ({
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
 
       {variantNote && <Text style={styles.note}>{variantNote}</Text>}
 
-      <View style={styles.metaRow}>
-        <Text style={styles.statsText}>
-          {t("result.circuit.stats", {
-            gates: scene.stats.gates,
-            inputs: scene.stats.inputs,
-            levels: scene.stats.levels,
-          })}
-        </Text>
-        <Pressable
-          accessibilityRole="switch"
-          accessibilityState={{ checked: compact }}
-          accessibilityLabel={t("result.circuit.compact")}
-          style={[styles.compactChip, compact && styles.compactChipActive]}
-          onPress={() => onCompactChange(!compact)}
-        >
-          <Text
-            style={[
-              styles.compactChipText,
-              compact && styles.compactChipTextActive,
-            ]}
-          >
-            {t("result.circuit.compact")}
+      {!isBlockVariant && (
+        <View style={styles.metaRow}>
+          <Text style={styles.statsText}>
+            {t("result.circuit.stats", {
+              gates: scene.stats.gates,
+              inputs: scene.stats.inputs,
+              levels: scene.stats.levels,
+            })}
           </Text>
-        </Pressable>
-      </View>
+          <Pressable
+            accessibilityRole="switch"
+            accessibilityState={{ checked: compact }}
+            accessibilityLabel={t("result.circuit.compact")}
+            style={[styles.compactChip, compact && styles.compactChipActive]}
+            onPress={() => onCompactChange(!compact)}
+          >
+            <Text
+              style={[
+                styles.compactChipText,
+                compact && styles.compactChipTextActive,
+              ]}
+            >
+              {t("result.circuit.compact")}
+            </Text>
+          </Pressable>
+        </View>
+      )}
 
+      {!isBlockVariant && (
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -207,6 +254,7 @@ const CircuitView = ({
           );
         })}
       </ScrollView>
+      )}
 
       {fullscreen ? (
         <>
@@ -289,13 +337,16 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "900",
   },
+  variantScroll: {
+    flexGrow: 0,
+  },
   variantRow: {
     flexDirection: "row",
     gap: 8,
     paddingHorizontal: 12,
   },
   variantChip: {
-    flex: 1,
+    paddingHorizontal: 14,
     minHeight: 40,
     borderRadius: 12,
     borderWidth: 1.5,

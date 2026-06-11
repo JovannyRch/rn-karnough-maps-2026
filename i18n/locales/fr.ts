@@ -130,6 +130,12 @@ export const frTranslation = {
       zoomHint: "Pincez pour zoomer · appuyez deux fois pour réinitialiser",
       compact: "Compact",
       stats: "Portes : {{gates}} · Entrées : {{inputs}} · Niveaux : {{levels}}",
+      mux: "MUX",
+      decoder: "Décodeur",
+      muxNote:
+        "Réalisé avec un multiplexeur {{size}}:1 — {{variable}} alimente les entrées de données.",
+      decoderNote:
+        "Réalisé avec un décodeur {{inputs}} vers {{outputs}} ; la porte OR combine les minterms requis.",
     },
     accessibility: {
       fullscreen: "Ouvrir le circuit en plein écran",

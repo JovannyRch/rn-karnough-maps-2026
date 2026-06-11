@@ -121,7 +121,11 @@ export const koTranslation = {
       "tapHint": "항을 탭하면 맵에서 해당 그룹이 강조 표시됩니다.",
       "zoomHint": "핀치로 확대 · 두 번 탭하여 초기화",
       "compact": "간단히",
-      "stats": "게이트: {{gates}} · 입력: {{inputs}} · 단계: {{levels}}"
+      "stats": "게이트: {{gates}} · 입력: {{inputs}} · 단계: {{levels}}",
+      "mux": "MUX",
+      "decoder": "디코더",
+      "muxNote": "{{size}}:1 멀티플렉서로 구현 — 데이터 입력은 {{variable}}가 담당합니다.",
+      "decoderNote": "{{inputs}}→{{outputs}} 디코더로 구현 — 필요한 최소항을 OR 게이트로 결합합니다."
     },
     "type": "유형: {{type}}",
     "badge": "논리 출력",

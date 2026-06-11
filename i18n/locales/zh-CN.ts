@@ -120,7 +120,11 @@ export const zhCNTranslation = {
       "tapHint": "点击某一项即可在卡诺图中高亮对应分组。",
       "zoomHint": "双指缩放 · 双击重置",
       "compact": "紧凑",
-      "stats": "门: {{gates}} · 输入: {{inputs}} · 级数: {{levels}}"
+      "stats": "门: {{gates}} · 输入: {{inputs}} · 级数: {{levels}}",
+      "mux": "MUX",
+      "decoder": "译码器",
+      "muxNote": "使用 {{size}}:1 多路选择器实现——数据输入由 {{variable}} 驱动。",
+      "decoderNote": "使用 {{inputs}} 线-{{outputs}} 线译码器实现；OR 门组合所需的最小项。"
     },
     "variables": "变量：{{count}}",
     "close": "关闭",

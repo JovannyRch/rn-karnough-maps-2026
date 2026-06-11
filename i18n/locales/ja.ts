@@ -131,6 +131,12 @@ export const jaTranslation = {
       zoomHint: "ピンチでズーム · ダブルタップでリセット",
       compact: "コンパクト",
       stats: "ゲート: {{gates}} · 入力: {{inputs}} · 段数: {{levels}}",
+      mux: "MUX",
+      decoder: "デコーダ",
+      muxNote:
+        "{{size}}:1 マルチプレクサで実装。データ入力は {{variable}} が担います。",
+      decoderNote:
+        "{{inputs}}→{{outputs}} デコーダで実装。必要な最小項を OR ゲートでまとめます。",
     },
     accessibility: {
       fullscreen: "回路を全画面で開く",

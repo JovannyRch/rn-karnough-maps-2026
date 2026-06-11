@@ -129,6 +129,12 @@ export const itTranslation = {
       zoomHint: "Pizzica per ingrandire · tocca due volte per reimpostare",
       compact: "Compatto",
       stats: "Porte: {{gates}} · Ingressi: {{inputs}} · Livelli: {{levels}}",
+      mux: "MUX",
+      decoder: "Decoder",
+      muxNote:
+        "Realizzato con un multiplexer {{size}}:1 — {{variable}} alimenta gli ingressi dati.",
+      decoderNote:
+        "Realizzato con un decoder da {{inputs}} a {{outputs}}; la porta OR combina i mintermini richiesti.",
     },
     accessibility: {
       fullscreen: "Apri il circuito a schermo intero",

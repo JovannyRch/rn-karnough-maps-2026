@@ -128,6 +128,12 @@ export const deTranslation = {
       zoomHint: "Zum Zoomen auf- und zuziehen · Doppeltippen zum Zurücksetzen",
       compact: "Kompakt",
       stats: "Gatter: {{gates}} · Eingänge: {{inputs}} · Ebenen: {{levels}}",
+      mux: "MUX",
+      decoder: "Decoder",
+      muxNote:
+        "Mit einem {{size}}:1-Multiplexer umgesetzt — {{variable}} speist die Dateneingänge.",
+      decoderNote:
+        "Mit einem {{inputs}}-zu-{{outputs}}-Decoder umgesetzt; das OR-Gatter kombiniert die benötigten Minterme.",
     },
     accessibility: {
       fullscreen: "Schaltung im Vollbild öffnen",

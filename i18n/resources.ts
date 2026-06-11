@@ -147,6 +147,12 @@ export const resources = {
           compact: "Compacto",
           stats:
             "Compuertas: {{gates}} · Entradas: {{inputs}} · Niveles: {{levels}}",
+          mux: "MUX",
+          decoder: "Decodificador",
+          muxNote:
+            "Implementado con un multiplexor {{size}}:1 — {{variable}} alimenta las entradas de datos.",
+          decoderNote:
+            "Implementado con un decodificador {{inputs}} a {{outputs}}; la compuerta OR combina los minitérminos requeridos.",
         },
         accessibility: {
           fullscreen: "Abrir el circuito en pantalla completa",
@@ -487,6 +493,12 @@ export const resources = {
           zoomHint: "Pinch to zoom · double-tap to reset",
           compact: "Compact",
           stats: "Gates: {{gates}} · Inputs: {{inputs}} · Levels: {{levels}}",
+          mux: "MUX",
+          decoder: "Decoder",
+          muxNote:
+            "Implemented with a {{size}}:1 multiplexer — {{variable}} drives the data inputs.",
+          decoderNote:
+            "Implemented with a {{inputs}}-to-{{outputs}} decoder; the OR gate combines the required minterms.",
         },
         accessibility: {
           fullscreen: "Open the circuit in fullscreen",

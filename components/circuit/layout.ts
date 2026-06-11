@@ -62,6 +62,11 @@ export interface CircuitStats {
   levels: number;
 }
 
+/** Free-form component body (MUX trapezoid, decoder rectangle) as an SVG path. */
+export interface SceneBox {
+  d: string;
+}
+
 export interface CircuitScene {
   width: number;
   height: number;
@@ -70,6 +75,7 @@ export interface CircuitScene {
   junctions: SceneJunction[];
   labels: SceneLabel[];
   hits: SceneHit[];
+  boxes: SceneBox[];
   stats: CircuitStats;
 }
 
@@ -84,7 +90,7 @@ export const gateOutputX = (kind: GateKind, x: number, w: number, h: number) =>
 
 /** OR-shaped gates have a concave input edge; wires overlap a little and the
  *  gate fill (drawn afterwards) covers the excess. */
-const gateInputX = (kind: GateKind, x: number, w: number): number =>
+export const gateInputX = (kind: GateKind, x: number, w: number): number =>
   kind === "or" || kind === "nor" ? x + Math.min(12, w * 0.2) : x;
 
 const spreadPinYs = (count: number, centerY: number, spacing: number) => {
@@ -666,6 +672,7 @@ export const buildCircuitScene = (
     junctions,
     labels,
     hits,
+    boxes: [],
     stats: {
       gates: statGates,
       inputs: statInputs,

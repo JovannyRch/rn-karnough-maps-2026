@@ -120,7 +120,11 @@ export const zhTWTranslation = {
       "tapHint": "點選某一項即可在卡諾圖中標示對應群組。",
       "zoomHint": "雙指縮放 · 點兩下重置",
       "compact": "緊湊",
-      "stats": "閘: {{gates}} · 輸入: {{inputs}} · 級數: {{levels}}"
+      "stats": "閘: {{gates}} · 輸入: {{inputs}} · 級數: {{levels}}",
+      "mux": "MUX",
+      "decoder": "解碼器",
+      "muxNote": "使用 {{size}}:1 多工器實作——資料輸入由 {{variable}} 驅動。",
+      "decoderNote": "使用 {{inputs}} 對 {{outputs}} 解碼器實作；OR 閘組合所需的最小項。"
     },
     "fullscreen": "全螢幕檢視",
     "close": "關閉",
