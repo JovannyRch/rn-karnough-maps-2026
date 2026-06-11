@@ -17,3 +17,15 @@ export interface VectorResultItem {
   groupIndex?: number;
   style: any;
 }
+
+/** Per-group explanation data for the step-by-step solve mode. */
+export interface GroupStepInfo {
+  groupIndex: number;
+  termPlain: string;
+  termMath: string;
+  cellCount: number;
+  /** Literals that stay constant across the group, e.g. ["A", "C'"]. */
+  fixedLiterals: string[];
+  /** Variables that change inside the group and drop out, e.g. ["B"]. */
+  eliminatedVariables: string[];
+}

@@ -38,15 +38,20 @@ const utf8ToBase64Url = (value: string) => {
   return output;
 };
 
+// String.prototype.indexOf("") returns 0, so out-of-range characters must
+// map to -1 explicitly or absent trailing chars decode as spurious bytes.
+const charIndex = (char: string | undefined) =>
+  char ? BASE64_URL_CHARS.indexOf(char) : -1;
+
 const base64UrlToUtf8 = (value: string) => {
   const clean = value.replace(/[^A-Za-z0-9\-_]/g, "");
   const bytes: number[] = [];
 
   for (let i = 0; i < clean.length; i += 4) {
-    const c0 = BASE64_URL_CHARS.indexOf(clean[i] ?? "");
-    const c1 = BASE64_URL_CHARS.indexOf(clean[i + 1] ?? "");
-    const c2 = BASE64_URL_CHARS.indexOf(clean[i + 2] ?? "");
-    const c3 = BASE64_URL_CHARS.indexOf(clean[i + 3] ?? "");
+    const c0 = charIndex(clean[i]);
+    const c1 = charIndex(clean[i + 1]);
+    const c2 = charIndex(clean[i + 2]);
+    const c3 = charIndex(clean[i + 3]);
 
     if (c0 < 0 || c1 < 0) {
       throw new Error("Invalid Base64URL code");

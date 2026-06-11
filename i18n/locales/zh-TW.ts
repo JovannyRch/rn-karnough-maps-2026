@@ -78,8 +78,50 @@ export const zhTWTranslation = {
   "navigation": {
     "appTitle": "K-Maps"
   },
+  "steps": {
+    "button": "逐步講解",
+    "title": "第 {{current}} 組，共 {{total}} 組",
+    "finalTitle": "最終運算式",
+    "covered_other": "包含 {{count}} 個值為 {{target}} 的儲存格。",
+    "eliminated": "{{variables}} 在組內發生變化，因此被消去。",
+    "eliminatedNone": "該組中所有變數保持不變。",
+    "termIntro": "保持不變的變數構成該項：",
+    "finalBody": "將所有項組合即可得到最簡運算式：",
+    "next": "下一步",
+    "back": "上一步",
+    "done": "完成",
+    "exit": "退出逐步講解"
+  },
+  "share": {
+    "accessibilityShare": "分享練習",
+    "accessibilityImport": "匯入練習",
+    "shareTitle": "卡諾圖",
+    "shareMessage": "來挑戰這道卡諾圖練習：\n{{url}}",
+    "shareErrorTitle": "錯誤",
+    "shareErrorMessage": "無法產生分享連結。",
+    "importTitle": "匯入練習",
+    "importBody": "貼上分享的連結或代碼以載入卡諾圖。",
+    "importPlaceholder": "連結或代碼",
+    "importAction": "載入練習",
+    "cancel": "取消",
+    "importedTitle": "練習已匯入",
+    "importedMessage": "已成功載入分享的卡諾圖。",
+    "invalidTitle": "無效代碼",
+    "invalidMessage": "無法匯入。請檢查連結或代碼是否完整。"
+  },
   "result": {
     "title": "電路",
+    "circuit": {
+      "standard": "標準",
+      "nandOnly": "僅 NAND",
+      "norOnly": "僅 NOR",
+      "nandNote": "僅使用 NAND 閘構建的等效電路。",
+      "norNote": "僅使用 NOR 閘構建的等效電路。",
+      "tapHint": "點選某一項即可在卡諾圖中標示對應群組。",
+      "zoomHint": "雙指縮放 · 點兩下重置",
+      "compact": "緊湊",
+      "stats": "閘: {{gates}} · 輸入: {{inputs}} · 級數: {{levels}}"
+    },
     "fullscreen": "全螢幕檢視",
     "close": "關閉",
     "minimumResult": "最低結果",

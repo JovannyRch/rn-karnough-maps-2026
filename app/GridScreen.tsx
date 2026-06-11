@@ -2,6 +2,7 @@ import ExportSessionPDFButton from "@/components/ExportSessionPDFButton";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { MyBannerAd } from "@/components/MyBannerAd";
 import { ProButton } from "@/components/ProBadge";
+import StepByStepPanel from "@/components/StepByStepPanel";
 import TableView from "@/components/TableView";
 import { DUO } from "@/constants/duoTheme";
 import {
@@ -20,15 +21,23 @@ import {
   incrementCompletedExercises,
   requestInAppReviewOnce,
 } from "@/utils/inAppReview";
+import {
+  buildShareUrl,
+  decodeSharePayload,
+  encodeSharePayload,
+  extractShareCode,
+} from "@/utils/shareCodec";
 import Icon from "@expo/vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
   Clipboard,
+  Linking,
   Modal,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TextInput,
@@ -114,6 +123,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     setResultType,
     focusedGroupIndex,
     setFocusedGroupIndex,
+    groupsInfo,
+    setGroupsInfo,
+    stepIndex,
+    setStepIndex,
     isPro,
     adsMutedUntil,
     variables,
@@ -143,6 +156,14 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       setBoxColors(kMap.getBoxColors());
       setVectorResult(kMap.getVectorResult());
       setCircuitVector(kMap.getCircuitVector());
+      setGroupsInfo(kMap.getGroupsInfo());
+
+      // The walkthrough refers to the previous solution; leave step mode
+      // whenever the map is re-solved.
+      if (useStore.getState().stepIndex !== null) {
+        setStepIndex(null);
+        setFocusedGroupIndex(null);
+      }
     }
   };
 
@@ -448,16 +469,17 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       );
     }
   };
-  /* 
   const applySharedCode = useCallback(
-    (rawInput: string) => {
+    (rawInput: string, options?: { silent?: boolean }) => {
       try {
+        // App launch / dev-client URLs (exp://..., the app scheme without a
+        // payload) reach this handler too; only complain when the user
+        // explicitly pasted something.
         const code = extractShareCode(rawInput);
         if (!code) {
-          Alert.alert(
-            "Código inválido",
-            "No se encontró un código para importar.",
-          );
+          if (!options?.silent) {
+            Alert.alert(t("share.invalidTitle"), t("share.invalidMessage"));
+          }
           return false;
         }
 
@@ -480,16 +502,10 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
           setVariableName(index, variableName);
         });
 
-        Alert.alert(
-          "Ejercicio importado",
-          "Se cargó correctamente el mapa compartido.",
-        );
+        Alert.alert(t("share.importedTitle"), t("share.importedMessage"));
         return true;
       } catch {
-        Alert.alert(
-          "Código inválido",
-          "No se pudo importar. Revisa que el enlace/código esté completo.",
-        );
+        Alert.alert(t("share.invalidTitle"), t("share.invalidMessage"));
         return false;
       }
     },
@@ -500,6 +516,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       setVariableQuantity,
       setValues,
       setView,
+      t,
     ],
   );
 
@@ -507,14 +524,14 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     Linking.getInitialURL()
       .then((url) => {
         if (url) {
-          applySharedCode(url);
+          applySharedCode(url, { silent: true });
         }
       })
       .catch(() => {});
 
     const subscription = Linking.addEventListener("url", ({ url }) => {
       if (url) {
-        applySharedCode(url);
+        applySharedCode(url, { silent: true });
       }
     });
 
@@ -535,11 +552,11 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       });
       const url = buildShareUrl(payloadCode);
       await Share.share({
-        title: "Mapa de Karnaugh",
-        message: `Resuelve este ejercicio:\n${url}`,
+        title: t("share.shareTitle"),
+        message: t("share.shareMessage", { url }),
       });
     } catch {
-      Alert.alert("Error", "No se pudo generar el enlace para compartir.");
+      Alert.alert(t("share.shareErrorTitle"), t("share.shareErrorMessage"));
     }
   };
 
@@ -550,7 +567,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     }
     setImportCode("");
     setShowImportDialog(false);
-  }; */
+  };
 
   const handleCopyResult = () => {
     if (!resultPlainText) {
@@ -618,7 +635,9 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
 
         <View style={styles.headerActions}>
           <LanguageToggle />
-          {/* <Pressable
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t("share.accessibilityShare")}
             style={({ pressed }) => [
               styles.shareButton,
               pressed && styles.historyButtonPressed,
@@ -630,6 +649,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             <Icon name="ios-share" size={17} color="#fff" />
           </Pressable>
           <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t("share.accessibilityImport")}
             style={({ pressed }) => [
               styles.importButton,
               pressed && styles.historyButtonPressed,
@@ -637,7 +658,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
             onPress={() => setShowImportDialog(true)}
           >
             <Icon name="input" size={17} color="#fff" />
-          </Pressable> */}
+          </Pressable>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t("grid.accessibility.history")}
@@ -785,9 +806,31 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
           {view === "table" && <TableView />}
         </Reanimated.View>
 
-        {view === "map" && groupLegend.length > 0 && (
+        {view === "map" && groupLegend.length > 0 && stepIndex === null && (
           <View style={styles.legendCard}>
-            <Text style={styles.legendTitle}>{t("grid.groups.title")}</Text>
+            <View style={styles.legendHeader}>
+              <Text style={styles.legendTitle}>{t("grid.groups.title")}</Text>
+              {groupsInfo.length > 0 && (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t("steps.button")}
+                  style={({ pressed }) => [
+                    styles.stepButton,
+                    pressed && styles.actionButtonPressed,
+                  ]}
+                  onPress={() => {
+                    setView("map");
+                    setStepIndex(0);
+                    setFocusedGroupIndex(0);
+                  }}
+                >
+                  <Icon name="school" size={14} color={DUO.blueDark} />
+                  <Text style={styles.stepButtonText}>
+                    {t("steps.button")}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -866,15 +909,25 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
         />
       </ScrollView>
 
+      {stepIndex !== null && (
+        <StepByStepPanel
+          bottom={
+            insets.bottom + (adsSuppressed ? 8 : ESTIMATED_BANNER_HEIGHT + 8)
+          }
+        />
+      )}
+
       <Reanimated.View
         style={[
           styles.resultDock,
+          stepIndex !== null && styles.resultDockHidden,
           {
             bottom:
               insets.bottom + (adsSuppressed ? 8 : ESTIMATED_BANNER_HEIGHT + 8),
           },
           resultDockAnimatedStyle,
         ]}
+        pointerEvents={stepIndex !== null ? "none" : "auto"}
       >
         <Pressable
           accessibilityRole="button"
@@ -931,7 +984,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       </Reanimated.View>
       {!adsSuppressed && <MyBannerAd />}
 
-      {/* <Modal
+      <Modal
         visible={showImportDialog}
         transparent
         animationType="fade"
@@ -939,10 +992,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       >
         <View style={styles.dialogBackdrop}>
           <View style={styles.dialogCard}>
-            <Text style={styles.dialogTitle}>Importar ejercicio</Text>
-            <Text style={styles.dialogBody}>
-              Pega el enlace o código compartido para cargar el mapa.
-            </Text>
+            <Text style={styles.dialogTitle}>{t("share.importTitle")}</Text>
+            <Text style={styles.dialogBody}>{t("share.importBody")}</Text>
 
             <TextInput
               value={importCode}
@@ -952,7 +1003,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               multiline
               numberOfLines={4}
               style={styles.importInput}
-              placeholder="rnkarnoughmap2026://share?d=... o código"
+              placeholder={t("share.importPlaceholder")}
               placeholderTextColor="#7A8A74"
             />
 
@@ -963,7 +1014,9 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
               ]}
               onPress={handleImportSubmit}
             >
-              <Text style={styles.dialogPrimaryActionText}>Cargar código</Text>
+              <Text style={styles.dialogPrimaryActionText}>
+                {t("share.importAction")}
+              </Text>
             </Pressable>
 
             <Pressable
@@ -976,11 +1029,13 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                 setShowImportDialog(false);
               }}
             >
-              <Text style={styles.dialogSecondaryActionText}>Cancelar</Text>
+              <Text style={styles.dialogSecondaryActionText}>
+                {t("share.cancel")}
+              </Text>
             </Pressable>
           </View>
         </View>
-      </Modal> */}
+      </Modal>
 
       <Modal
         visible={showEngagementDialog}
@@ -1427,7 +1482,31 @@ const styles = StyleSheet.create({
     color: DUO.muted,
     textTransform: "uppercase",
     letterSpacing: 0.6,
+  },
+  legendHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 8,
+  },
+  stepButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    minHeight: 30,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: DUO.blue,
+    backgroundColor: "#EAF7FE",
+    paddingHorizontal: 10,
+  },
+  stepButtonText: {
+    color: DUO.blueDark,
+    fontWeight: "800",
+    fontSize: 12,
+  },
+  resultDockHidden: {
+    opacity: 0,
   },
   legendRow: {
     gap: 8,

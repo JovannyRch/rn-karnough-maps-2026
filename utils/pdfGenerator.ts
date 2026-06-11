@@ -3,6 +3,7 @@ import * as Sharing from "expo-sharing";
 import { buildMinimizationComparison } from "./minimizationComparator";
 import { buildRotatedMap } from "@/app/utils/rotationMapping";
 import i18n, { getCurrentLanguage, getCurrentLocale } from "@/i18n";
+import { GROUP_COLORS } from "@/constants/groupColors";
 import { buildGroupColorsByMinterm } from "./groupColorLookup";
 
 interface CircuitData {
@@ -45,16 +46,7 @@ type Literal = {
 
 const STROKE = "#2f4858";
 const FILL_GATE = "#2f4858";
-const TERM_COLORS = [
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "#50C878",
-  "lightblue",
-  "#CD7F32",
-  "#ff6699",
-];
+const TERM_COLORS = [...GROUP_COLORS];
 
 const translate = (key: string, options?: Record<string, unknown>): string =>
   i18n.t(key, options);

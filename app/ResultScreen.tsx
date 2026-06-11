@@ -1,4 +1,5 @@
-import { CircuitComponent } from "@/components/Circuit";
+import CircuitView from "@/components/circuit/CircuitView";
+import { CircuitVariant } from "@/components/circuit/model";
 import { useEffect, useState } from "react";
 import {
   Modal,
@@ -8,6 +9,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
@@ -41,6 +43,9 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
   const fade = useSharedValue(0);
   const lift = useSharedValue(14);
   const [isCircuitFullscreen, setIsCircuitFullscreen] = useState(false);
+  const [circuitVariant, setCircuitVariant] =
+    useState<CircuitVariant>("standard");
+  const [circuitCompact, setCircuitCompact] = useState(false);
 
   useEffect(() => {
     fade.value = withTiming(1, { duration: 300 });
@@ -119,7 +124,12 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
             </Text>
           </Pressable>
           <View style={styles.circuitCard}>
-            <CircuitComponent />
+            <CircuitView
+              variant={circuitVariant}
+              onVariantChange={setCircuitVariant}
+              compact={circuitCompact}
+              onCompactChange={setCircuitCompact}
+            />
           </View>
         </Reanimated.View>
       </ScrollView>
@@ -131,6 +141,7 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
         animationType="slide"
         onRequestClose={() => setIsCircuitFullscreen(false)}
       >
+        <GestureHandlerRootView style={styles.fullscreenContainer}>
         <SafeAreaView style={styles.fullscreenContainer}>
           <View style={styles.fullscreenHeader}>
             <Text style={styles.fullscreenTitle}>{t("result.title")}</Text>
@@ -147,13 +158,17 @@ const ResultScreen = ({ navigation }: ResultScreenProps) => {
             </Pressable>
           </View>
           <View style={styles.fullscreenCircuitCard}>
-            <CircuitComponent
-              bottomPadding={adsSuppressed ? 24 : 96 + insets.bottom}
-              enableZoom
+            <CircuitView
+              variant={circuitVariant}
+              onVariantChange={setCircuitVariant}
+              compact={circuitCompact}
+              onCompactChange={setCircuitCompact}
+              fullscreen
             />
           </View>
           {!adsSuppressed && <MyBannerAd />}
         </SafeAreaView>
+        </GestureHandlerRootView>
       </Modal>
     </SafeAreaView>
   );

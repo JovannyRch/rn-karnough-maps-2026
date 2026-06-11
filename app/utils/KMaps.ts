@@ -1,4 +1,5 @@
-import { BoxColor, VectorResultItem } from "../types/types";
+import { GROUP_COLORS } from "@/constants/groupColors";
+import { BoxColor, GroupStepInfo, VectorResultItem } from "../types/types";
 
 type SolveType = "SOP" | "POS";
 
@@ -287,6 +288,7 @@ export class KMaps {
   colors: string[];
   vectorResult: VectorResultItem[];
   circuitVector: string[];
+  groupsInfo: GroupStepInfo[];
   variableRotation: number;
   variables: string[];
 
@@ -306,17 +308,9 @@ export class KMaps {
     this.borderWidth = 5;
     this.borderRadius = 10;
     this.boxColors = [];
-    this.colors = [
-      "red",
-      "blue",
-      "green",
-      "orange",
-      "#ff6699",
-      "lightblue",
-      "#CD7F32",
-      "#50C878",
-    ];
+    this.colors = [...GROUP_COLORS];
     this.circuitVector = [];
+    this.groupsInfo = [];
     this.variableRotation =
       ((variableRotation % this.typeMap) + this.typeMap) % this.typeMap;
     const providedVariables = variables?.slice(0, this.typeMap) ?? [];
@@ -408,7 +402,7 @@ export class KMaps {
     const targetValue = this.typeSol === "SOP" ? 1 : 0;
 
     return patterns
-      .map((pattern) => {
+      .map((pattern, patternIndex) => {
         const covered = cells
           .filter((cell) =>
             matchesPattern(pattern, toBinary(cell.index, this.typeMap)),
@@ -433,15 +427,16 @@ export class KMaps {
           return found?.value === targetValue;
         });
 
-        return coversAnyTarget ? uniqueCovered : [];
+        return { patternIndex, cells: coversAnyTarget ? uniqueCovered : [] };
       })
-      .filter((group) => group.length > 0);
+      .filter((group) => group.cells.length > 0);
   }
 
   private setConstantResult(constant: "0" | "1") {
     this.result = constant;
     this.mathExpression = constant;
     this.circuitVector = [constant];
+    this.groupsInfo = [];
     this.vectorResult = [
       {
         value: constant,
@@ -566,7 +561,37 @@ export class KMaps {
     });
 
     const groups = this.buildGroupsFromPatterns(sortedPatterns, cells);
-    this.drawGroup(groups, groups);
+    const groupCells = groups.map((group) => group.cells);
+
+    this.groupsInfo = groups.map((group, index) => {
+      const pattern = sortedPatterns[group.patternIndex] ?? "";
+      const term = termData[group.patternIndex];
+      const fixedLiterals: string[] = [];
+      const eliminatedVariables: string[] = [];
+
+      for (let i = 0; i < pattern.length; i++) {
+        const variable = this.variables[i] ?? VARIABLES[i];
+        if (pattern[i] === "-") {
+          eliminatedVariables.push(variable);
+          continue;
+        }
+
+        const negated =
+          this.typeSol === "SOP" ? pattern[i] === "0" : pattern[i] === "1";
+        fixedLiterals.push(negated ? `${variable}'` : variable);
+      }
+
+      return {
+        groupIndex: index,
+        termPlain: term?.plain ?? "",
+        termMath: term?.math ?? "",
+        cellCount: group.cells.length,
+        fixedLiterals,
+        eliminatedVariables,
+      };
+    });
+
+    this.drawGroup(groupCells, groupCells);
   }
 
   drawGroup(temp: GroupCell[][], groups: GroupCell[][]) {
@@ -881,5 +906,9 @@ export class KMaps {
 
   getCircuitVector() {
     return this.circuitVector;
+  }
+
+  getGroupsInfo() {
+    return this.groupsInfo;
   }
 }

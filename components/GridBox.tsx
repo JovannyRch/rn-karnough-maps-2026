@@ -20,8 +20,14 @@ interface GridBoxProps {
 
 const GridBox = ({ index, row, column }: GridBoxProps) => {
   const { t } = useTranslation();
-  const { boxColors, values, setValues, resultType, focusedGroupIndex } =
-    useStore();
+  const {
+    boxColors,
+    values,
+    setValues,
+    resultType,
+    focusedGroupIndex,
+    stepIndex,
+  } = useStore();
 
   const boxes: BoxColor[] = useMemo(() => {
     return boxColors.filter((box) => {
@@ -90,21 +96,29 @@ const GridBox = ({ index, row, column }: GridBoxProps) => {
               {value}
             </Text>
           </View>
-          {boxes.map(({ style, row, column, groupIndex }) => (
-            <View
-              key={`#${row},${column},${groupIndex ?? "na"},${style.borderColor}`}
-              style={[
-                styles.overlayBox,
-                style,
-                focusedGroupIndex !== null &&
-                  groupIndex !== focusedGroupIndex &&
-                  styles.overlayMuted,
-                focusedGroupIndex !== null &&
-                  groupIndex === focusedGroupIndex &&
-                  styles.overlayFocused,
-              ]}
-            />
-          ))}
+          {boxes
+            .filter(
+              // In step-by-step mode, groups beyond the current step stay hidden.
+              ({ groupIndex }) =>
+                stepIndex === null ||
+                typeof groupIndex !== "number" ||
+                groupIndex <= stepIndex,
+            )
+            .map(({ style, row, column, groupIndex }) => (
+              <View
+                key={`#${row},${column},${groupIndex ?? "na"},${style.borderColor}`}
+                style={[
+                  styles.overlayBox,
+                  style,
+                  focusedGroupIndex !== null &&
+                    groupIndex !== focusedGroupIndex &&
+                    styles.overlayMuted,
+                  focusedGroupIndex !== null &&
+                    groupIndex === focusedGroupIndex &&
+                    styles.overlayFocused,
+                ]}
+              />
+            ))}
         </TouchableOpacity>
       </Animated.View>
     </View>

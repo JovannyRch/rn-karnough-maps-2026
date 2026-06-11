@@ -78,9 +78,51 @@ export const koTranslation = {
   "navigation": {
     "appTitle": "K-Maps"
   },
+  "steps": {
+    "button": "단계별 풀이",
+    "title": "그룹 {{current}} / {{total}}",
+    "finalTitle": "최종 식",
+    "covered_other": "값이 {{target}}인 셀 {{count}}개를 포함합니다.",
+    "eliminated": "{{variables}}은(는) 그룹 안에서 변하므로 제거됩니다.",
+    "eliminatedNone": "이 그룹에서는 모든 변수가 일정합니다.",
+    "termIntro": "일정한 변수들이 다음 항을 만듭니다:",
+    "finalBody": "모든 항을 결합하면 최소화된 식이 됩니다:",
+    "next": "다음",
+    "back": "이전",
+    "done": "완료",
+    "exit": "단계별 풀이 종료"
+  },
+  "share": {
+    "accessibilityShare": "문제 공유",
+    "accessibilityImport": "문제 가져오기",
+    "shareTitle": "카르노 맵",
+    "shareMessage": "이 카르노 맵 문제를 풀어 보세요:\n{{url}}",
+    "shareErrorTitle": "오류",
+    "shareErrorMessage": "공유 링크를 만들 수 없습니다.",
+    "importTitle": "문제 가져오기",
+    "importBody": "공유된 링크나 코드를 붙여넣어 맵을 불러오세요.",
+    "importPlaceholder": "링크 또는 코드",
+    "importAction": "문제 불러오기",
+    "cancel": "취소",
+    "importedTitle": "문제를 가져왔습니다",
+    "importedMessage": "공유된 맵을 성공적으로 불러왔습니다.",
+    "invalidTitle": "잘못된 코드",
+    "invalidMessage": "가져올 수 없습니다. 링크나 코드가 완전한지 확인하세요."
+  },
   "result": {
     "title": "회로",
     "close": "닫기",
+    "circuit": {
+      "standard": "표준",
+      "nandOnly": "NAND만",
+      "norOnly": "NOR만",
+      "nandNote": "NAND 게이트만으로 구성된 등가 회로입니다.",
+      "norNote": "NOR 게이트만으로 구성된 등가 회로입니다.",
+      "tapHint": "항을 탭하면 맵에서 해당 그룹이 강조 표시됩니다.",
+      "zoomHint": "핀치로 확대 · 두 번 탭하여 초기화",
+      "compact": "간단히",
+      "stats": "게이트: {{gates}} · 입력: {{inputs}} · 단계: {{levels}}"
+    },
     "type": "유형: {{type}}",
     "badge": "논리 출력",
     "minimumResult": "최소 결과",

@@ -78,8 +78,50 @@ export const zhCNTranslation = {
       "buyPro": "购买专业版"
     }
   },
+  "steps": {
+    "button": "逐步讲解",
+    "title": "第 {{current}} 组，共 {{total}} 组",
+    "finalTitle": "最终表达式",
+    "covered_other": "包含 {{count}} 个值为 {{target}} 的单元格。",
+    "eliminated": "{{variables}} 在组内发生变化，因此被消去。",
+    "eliminatedNone": "该组中所有变量保持不变。",
+    "termIntro": "保持不变的变量构成该项：",
+    "finalBody": "将所有项组合即可得到最简表达式：",
+    "next": "下一步",
+    "back": "上一步",
+    "done": "完成",
+    "exit": "退出逐步讲解"
+  },
+  "share": {
+    "accessibilityShare": "分享练习",
+    "accessibilityImport": "导入练习",
+    "shareTitle": "卡诺图",
+    "shareMessage": "来挑战这道卡诺图练习：\n{{url}}",
+    "shareErrorTitle": "错误",
+    "shareErrorMessage": "无法生成分享链接。",
+    "importTitle": "导入练习",
+    "importBody": "粘贴分享的链接或代码以加载卡诺图。",
+    "importPlaceholder": "链接或代码",
+    "importAction": "加载练习",
+    "cancel": "取消",
+    "importedTitle": "练习已导入",
+    "importedMessage": "已成功加载分享的卡诺图。",
+    "invalidTitle": "无效代码",
+    "invalidMessage": "无法导入。请检查链接或代码是否完整。"
+  },
   "result": {
     "title": "电路",
+    "circuit": {
+      "standard": "标准",
+      "nandOnly": "仅 NAND",
+      "norOnly": "仅 NOR",
+      "nandNote": "仅使用 NAND 门构建的等效电路。",
+      "norNote": "仅使用 NOR 门构建的等效电路。",
+      "tapHint": "点击某一项即可在卡诺图中高亮对应分组。",
+      "zoomHint": "双指缩放 · 双击重置",
+      "compact": "紧凑",
+      "stats": "门: {{gates}} · 输入: {{inputs}} · 级数: {{levels}}"
+    },
     "variables": "变量：{{count}}",
     "close": "关闭",
     "circuitDiagram": "电路图",
