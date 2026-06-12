@@ -10,7 +10,7 @@
       "edgeToEdgeEnabled": true,
       "package": "com.jovannyrch.kmaps",
       "predictiveBackGestureEnabled": false,
-      "versionCode": 44
+      "versionCode": 45
     },
     "name": "Mapas de Karnough",
     "newArchEnabled": true,
@@ -41,7 +41,7 @@
     "scheme": "rnkarnoughmap2026",
     "slug": "rn_karnough_map_2026",
     "userInterfaceStyle": "automatic",
-    "version": "3.1.0",
+    "version": "3.2.1",
     "web": {
       "favicon": "./assets/images/favicon.png",
       "output": "static"

@@ -17,12 +17,12 @@ import {
   addExerciseHistoryEntry,
   ExerciseHistoryEntry,
 } from "@/utils/exerciseHistory";
+import { hapticLight, hapticSelect } from "@/utils/haptics";
 import {
   getCompletedExercisesCount,
   incrementCompletedExercises,
   requestInAppReviewOnce,
 } from "@/utils/inAppReview";
-import { hapticLight, hapticSelect } from "@/utils/haptics";
 import {
   buildShareUrl,
   decodeSharePayload,
@@ -31,7 +31,9 @@ import {
 } from "@/utils/shareCodec";
 import Icon from "@expo/vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   Clipboard,
@@ -59,7 +61,6 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
 import FiveVariablesGrid from "./Grids/FiveVariablesGrid";
 import FourVariables from "./Grids/FourVariablesGrid";
 import ThreeVariablesGrid from "./Grids/ThreeVariablesGrid";
@@ -543,7 +544,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
     return () => {
       subscription.remove();
     };
-  }, [applySharedCode]); 
+  }, [applySharedCode]);
 
   const handleShareExercise = async () => {
     try {
@@ -634,8 +635,13 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
   return (
     <SafeAreaView style={styles.container}>
       <Reanimated.View style={[styles.header, headerAnimatedStyle]}>
-        <View>
+        <View style={styles.titleRow}>
           <Text style={styles.title}>{t("grid.title")}</Text>
+          <View>
+            <Text style={styles.versionBadge}>
+              v{Constants.expoConfig?.version}
+            </Text>
+          </View>
         </View>
 
         <View style={styles.headerActions}>
@@ -773,10 +779,9 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                     style={styles.variableInputLabel}
                   >{`V${index + 1}`}</Text>
                   <TextInput
-                    accessibilityLabel={t(
-                      "grid.accessibility.variableInput",
-                      { number: index + 1 },
-                    )}
+                    accessibilityLabel={t("grid.accessibility.variableInput", {
+                      number: index + 1,
+                    })}
                     value={variable}
                     maxLength={3}
                     autoCapitalize="characters"
@@ -834,9 +839,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
                   }}
                 >
                   <Icon name="school" size={14} color={DUO.blueDark} />
-                  <Text style={styles.stepButtonText}>
-                    {t("steps.button")}
-                  </Text>
+                  <Text style={styles.stepButtonText}>{t("steps.button")}</Text>
                 </Pressable>
               )}
             </View>
@@ -945,9 +948,7 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
           onPress={handleCopyResult}
           disabled={!resultPlainText}
         >
-          <Text style={styles.resultDockLabel}>
-            {t("grid.result.title")}
-          </Text>
+          <Text style={styles.resultDockLabel}>{t("grid.result.title")}</Text>
           {vectorResult.length > 0 ? (
             <View style={styles.resultDockVector}>
               {vectorResult.map((item, index) => (
@@ -1062,12 +1063,8 @@ export default function GridScreen({ navigation, route }: GridScreenProps) {
       >
         <View style={styles.dialogBackdrop}>
           <View style={styles.dialogCard}>
-            <Text style={styles.dialogTitle}>
-              {t("grid.engagement.title")}
-            </Text>
-            <Text style={styles.dialogBody}>
-              {t("grid.engagement.body")}
-            </Text>
+            <Text style={styles.dialogTitle}>{t("grid.engagement.title")}</Text>
+            <Text style={styles.dialogBody}>{t("grid.engagement.body")}</Text>
 
             <Pressable
               style={({ pressed }) => [
@@ -1289,6 +1286,22 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     fontSize: 19,
     marginTop: 2,
+  },
+  titleRow: {
+    gap: 8,
+  },
+  versionBadge: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: DUO.muted,
+    width: 50,
+    backgroundColor: "#F2F8EC",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: DUO.border,
   },
   headerActions: {
     flexDirection: "row",

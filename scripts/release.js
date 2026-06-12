@@ -18,7 +18,22 @@ function getCurrentVersionCode() {
   return match ? parseInt(match[1], 10) : 0;
 }
 
-function updateVersionCodes(newCode) {
+function bumpSemver(version, type) {
+  const parts = version.split('.').map(Number);
+  if (type === 'major') {
+    parts[0]++;
+    parts[1] = 0;
+    parts[2] = 0;
+  } else if (type === 'minor') {
+    parts[1]++;
+    parts[2] = 0;
+  } else {
+    parts[2]++;
+  }
+  return parts.join('.');
+}
+
+function updateVersionCodes(newCode, bumpType) {
   const buildGradlePath = path.join(ROOT, 'android/app/build.gradle');
   let buildGradle = fs.readFileSync(buildGradlePath, 'utf8');
   buildGradle = buildGradle.replace(/versionCode\s+\d+/, `versionCode ${newCode}`);
@@ -27,7 +42,12 @@ function updateVersionCodes(newCode) {
   const appJsonPath = path.join(ROOT, 'app.json');
   const appJson = readJson(appJsonPath);
   appJson.expo.android.versionCode = newCode;
+
+  const oldVersion = appJson.expo.version;
+  appJson.expo.version = bumpSemver(oldVersion, bumpType);
   writeJson(appJsonPath, appJson);
+
+  return { oldVersion, newVersion: appJson.expo.version };
 }
 
 function runBuild() {
@@ -36,13 +56,21 @@ function runBuild() {
 }
 
 function main() {
+  const bumpType = process.argv[2] || 'patch';
+  if (!['patch', 'minor', 'major'].includes(bumpType)) {
+    console.error('Usage: node release.js [patch|minor|major]');
+    process.exit(1);
+  }
+
   const currentCode = getCurrentVersionCode();
   const newCode = currentCode + 1;
 
   console.log(`Current versionCode: ${currentCode}`);
   console.log(`New versionCode: ${newCode}`);
 
-  updateVersionCodes(newCode);
+  const { oldVersion, newVersion } = updateVersionCodes(newCode, bumpType);
+  console.log(`Version: ${oldVersion} → ${newVersion} (${bumpType})`);
+
   runBuild();
 
   const bundleDir = path.join(ROOT, 'android/app/build/outputs/bundle/release');
