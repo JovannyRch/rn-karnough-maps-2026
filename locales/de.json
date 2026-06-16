@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Karnaugh-Diagramme"
+  },
+  "android": {
+    "app_name": "Karnaugh-Diagramme"
+  }
+}

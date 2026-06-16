@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "カルノー図"
+  },
+  "android": {
+    "app_name": "カルノー図"
+  }
+}

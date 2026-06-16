@@ -41,3 +41,16 @@ app-example
 # generated native folders
 /ios
 /android
+!/android/
+/android/*
+!/android/app/
+/android/app/*
+!/android/app/src/
+/android/app/src/*
+!/android/app/src/main/
+/android/app/src/main/*
+!/android/app/src/main/res/
+/android/app/src/main/res/*
+!/android/app/src/main/res/values-*/
+/android/app/src/main/res/values-*/*
+!/android/app/src/main/res/values-*/strings.xml

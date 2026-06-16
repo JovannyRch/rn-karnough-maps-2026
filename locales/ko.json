@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "카르노 맵"
+  },
+  "android": {
+    "app_name": "카르노 맵"
+  }
+}

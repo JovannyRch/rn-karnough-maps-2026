@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "Mapas de Karnaugh"
+  },
+  "android": {
+    "app_name": "Mapas de Karnaugh"
+  }
+}

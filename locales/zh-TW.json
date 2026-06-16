@@ -1,0 +1,8 @@
+{
+  "ios": {
+    "CFBundleDisplayName": "卡諾圖"
+  },
+  "android": {
+    "app_name": "卡諾圖"
+  }
+}

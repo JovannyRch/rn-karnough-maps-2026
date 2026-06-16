@@ -10,7 +10,7 @@
       "edgeToEdgeEnabled": true,
       "package": "com.jovannyrch.kmaps",
       "predictiveBackGestureEnabled": false,
-      "versionCode": 45
+      "versionCode": 46
     },
     "name": "Mapas de Karnough",
     "newArchEnabled": true,
@@ -36,12 +36,58 @@
           "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz"
         }
       ],
-      "expo-localization"
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "android": [
+              "es",
+              "en",
+              "pt",
+              "fr",
+              "de",
+              "it",
+              "ja",
+              "ko",
+              "zh-CN",
+              "zh-TW"
+            ],
+            "ios": [
+              "es",
+              "en",
+              "pt",
+              "fr",
+              "de",
+              "it",
+              "ja",
+              "ko",
+              "zh-Hans",
+              "zh-Hant"
+            ]
+          }
+        }
+      ]
     ],
+    "ios": {
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true
+      }
+    },
+    "locales": {
+      "de": "./locales/de.json",
+      "en": "./locales/en.json",
+      "fr": "./locales/fr.json",
+      "it": "./locales/it.json",
+      "ja": "./locales/ja.json",
+      "ko": "./locales/ko.json",
+      "pt": "./locales/pt.json",
+      "zh-CN": "./locales/zh-CN.json",
+      "zh-TW": "./locales/zh-TW.json"
+    },
     "scheme": "rnkarnoughmap2026",
     "slug": "rn_karnough_map_2026",
     "userInterfaceStyle": "automatic",
-    "version": "3.2.1",
+    "version": "3.2.2",
     "web": {
       "favicon": "./assets/images/favicon.png",
       "output": "static"
